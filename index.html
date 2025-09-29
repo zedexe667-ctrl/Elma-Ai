@@ -1114,24 +1114,7 @@
                 console.log('🔄 استفاده از پاسخ‌های پیش‌فرض چت...');
             }
 
-            try {
-                // همون تغییر برای game.json
-                const gameResponse = await fetch('./game.json?v=' + Date.now());
-                if (!gameResponse.ok) {
-                    throw new Error(`HTTP ${gameResponse.status}: فایل game.json پیدا نشد`);
-                }
-                const gameData = await gameResponse.json();
-                if (gameData && typeof gameData === 'object') {
-                    gameQuestions = gameData;
-                    console.log('✅ سوالات بازی از فایل JSON بارگذاری شد:', Object.keys(gameQuestions).length, 'دسته');
-                }
-            } catch (error) {
-                console.warn('⚠️ خطا در بارگذاری فایل game.json:', error.message);
-                console.log('🔄 استفاده از سوالات پیش‌فرض بازی...');
-                loadDefaultGameQuestions();
-            }
-            // Load default chat responses if needed
-            if (!chatDictionary || Object.keys(chatDictionary).length === 0) {
+            
 
                 // Comprehensive fallback responses
                 chatDictionary = {
@@ -3052,5 +3035,6 @@
     </script>
     <script>(function () { function c() { var b = a.contentDocument || a.contentWindow.document; if (b) { var d = b.createElement('script'); d.innerHTML = "window.__CF$cv$params={r:'98231e777770da45',t:'MTc1ODM5MDE0Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);"; b.getElementsByTagName('head')[0].appendChild(d) } } if (document.body) { var a = document.createElement('iframe'); a.height = 1; a.width = 1; a.style.position = 'absolute'; a.style.top = 0; a.style.left = 0; a.style.border = 'none'; a.style.visibility = 'hidden'; document.body.appendChild(a); if ('loading' !== document.readyState) c(); else if (window.addEventListener) document.addEventListener('DOMContentLoaded', c); else { var e = document.onreadystatechange || function () { }; document.onreadystatechange = function (b) { e(b); 'loading' !== document.readyState && (document.onreadystatechange = e, c()) } } } })();</script>
 </body>
+
 
 </html>
