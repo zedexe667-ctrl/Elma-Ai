@@ -1105,25 +1105,37 @@
     "عکستو بده": [
       {
         "type": "image",
-        "url": "Assets/img/Elma/elma2.png",
+        "url": "Assets/img/Elma/Elma2.png",
         "text": "بیا عشقم"
       },
       {
         "type": "image",
-        "url": "Assets/img/Elma/elma.png",
+        "url": "Assets/img/Elma/Elma.png",
         "text": "بفرما عشقم"
       }
     ],
     "عکستو میدی": [
       {
         "type": "image",
-        "url": "Assets/img/Elma/elma2.png",
+        "url": "Assets/img/Elma/Elma2.png",
         "text": "بیا عشقم"
       },
       {
         "type": "image",
-        "url": "Assets/img/Elma/elma.png",
+        "url": "Assets/img/Elma/Elma.png",
         "text": "بفرما عشقم"
+      }
+    ],
+    "نود میدی؟": [
+      {
+        "type": "image",
+        "url": "Assets/img/Elma Nude/Elma.png",
+        "text": "اینم عکس قدیم"
+      },
+      {
+        "type": "image",
+        "url": "Assets/img/Elma Nude/Elma1.png",
+        "text": "اینم نود"
       }
     ]    
   }
