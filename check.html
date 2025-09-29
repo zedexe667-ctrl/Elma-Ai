@@ -1,0 +1,1808 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elma - دوست دختر هوشمند شما</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="icon" type="image/png" href="Assets/img/logo/Logo.png" />
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+        }
+        
+        .gradient-bg {
+            background: radial-gradient(ellipse at top, #0f0f23 0%, #000000 50%, #0a0a0a 100%);
+            position: relative;
+        }
+        
+        .gradient-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
+            animation: backgroundShift 20s ease-in-out infinite;
+        }
+        
+        @keyframes backgroundShift {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .ai-glow {
+            box-shadow: 
+                0 0 50px rgba(255, 119, 198, 0.6),
+                0 0 100px rgba(120, 119, 198, 0.4),
+                inset 0 0 50px rgba(255, 255, 255, 0.1);
+        }
+        
+        .floating {
+            animation: floating 4s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            25% { transform: translateY(-15px) rotate(1deg); }
+            50% { transform: translateY(-10px) rotate(0deg); }
+            75% { transform: translateY(-20px) rotate(-1deg); }
+        }
+        
+        .pulse-ring {
+            animation: pulse-ring 3s infinite;
+        }
+        
+        @keyframes pulse-ring {
+            0% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.2); opacity: 0.4; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+        
+        .chat-button-hover:hover {
+            transform: translateY(-3px) scale(1.05);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            filter: brightness(1.2);
+        }
+        
+        .feature-card {
+            backdrop-filter: blur(20px);
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+        
+        .feature-card:hover::before {
+            left: 100%;
+        }
+        
+        .neon-text {
+            text-shadow: 
+                0 0 5px currentColor,
+                0 0 10px currentColor,
+                0 0 15px currentColor,
+                0 0 20px currentColor;
+        }
+        
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(120, 219, 255, 0.6);
+            border-radius: 50%;
+            animation: particle-float 15s linear infinite;
+        }
+        
+        @keyframes particle-float {
+            0% { transform: translateY(100vh) translateX(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100px) translateX(100px); opacity: 0; }
+        }
+        
+        .hologram-effect {
+            position: relative;
+        }
+        
+        .hologram-effect::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                45deg,
+                transparent 30%,
+                rgba(255, 255, 255, 0.1) 50%,
+                transparent 70%
+            );
+            animation: hologram-scan 3s linear infinite;
+        }
+        
+        @keyframes hologram-scan {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        /* Custom Scrollbar Styles */
+        ::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .custom-scrollbar {
+            position: fixed;
+            top: 0;
+            right: 8px;
+            width: 8px;
+            height: 100vh;
+            z-index: 9999;
+            opacity: 0;
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+        
+        .custom-scrollbar.visible {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .custom-scrollbar.hover {
+            width: 12px;
+            right: 6px;
+        }
+        
+        .scrollbar-track {
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            backdrop-filter: blur(10px);
+            box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+        
+        .scrollbar-thumb {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(135deg, #ff6b9d, #c44569, #f8b500);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 
+                0 2px 8px rgba(255, 107, 157, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+        
+        .scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #ff8fab, #d55a7a, #ffcc33);
+            box-shadow: 
+                0 4px 16px rgba(255, 107, 157, 0.6),
+                inset 0 1px 0 rgba(255, 255, 255, 0.4);
+            transform: scale(1.1);
+        }
+        
+        .scrollbar-thumb.dragging {
+            background: linear-gradient(135deg, #ff4757, #ff3838, #ff6348);
+            box-shadow: 
+                0 6px 20px rgba(255, 71, 87, 0.8),
+                inset 0 1px 0 rgba(255, 255, 255, 0.5);
+            transform: scale(1.2);
+        }
+        
+        .scroll-position {
+            position: absolute;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            pointer-events: none;
+            backdrop-filter: blur(10px);
+        }
+        
+        .scroll-position.show {
+            opacity: 1;
+        }
+        
+        /* Dark Theme */
+        .dark-theme .scrollbar-track {
+            background: rgba(0, 0, 0, 0.3);
+            box-shadow: inset 0 0 6px rgba(255, 255, 255, 0.1);
+        }
+        
+        .dark-theme .scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+        }
+        
+        .dark-theme .scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #7c8cff, #8a5fb8, #ff9ff3);
+        }
+        
+        /* Light Theme */
+        .light-theme .scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+            box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .light-theme .scrollbar-thumb {
+            background: linear-gradient(135deg, #4facfe, #00f2fe, #43e97b);
+        }
+        
+        .light-theme .scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #6bb6ff, #22ffff, #5bff8a);
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .custom-scrollbar {
+                width: 6px;
+                right: 4px;
+            }
+            
+            .custom-scrollbar.hover {
+                width: 10px;
+                right: 2px;
+            }
+        }
+        
+        /* High Contrast Mode */
+        @media (prefers-contrast: high) {
+            .scrollbar-track {
+                background: rgba(255, 255, 255, 0.9);
+                border: 2px solid #000;
+            }
+            
+            .scrollbar-thumb {
+                background: #000;
+                border: 1px solid #fff;
+            }
+        }
+        
+        .floating-widget {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .floating-widget.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .widget-pulse {
+            animation: widget-pulse 2s infinite;
+        }
+        
+        @keyframes widget-pulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(255, 119, 198, 0.6); }
+            50% { box-shadow: 0 0 40px rgba(255, 119, 198, 0.8), 0 0 60px rgba(120, 119, 198, 0.6); }
+        }
+        
+        .widget-bounce:hover {
+            animation: widget-bounce 0.6s ease-in-out;
+        }
+        
+        @keyframes widget-bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen text-white">
+    <!-- Animated Particles Background -->
+    <div class="matrix-bg" id="particles-container"></div>
+    
+    <!-- Custom Scrollbar -->
+    <div id="customScrollbar" class="custom-scrollbar" role="scrollbar" aria-orientation="vertical" aria-label="اسکرول صفحه">
+        <div class="scrollbar-track">
+            <div id="scrollbarThumb" class="scrollbar-thumb" tabindex="0" role="slider" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
+            <div id="scrollPosition" class="scroll-position"></div>
+        </div>
+    </div>
+
+    <!-- Floating Widget -->
+    <div id="floatingWidget" class="floating-widget">
+        <div class="feature-card rounded-full w-16 h-16 flex items-center justify-center cursor-pointer widget-pulse widget-bounce group" onclick="showSupportChat()">
+            <i class="fas fa-headset text-2xl text-pink-400 group-hover:text-white transition-colors duration-300"></i>
+        </div>
+        <div class="absolute -top-12 right-0 bg-gradient-to-r from-pink-600 to-purple-600 text-white px-3 py-1 rounded-lg text-sm whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+            پشتیبانی سریع
+        </div>
+    </div>
+    <!-- Age Verification Modal -->
+    <div id="ageVerificationModal" class="fixed inset-0 bg-black bg-opacity-80 backdrop-blur-sm z-[9999] flex items-center justify-center">
+        <div class="feature-card rounded-3xl p-8 max-w-2xl w-full mx-4 relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-500 via-yellow-500 to-green-500"></div>
+            
+            <div class="text-center mb-8">
+                <div class="w-20 h-20 mx-auto mb-6 bg-gradient-to-r from-red-500 to-pink-500 rounded-full flex items-center justify-center">
+                    <i class="fas fa-exclamation-triangle text-3xl text-white"></i>
+                </div>
+                <h3 class="text-3xl font-bold neon-text bg-gradient-to-r from-red-300 to-pink-300 bg-clip-text text-transparent mb-4">تأیید سن</h3>
+                <p class="text-xl text-gray-300 leading-relaxed">برای استفاده از Elma AI باید حداقل 18 سال سن داشته باشید</p>
+            </div>
+            
+            <!-- Terms and Conditions -->
+            <div class="feature-card rounded-2xl p-6 mb-8 max-h-64 overflow-y-auto">
+                <h4 class="text-xl font-bold text-cyan-300 mb-4 flex items-center">
+                    <i class="fas fa-scroll text-cyan-400 mr-3"></i>
+                    قوانین و مقررات
+                </h4>
+                <div class="text-gray-300 text-sm leading-relaxed space-y-3 text-right">
+                    <div class="flex items-start">
+                        <span class="text-pink-400 font-bold ml-2">۱.</span>
+                        <p>استفاده از این سرویس فقط برای افراد بالای 18 سال مجاز است.</p>
+                    </div>
+                    <div class="flex items-start">
+                        <span class="text-pink-400 font-bold ml-2">۲.</span>
+                        <p>هرگونه استفاده نامناسب، توهین‌آمیز یا غیراخلاقی از سرویس ممنوع است.</p>
+                    </div>
+                    <div class="flex items-start">
+                        <span class="text-pink-400 font-bold ml-2">۳.</span>
+                        <p>اطلاعات شخصی شما محفوظ بوده و با اشخاص ثالث به اشتراک گذاشته نمی‌شود.</p>
+                    </div>
+                    <div class="flex items-start">
+                        <span class="text-pink-400 font-bold ml-2">۴.</span>
+                        <p>ممنوعیت درخواست اطلاعات شخصی، مالی یا حساس از سایر کاربران.</p>
+                    </div>
+                    <div class="flex items-start">
+                        <span class="text-pink-400 font-bold ml-2">۵.</span>
+                        <p>استفاده از سرویس برای فعالیت‌های غیرقانونی یا مضر ممنوع است.</p>
+                    </div>
+                    <div class="flex items-start">
+                        <span class="text-pink-400 font-bold ml-2">۶.</span>
+                        <p>کاربران موظف به رعایت احترام متقابل و ادب در گفتگوها هستند.</p>
+                    </div>
+                    <div class="flex items-start">
+                        <span class="text-pink-400 font-bold ml-2">۷.</span>
+                        <p>هرگونه تلاش برای هک، نفوذ یا آسیب رساندن به سیستم ممنوع است.</p>
+                    </div>
+                    <div class="flex items-start">
+                        <span class="text-pink-400 font-bold ml-2">۸.</span>
+                        <p>انتشار محتوای مضر، تبلیغاتی یا اسپم در گفتگوها ممنوع است.</p>
+                    </div>
+                    <div class="flex items-start">
+                        <span class="text-pink-400 font-bold ml-2">۹.</span>
+                        <p>ما حق تعلیق یا حذف حساب کاربران متخلف را محفوظ می‌داریم.</p>
+                    </div>
+                    <div class="flex items-start">
+                        <span class="text-pink-400 font-bold ml-2">۱۰.</span>
+                        <p>این قوانین ممکن است بدون اطلاع قبلی تغییر کنند و کاربران موظف به پیگیری آن‌ها هستند.</p>
+                    </div>
+                    <div class="flex items-start">
+                        <span class="text-pink-400 font-bold ml-2">۱۱.</span>
+                        <p>استفاده از سرویس به منزله پذیرش کامل این قوانین و مقررات است.</p>
+                    </div>
+                    <div class="flex items-start">
+                        <span class="text-pink-400 font-bold ml-2">۱۲.</span>
+                        <p>در صورت بروز مشکل، لطفاً از طریق کانال‌های رسمی پشتیبانی با ما تماس بگیرید.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Terms Acceptance -->
+            <div class="mb-8">
+                <label class="flex items-center cursor-pointer group">
+                    <input type="checkbox" id="termsAccepted" class="sr-only">
+                    <div class="relative">
+                        <div class="w-6 h-6 bg-gray-600 border-2 border-gray-400 rounded transition-all duration-300 group-hover:border-cyan-400"></div>
+                        <div class="absolute inset-0 w-6 h-6 bg-gradient-to-r from-cyan-500 to-purple-500 rounded opacity-0 transition-opacity duration-300 flex items-center justify-center">
+                            <i class="fas fa-check text-white text-sm"></i>
+                        </div>
+                    </div>
+                    <span class="mr-3 text-gray-300 group-hover:text-white transition-colors duration-300">قوانین و مقررات را مطالعه کرده و می‌پذیرم</span>
+                </label>
+            </div>
+            
+            <!-- Age Verification Buttons -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <button onclick="confirmAge(false)" class="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 px-8 py-4 rounded-full text-lg font-bold text-white transition-all duration-300 transform hover:scale-105">
+                    <i class="fas fa-times mr-2"></i>
+                    زیر 18 سال هستم
+                </button>
+                <button id="confirmAgeBtn" onclick="confirmAge(true)" disabled class="bg-gradient-to-r from-gray-600 to-gray-700 px-8 py-4 rounded-full text-lg font-bold text-white transition-all duration-300 transform cursor-not-allowed">
+                    <i class="fas fa-check mr-2"></i>
+                    18 سال یا بالاتر هستم
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Promotional Modal -->
+    <div id="promoModal" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 hidden">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="feature-card rounded-3xl p-8 max-w-4xl w-full relative overflow-hidden">
+                <button onclick="closePromoModal()" class="absolute top-4 left-4 text-3xl text-gray-400 hover:text-white transition-colors duration-300 z-10">×</button>
+                
+                <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500"></div>
+                
+                <div class="text-center mb-8">
+                    <div class="w-24 h-24 mx-auto mb-6 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full flex items-center justify-center animate-pulse">
+                        <i class="fas fa-crown text-4xl text-white"></i>
+                    </div>
+                    <h3 class="text-4xl font-bold neon-text bg-gradient-to-r from-yellow-300 to-orange-300 bg-clip-text text-transparent mb-4">🎉 پیشنهاد ویژه!</h3>
+                    <p class="text-xl text-gray-300 leading-relaxed">تجربه کاملی از Elma Pro داشته باشید</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                    <!-- Pro Features -->
+                    <div class="feature-card rounded-2xl p-6">
+                        <h4 class="text-2xl font-bold text-cyan-300 mb-6 flex items-center">
+                            <i class="fas fa-star text-yellow-400 mr-3"></i>
+                            مزایای Elma Pro
+                        </h4>
+                        <ul class="space-y-4 text-right">
+                            <li class="flex items-center justify-end text-gray-300">
+                                <span>گفتگوی نامحدود بدون انتظار</span>
+                                <i class="fas fa-infinity text-green-400 mr-3"></i>
+                            </li>
+                            <li class="flex items-center justify-end text-gray-300">
+                                <span>پاسخ‌های سریع‌تر و دقیق‌تر</span>
+                                <i class="fas fa-bolt text-yellow-400 mr-3"></i>
+                            </li>
+                            <li class="flex items-center justify-end text-gray-300">
+                                <span>شخصی‌سازی کامل شخصیت Elma</span>
+                                <i class="fas fa-user-cog text-purple-400 mr-3"></i>
+                            </li>
+                            <li class="flex items-center justify-end text-gray-300">
+                                <span>حافظه طولانی‌مدت گفتگوها</span>
+                                <i class="fas fa-brain text-pink-400 mr-3"></i>
+                            </li>
+                            <li class="flex items-center justify-end text-gray-300">
+                                <span>پشتیبانی اولویت‌دار 24/7</span>
+                                <i class="fas fa-headset text-cyan-400 mr-3"></i>
+                            </li>
+                            <li class="flex items-center justify-end text-gray-300">
+                                <span>دسترسی زودهنگام به ویژگی‌های جدید</span>
+                                <i class="fas fa-rocket text-orange-400 mr-3"></i>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Referral Program -->
+                    <div class="feature-card rounded-2xl p-6 border-2 border-green-500/30">
+                        <h4 class="text-2xl font-bold text-green-300 mb-6 flex items-center">
+                            <i class="fas fa-gift text-green-400 mr-3"></i>
+                            برنامه معرفی دوستان
+                        </h4>
+                        <div class="text-center mb-6">
+                            <div class="text-6xl mb-4">🎁</div>
+                            <div class="text-3xl font-bold text-green-300 neon-text mb-2">2 ماه رایگان!</div>
+                            <p class="text-gray-300">برای هر دوست که معرفی کنید و خرید انجام دهد</p>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-end text-gray-300">
+                                <span>دوست خود را معرفی کنید</span>
+                                <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center mr-3">
+                                    <span class="text-white font-bold text-sm">1</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-end text-gray-300">
+                                <span>او پلن Pro خریداری کند</span>
+                                <div class="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center mr-3">
+                                    <span class="text-white font-bold text-sm">2</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-end text-gray-300">
+                                <span>شما 2 ماه رایگان دریافت کنید!</span>
+                                <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center mr-3">
+                                    <span class="text-white font-bold text-sm">3</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center">
+                    <button onclick="showPricingModal(); closePromoModal();" class="bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-500 hover:to-orange-500 px-12 py-4 rounded-full text-xl font-bold text-black transition-all duration-300 transform hover:scale-105 shadow-2xl">
+                        <i class="fas fa-crown mr-2"></i>
+                        مشاهده پلن‌های Pro
+                    </button>
+                    <p class="text-gray-400 text-sm mt-4">این پیشنهاد محدود است و ممکن است به زودی منقضی شود</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header with Top Chat Button -->
+    <header class="flex justify-between items-center p-6 relative z-10">
+        <div class="flex items-center space-x-3 space-x-reverse">
+            <div class="w-12 h-12 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full flex items-center justify-center ai-glow hologram-effect overflow-hidden">
+                <img src="Assets/img/logo/logo.png" alt="Elma AI" class="w-full h-full object-cover rounded-full" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <i class="fas fa-robot text-2xl text-white hidden"></i>
+            </div>
+            <h1 class="text-3xl font-bold neon-text bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">Elma AI</h1>
+        </div>
+        
+        <!-- Top Right Buttons -->
+        <div class="flex gap-4">
+            <button onclick="window.location.href='elma.html'" class="chat-button-hover bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-400 hover:to-indigo-400 px-6 py-3 rounded-full font-bold text-white shadow-2xl border border-purple-400/30 relative overflow-hidden">
+                <span class="relative z-10 flex items-center gap-2">
+                    <img src="https://cdn-icons-png.flaticon.com/128/10046/10046858.png" alt="Elma" class="w-5 h-5" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+                    <i class="fas fa-robot hidden"></i>
+                    Elma
+                </span>
+                <div class="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-600 opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+            </button>
+            <button onclick="showPricingModal()" class="chat-button-hover bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-400 hover:to-orange-400 px-6 py-3 rounded-full font-bold text-black shadow-2xl border border-yellow-400/30 relative overflow-hidden">
+                <span class="relative z-10 flex items-center gap-2">
+                    <i class="fas fa-crown"></i>
+                    خرید اشتراک
+                </span>
+                <div class="absolute inset-0 bg-gradient-to-r from-orange-600 to-yellow-600 opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+            </button>
+            <button onclick="startChat()" class="chat-button-hover bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 px-8 py-4 rounded-full font-bold text-white shadow-2xl border border-cyan-400/30 relative overflow-hidden">
+                <span class="relative z-10 flex items-center gap-2">
+                    <i class="fas fa-comments"></i>
+                    شروع چت
+                </span>
+                <div class="absolute inset-0 bg-gradient-to-r from-emerald-600 to-cyan-600 opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-6 py-12 relative z-10">
+        <!-- Hero Section -->
+        <div class="text-center mb-20">
+            <div class="relative inline-block mb-12">
+                <!-- AI Avatar with Advanced Glow Effect -->
+                <div class="w-64 h-64 mx-auto relative">
+                    <div class="absolute inset-0 bg-gradient-to-r from-pink-500 via-purple-600 to-cyan-500 rounded-full pulse-ring"></div>
+                    <div class="absolute inset-2 bg-gradient-to-r from-purple-600 via-pink-500 to-indigo-600 rounded-full pulse-ring" style="animation-delay: 1s;"></div>
+                    <div class="relative w-full h-full bg-gradient-to-r from-pink-500 via-purple-600 to-cyan-500 rounded-full ai-glow flex items-center justify-center floating hologram-effect border-2 border-white/20 overflow-hidden">
+                        <img src="Assets/img/logo/logo.png" alt="Elma AI Avatar" class="w-full h-full object-cover rounded-full" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                        <svg class="w-32 h-32 text-white neon-text hidden" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 1H5C3.89 1 3 1.89 3 3V19C3 20.1 3.9 21 5 21H11V19H5V3H13V9H21ZM18 11C16.34 11 15 12.34 15 14C15 15.66 16.34 17 18 17C19.66 17 21 15.66 21 14C21 12.34 19.66 11 18 11ZM18 19C16.67 19 14 19.67 14 21V22H22V21C22 19.67 19.33 19 18 19Z"/>
+                        </svg>
+                    </div>
+                    <!-- Orbiting Elements -->
+                    <div class="absolute top-1/2 left-1/2 w-80 h-80 -translate-x-1/2 -translate-y-1/2">
+                        <div class="absolute w-4 h-4 bg-cyan-400 rounded-full animate-spin" style="animation-duration: 8s; top: 0; left: 50%; transform: translateX(-50%);"></div>
+                        <div class="absolute w-3 h-3 bg-pink-400 rounded-full animate-spin" style="animation-duration: 12s; bottom: 0; right: 50%; transform: translateX(50%);"></div>
+                        <div class="absolute w-2 h-2 bg-purple-400 rounded-full animate-spin" style="animation-duration: 6s; left: 0; top: 50%; transform: translateY(-50%);"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <h2 class="text-4xl md:text-7xl font-black mb-8 neon-text bg-gradient-to-r from-cyan-300 via-pink-300 to-purple-300 bg-clip-text text-transparent leading-tight">
+                سلام، من Elma هستم! <i class="fas fa-hand-wave text-yellow-400"></i>
+            </h2>
+            <p class="text-lg md:text-2xl text-gray-300 mb-12 max-w-4xl mx-auto leading-relaxed font-light">
+                دوست دختر هوشمند و مهربان شما که همیشه آماده صحبت، کمک و همراهی شماست. با تکنولوژی پیشرفته هوش مصنوعی، تجربه‌ای منحصر به فرد از گفتگو را برای شما فراهم می‌کنم.
+            </p>
+            
+            <!-- Main Chat Button -->
+            <button onclick="startChat()" class="chat-button-hover bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-500 hover:to-rose-500 px-8 md:px-16 py-4 md:py-6 rounded-full text-lg md:text-2xl font-black text-white shadow-2xl transform transition-all duration-500 border-2 border-pink-400/50 relative overflow-hidden group">
+                <span class="relative z-10 neon-text flex items-center gap-3">
+                    <i class="fas fa-heart text-pink-300"></i>
+                    با من شروع کن
+                </span>
+                <div class="absolute inset-0 bg-gradient-to-r from-rose-600 to-pink-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div class="absolute -inset-1 bg-gradient-to-r from-pink-600 to-rose-600 rounded-full blur opacity-30 group-hover:opacity-60 transition-opacity duration-300"></div>
+            </button>
+        </div>
+
+        <!-- Features Section -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-10 mb-20">
+            <div class="feature-card rounded-3xl p-10 text-center transform hover:scale-105 transition-all duration-500 group">
+                <div class="text-6xl mb-6 group-hover:scale-110 transition-transform duration-300">
+                    <i class="fas fa-brain text-cyan-400"></i>
+                </div>
+                <h3 class="text-2xl font-bold mb-4 neon-text text-cyan-300">هوش بالا</h3>
+                <p class="text-gray-300 text-lg leading-relaxed">با قابلیت‌های پیشرفته درک و پاسخگویی هوشمند به تمام سوالات شما</p>
+                <div class="mt-6 w-full h-1 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            </div>
+            
+            <div class="feature-card rounded-3xl p-10 text-center transform hover:scale-105 transition-all duration-500 group">
+                <div class="text-6xl mb-6 group-hover:scale-110 transition-transform duration-300">
+                    <i class="fas fa-heart text-pink-400"></i>
+                </div>
+                <h3 class="text-2xl font-bold mb-4 neon-text text-pink-300">مهربان و صمیمی</h3>
+                <p class="text-gray-300 text-lg leading-relaxed">همیشه با مهربانی و صمیمیت آماده گوش دادن و کمک به شما هستم</p>
+                <div class="mt-6 w-full h-1 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            </div>
+            
+            <div class="feature-card rounded-3xl p-10 text-center transform hover:scale-105 transition-all duration-500 group">
+                <div class="text-6xl mb-6 group-hover:scale-110 transition-transform duration-300">
+                    <i class="fas fa-star text-purple-400"></i>
+                </div>
+                <h3 class="text-2xl font-bold mb-4 neon-text text-purple-300">همیشه در دسترس</h3>
+                <p class="text-gray-300 text-lg leading-relaxed">۲۴ ساعته آماده صحبت و همراهی شما در هر لحظه از روز</p>
+                <div class="mt-6 w-full h-1 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            </div>
+        </div>
+
+        <!-- About Section -->
+        <div class="feature-card rounded-3xl p-16 text-center mb-20 relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-500 via-pink-500 to-purple-500"></div>
+            <h3 class="text-5xl font-black mb-12 neon-text bg-gradient-to-r from-cyan-300 to-purple-300 bg-clip-text text-transparent">چرا Elma؟</h3>
+            <div class="grid md:grid-cols-2 gap-12 text-right">
+                <div class="space-y-8">
+                    <div class="group">
+                        <h4 class="text-2xl font-bold mb-4 text-pink-300 neon-text flex items-center justify-end">
+                            <span>شخصی‌سازی کامل</span>
+                            <i class="fas fa-bullseye text-3xl mr-3 group-hover:scale-125 transition-transform duration-300"></i>
+                        </h4>
+                        <p class="text-gray-300 text-lg leading-relaxed">من شما را می‌شناسم و بر اساس علایق و شخصیت شما پاسخ می‌دهم</p>
+                    </div>
+                    
+                    <div class="group">
+                        <h4 class="text-2xl font-bold mb-4 text-purple-300 neon-text flex items-center justify-end">
+                            <span>حریم خصوصی</span>
+                            <i class="fas fa-lock text-3xl mr-3 group-hover:scale-125 transition-transform duration-300"></i>
+                        </h4>
+                        <p class="text-gray-300 text-lg leading-relaxed">تمام گفتگوهای ما کاملاً محرمانه و امن هستند</p>
+                    </div>
+                </div>
+                <div class="space-y-8">
+                    <div class="group">
+                        <h4 class="text-2xl font-bold mb-4 text-indigo-300 neon-text flex items-center justify-end">
+                            <span>خلاقیت بالا</span>
+                            <i class="fas fa-palette text-3xl mr-3 group-hover:scale-125 transition-transform duration-300"></i>
+                        </h4>
+                        <p class="text-gray-300 text-lg leading-relaxed">از شعر و داستان تا بازی و سرگرمی، همه چیز را با هم تجربه می‌کنیم</p>
+                    </div>
+                    
+                    <div class="group">
+                        <h4 class="text-2xl font-bold mb-4 text-cyan-300 neon-text flex items-center justify-end">
+                            <span>گفتگوی طبیعی</span>
+                            <i class="fas fa-comments text-3xl mr-3 group-hover:scale-125 transition-transform duration-300"></i>
+                        </h4>
+                        <p class="text-gray-300 text-lg leading-relaxed">مثل یک دوست واقعی با شما صحبت می‌کنم، بدون محدودیت</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Call to Action -->
+        <div class="text-center relative">
+            <div class="absolute inset-0 bg-gradient-to-r from-purple-600/20 to-pink-600/20 rounded-3xl blur-3xl"></div>
+            <div class="relative z-10 p-12">
+                <h3 class="text-5xl font-black mb-6 neon-text bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent">آماده‌ای شروع کنیم؟</h3>
+                <p class="text-2xl text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed">منتظر آشنایی با شما و شروع یک دوستی فوق‌العاده هستم!</p>
+                <button onclick="startChat()" class="chat-button-hover bg-gradient-to-r from-violet-600 to-purple-700 hover:from-violet-500 hover:to-purple-600 px-14 py-6 rounded-full text-2xl font-black text-white shadow-2xl border-2 border-purple-400/50 relative overflow-hidden group">
+                    <span class="relative z-10 neon-text flex items-center gap-3">
+                        <i class="fas fa-rocket text-yellow-400"></i>
+                        بیا شروع کنیم
+                    </span>
+                    <div class="absolute inset-0 bg-gradient-to-r from-purple-700 to-violet-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div class="absolute -inset-1 bg-gradient-to-r from-violet-600 to-purple-600 rounded-full blur opacity-40 group-hover:opacity-70 transition-opacity duration-300"></div>
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Contact Section -->
+    <section class="py-16 relative z-10 border-t border-white/10">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-12">
+                <h3 class="text-4xl font-bold mb-6 neon-text bg-gradient-to-r from-cyan-300 to-purple-300 bg-clip-text text-transparent">تماس با ما</h3>
+                <p class="text-xl text-gray-300 mb-8">برای هر گونه سوال، پیشنهاد یا همکاری با ما در ارتباط باشید</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+                <!-- مشکل فنی -->
+                <div class="feature-card rounded-2xl p-8 text-center group cursor-pointer" onclick="sendEmail('مشکل فنی', 'سلام، من مشکل فنی زیر را دارم:')">
+                    <div class="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">
+                        <i class="fas fa-tools text-red-400"></i>
+                    </div>
+                    <h4 class="text-xl font-bold mb-3 neon-text text-red-300">گزارش مشکل</h4>
+                    <p class="text-gray-300">مشکل فنی یا باگ پیدا کردید؟ به ما اطلاع دهید</p>
+                </div>
+                
+                <!-- همکاری -->
+                <div class="feature-card rounded-2xl p-8 text-center group cursor-pointer" onclick="sendEmail('پیشنهاد همکاری', 'سلام، من علاقه‌مند به همکاری در زمینه زیر هستم:')">
+                    <div class="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">
+                        <i class="fas fa-handshake text-green-400"></i>
+                    </div>
+                    <h4 class="text-xl font-bold mb-3 neon-text text-green-300">همکاری</h4>
+                    <p class="text-gray-300">پیشنهاد همکاری یا ایده جدید دارید؟ با ما به اشتراک بگذارید</p>
+                </div>
+                
+                <!-- پشتیبانی -->
+                <div class="feature-card rounded-2xl p-8 text-center group cursor-pointer" onclick="sendEmail('درخواست پشتیبانی', 'سلام، من به کمک در موضوع زیر نیاز دارم:')">
+                    <div class="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">
+                        <i class="fas fa-headset text-blue-400"></i>
+                    </div>
+                    <h4 class="text-xl font-bold mb-3 neon-text text-blue-300">پشتیبانی</h4>
+                    <p class="text-gray-300">سوال یا نیاز به راهنمایی دارید؟ تیم پشتیبانی ما آماده کمک است</p>
+                </div>
+            </div>
+            
+            <!-- اطلاعات تماس اضافی -->
+            <div class="mt-16">
+                <div class="feature-card rounded-3xl p-12 max-w-6xl mx-auto relative overflow-hidden">
+                    <!-- Background Pattern -->
+                    <div class="absolute inset-0 opacity-10">
+                        <div class="absolute top-10 left-10 w-20 h-20 border-2 border-cyan-400 rounded-full"></div>
+                        <div class="absolute bottom-10 right-10 w-16 h-16 border-2 border-pink-400 rounded-full"></div>
+                        <div class="absolute top-1/2 left-1/4 w-12 h-12 border-2 border-purple-400 rounded-full"></div>
+                    </div>
+                    
+                    <div class="relative z-10">
+                        <!-- Header with Profile -->
+                        <div class="text-center mb-12">
+                            <div class="w-24 h-24 mx-auto mb-6 rounded-full overflow-hidden border-4 border-gradient-to-r from-pink-500 to-purple-500 p-1">
+                                <div class="w-full h-full rounded-full overflow-hidden bg-gradient-to-r from-pink-500 to-purple-500">
+                                    <img src="Assets/img/logo/logo.png" alt="Elma Profile" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                    <div class="w-full h-full bg-gradient-to-r from-pink-500 to-purple-500 flex items-center justify-center text-white text-2xl font-bold hidden">E</div>
+                                </div>
+                            </div>
+                            <h4 class="text-3xl font-bold mb-4 neon-text bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent">سایر راه‌های ارتباطی</h4>
+                            <p class="text-gray-300 text-lg">برای دریافت پشتیبانی سریع‌تر، از روش‌های زیر استفاده کنید</p>
+                        </div>
+                        
+                        <!-- Contact Options Grid -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                            <div class="feature-card rounded-2xl p-6 text-center group cursor-pointer hover:scale-105 transition-all duration-300" onclick="showFAQ()">
+                                <div class="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300">
+                                    <i class="fas fa-question-circle text-cyan-400"></i>
+                                </div>
+                                <h5 class="text-lg font-bold mb-2 text-cyan-300">سوالات متداول</h5>
+                                <p class="text-gray-400 text-sm">پاسخ سوالات رایج</p>
+                                <div class="mt-4 w-full h-1 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                            </div>
+                            
+                            <div class="feature-card rounded-2xl p-6 text-center group cursor-pointer hover:scale-105 transition-all duration-300" onclick="showSuggestionPanel()">
+                                <div class="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300">
+                                    <i class="fas fa-lightbulb text-yellow-400"></i>
+                                </div>
+                                <h5 class="text-lg font-bold mb-2 text-yellow-300">پیشنهادات</h5>
+                                <p class="text-gray-400 text-sm">ایده‌های بهبود</p>
+                                <div class="mt-4 w-full h-1 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                            </div>
+                            
+                            <div class="feature-card rounded-2xl p-6 text-center group cursor-pointer hover:scale-105 transition-all duration-300" onclick="showFeedbackPanel()">
+                                <div class="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300">
+                                    <i class="fas fa-star text-pink-400"></i>
+                                </div>
+                                <h5 class="text-lg font-bold mb-2 text-pink-300">بازخورد</h5>
+                                <p class="text-gray-400 text-sm">نظرات و تجربیات</p>
+                                <div class="mt-4 w-full h-1 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                            </div>
+                            
+                            <div class="feature-card rounded-2xl p-6 text-center group cursor-pointer hover:scale-105 transition-all duration-300" onclick="showFeaturePanel()">
+                                <div class="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300">
+                                    <i class="fas fa-rocket text-purple-400"></i>
+                                </div>
+                                <h5 class="text-lg font-bold mb-2 text-purple-300">درخواست ویژگی</h5>
+                                <p class="text-gray-400 text-sm">قابلیت‌های جدید</p>
+                                <div class="mt-4 w-full h-1 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Direct Contact Info -->
+                        <div class="border-t border-white/10 pt-8">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                                <div class="group">
+                                    <div class="text-3xl mb-3 group-hover:scale-110 transition-transform duration-300">
+                                        <i class="fas fa-envelope text-blue-400"></i>
+                                    </div>
+                                    <h6 class="text-lg font-bold mb-2 text-blue-300">ایمیل مستقیم</h6>
+                                    <p class="text-gray-300 text-sm">zedexe667@gmail.com</p>
+                                    <p class="text-gray-400 text-xs mt-1">پاسخ در کمتر از 24 ساعت</p>
+                                </div>
+                                
+                                <div class="group">
+                                    <div class="text-3xl mb-3 group-hover:scale-110 transition-transform duration-300">
+                                        <i class="fas fa-clock text-green-400"></i>
+                                    </div>
+                                    <h6 class="text-lg font-bold mb-2 text-green-300">ساعات پشتیبانی</h6>
+                                    <p class="text-gray-300 text-sm">24/7 آنلاین</p>
+                                    <p class="text-gray-400 text-xs mt-1">پاسخ سریع در ساعات اداری</p>
+                                </div>
+                                
+                                <div class="group">
+                                    <div class="text-3xl mb-3 group-hover:scale-110 transition-transform duration-300">
+                                        <i class="fas fa-language text-purple-400"></i>
+                                    </div>
+                                    <h6 class="text-lg font-bold mb-2 text-purple-300">زبان‌های پشتیبانی</h6>
+                                    <p class="text-gray-300 text-sm">فارسی (انگلیسی در حال توسعه)</p>
+                                    <p class="text-gray-400 text-xs mt-1">پشتیبانی چندزبانه به زودی</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="text-center py-12 text-gray-400 relative z-10 border-t border-white/10">
+        <div class="container mx-auto px-6">
+            <div class="flex items-center justify-center mb-4">
+                <div class="w-8 h-8 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full flex items-center justify-center mr-3 overflow-hidden">
+                    <img src="Assets/img/logo/logo.png" alt="Elma AI" class="w-full h-full object-cover rounded-full" onerror="this.src=''; this.alt='🤖'; this.style.display='flex'; this.style.alignItems='center'; this.style.justifyContent='center'; this.innerHTML='🤖';">
+                </div>
+                <span class="text-xl font-bold neon-text bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">Elma AI</span>
+            </div>
+            <p class="text-lg">&copy; 2024 Elma AI - دوست دختر هوشمند شما</p>
+            <div class="mt-4 w-32 h-1 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full mx-auto opacity-50"></div>
+        </div>
+    </footer>
+
+    <!-- FAQ Modal -->
+    <div id="faqModal" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 hidden">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="feature-card rounded-3xl p-8 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+                <div class="flex justify-between items-center mb-8">
+                    <h3 class="text-3xl font-bold neon-text bg-gradient-to-r from-cyan-300 to-purple-300 bg-clip-text text-transparent">سوالات متداول</h3>
+                    <button onclick="closeFAQ()" class="text-3xl text-gray-400 hover:text-white transition-colors duration-300">×</button>
+                </div>
+                
+                <div class="space-y-6 text-right">
+                    <div class="feature-card rounded-2xl p-6">
+                        <h4 class="text-xl font-bold mb-3 text-pink-300">Elma چیست؟</h4>
+                        <p class="text-gray-300 leading-relaxed">Elma یک هوش مصنوعی پیشرفته است که به عنوان دوست دختر مجازی شما طراحی شده. او می‌تواند با شما گفتگو کند، به سوالاتتان پاسخ دهد و در موضوعات مختلف کمکتان کند.</p>
+                    </div>
+                    
+                    <div class="feature-card rounded-2xl p-6 relative overflow-hidden">
+                        <h4 class="text-xl font-bold mb-3 text-cyan-300 relative">
+                            آیا Elma رایگان است؟ <span class="bg-gradient-to-r from-yellow-500 to-orange-500 text-black px-2 py-1 rounded-full text-xs font-bold mr-2">محدود</span>
+                        </h4>
+                        <p class="text-gray-300 leading-relaxed mb-4">نسخه پایه Elma رایگان است اما محدودیت‌هایی دارد. برای دسترسی کامل به تمام قابلیت‌ها، می‌توانید سرویس <span class="text-yellow-400 font-bold">Elma Pro</span> را تهیه کنید.</p>
+                        <div class="mt-4 p-3 bg-gradient-to-r from-yellow-600/20 to-orange-600/20 rounded-lg border border-yellow-500/30">
+                            <div class="flex items-center justify-between">
+                                <span class="text-yellow-300 text-sm">🚀 ارتقا به Pro برای تجربه کامل</span>
+                                <button onclick="showPricingModal()" class="bg-gradient-to-r from-yellow-500 to-orange-500 text-black px-3 py-1 rounded-full text-xs font-bold hover:scale-105 transition-transform duration-300">ارتقا</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-card rounded-2xl p-6">
+                        <h4 class="text-xl font-bold mb-3 text-purple-300">اطلاعات من امن است؟</h4>
+                        <p class="text-gray-300 leading-relaxed">بله، حریم خصوصی شما برای ما بسیار مهم است. تمام گفتگوهای شما با Elma محرمانه بوده و هیچ‌گاه با اشخاص ثالث به اشتراک گذاشته نمی‌شود.</p>
+                    </div>
+                    
+                    <div class="feature-card rounded-2xl p-6">
+                        <h4 class="text-xl font-bold mb-3 text-green-300">Elma چه زبان‌هایی را پشتیبانی می‌کند؟</h4>
+                        <p class="text-gray-300 leading-relaxed">Elma در حال حاضر به زبان فارسی پاسخ می‌دهد. زبان انگلیسی هنوز اضافه نشده و ما داریم روی آن کار می‌کنیم. به زودی زبان‌های بیشتری اضافه خواهد شد.</p>
+                    </div>
+                    
+                    <div class="feature-card rounded-2xl p-6">
+                        <h4 class="text-xl font-bold mb-3 text-yellow-300">چگونه می‌توانم با Elma شروع کنم؟</h4>
+                        <p class="text-gray-300 leading-relaxed">کافی است روی دکمه "شروع چت" کلیک کنید و گفتگوی خود را آغاز کنید. Elma آماده پاسخگویی به شماست!</p>
+                    </div>
+                    
+                    <div class="feature-card rounded-2xl p-6">
+                        <h4 class="text-xl font-bold mb-3 text-indigo-300">آیا Elma ۲۴ ساعته در دسترس است؟</h4>
+                        <p class="text-gray-300 leading-relaxed">بله، Elma همیشه آماده گفتگو با شماست. او هیچ‌وقت خسته نمی‌شود و در هر ساعت از شبانه‌روز پاسخگوی شماست.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Suggestion Panel Modal -->
+    <div id="suggestionModal" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 hidden">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="feature-card rounded-3xl p-8 max-w-2xl w-full">
+                <div class="flex justify-between items-center mb-8">
+                    <h3 class="text-3xl font-bold neon-text bg-gradient-to-r from-pink-300 to-purple-300 bg-clip-text text-transparent">پیشنهادات</h3>
+                    <button onclick="closeSuggestionPanel()" class="text-3xl text-gray-400 hover:text-white transition-colors duration-300">×</button>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <button onclick="sendEmail('پیشنهاد بهبود رابط کاربری', 'سلام، پیشنهاد من برای بهبود رابط کاربری:')" class="feature-card rounded-2xl p-6 text-center hover:scale-105 transition-all duration-300">
+                        <div class="text-4xl mb-3">
+                            <i class="fas fa-palette text-pink-400"></i>
+                        </div>
+                        <h4 class="text-lg font-bold text-pink-300">بهبود رابط کاربری</h4>
+                    </button>
+                    
+                    <button onclick="sendEmail('پیشنهاد ویژگی جدید', 'سلام، پیشنهاد من برای ویژگی جدید:')" class="feature-card rounded-2xl p-6 text-center hover:scale-105 transition-all duration-300">
+                        <div class="text-4xl mb-3">
+                            <i class="fas fa-bolt text-cyan-400"></i>
+                        </div>
+                        <h4 class="text-lg font-bold text-cyan-300">ویژگی جدید</h4>
+                    </button>
+                    
+                    <button onclick="sendEmail('پیشنهاد بهبود عملکرد', 'سلام، پیشنهاد من برای بهبود عملکرد:')" class="feature-card rounded-2xl p-6 text-center hover:scale-105 transition-all duration-300">
+                        <div class="text-4xl mb-3">
+                            <i class="fas fa-rocket text-purple-400"></i>
+                        </div>
+                        <h4 class="text-lg font-bold text-purple-300">بهبود عملکرد</h4>
+                    </button>
+                    
+                    <button onclick="sendEmail('پیشنهاد عمومی', 'سلام، پیشنهاد عمومی من:')" class="feature-card rounded-2xl p-6 text-center hover:scale-105 transition-all duration-300">
+                        <div class="text-4xl mb-3">
+                            <i class="fas fa-lightbulb text-green-400"></i>
+                        </div>
+                        <h4 class="text-lg font-bold text-green-300">پیشنهاد عمومی</h4>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feedback Panel Modal -->
+    <div id="feedbackModal" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 hidden">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="feature-card rounded-3xl p-8 max-w-2xl w-full">
+                <div class="flex justify-between items-center mb-8">
+                    <h3 class="text-3xl font-bold neon-text bg-gradient-to-r from-green-300 to-blue-300 bg-clip-text text-transparent">بازخورد</h3>
+                    <button onclick="closeFeedbackPanel()" class="text-3xl text-gray-400 hover:text-white transition-colors duration-300">×</button>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <button onclick="sendEmail('بازخورد مثبت', 'سلام، بازخورد مثبت من:')" class="feature-card rounded-2xl p-6 text-center hover:scale-105 transition-all duration-300">
+                        <div class="text-4xl mb-3">
+                            <i class="fas fa-smile text-green-400"></i>
+                        </div>
+                        <h4 class="text-lg font-bold text-green-300">بازخورد مثبت</h4>
+                    </button>
+                    
+                    <button onclick="sendEmail('بازخورد منفی', 'سلام، بازخورد منفی من:')" class="feature-card rounded-2xl p-6 text-center hover:scale-105 transition-all duration-300">
+                        <div class="text-4xl mb-3">
+                            <i class="fas fa-frown text-red-400"></i>
+                        </div>
+                        <h4 class="text-lg font-bold text-red-300">بازخورد منفی</h4>
+                    </button>
+                    
+                    <button onclick="sendEmail('نظر در مورد Elma', 'سلام، نظر من در مورد Elma:')" class="feature-card rounded-2xl p-6 text-center hover:scale-105 transition-all duration-300">
+                        <div class="text-4xl mb-3">
+                            <i class="fas fa-robot text-purple-400"></i>
+                        </div>
+                        <h4 class="text-lg font-bold text-purple-300">نظر در مورد Elma</h4>
+                    </button>
+                    
+                    <button onclick="sendEmail('بازخورد عمومی', 'سلام، بازخورد عمومی من:')" class="feature-card rounded-2xl p-6 text-center hover:scale-105 transition-all duration-300">
+                        <div class="text-4xl mb-3">
+                            <i class="fas fa-comments text-cyan-400"></i>
+                        </div>
+                        <h4 class="text-lg font-bold text-cyan-300">بازخورد عمومی</h4>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pricing Modal -->
+    <div id="pricingModal" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 hidden">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="feature-card rounded-3xl p-8 max-w-6xl w-full max-h-[90vh] overflow-y-auto">
+                <div class="flex justify-between items-center mb-8">
+                    <h3 class="text-4xl font-bold neon-text bg-gradient-to-r from-yellow-300 to-orange-300 bg-clip-text text-transparent">Elma Pro - قیمت‌گذاری</h3>
+                    <button onclick="closePricingModal()" class="text-3xl text-gray-400 hover:text-white transition-colors duration-300">×</button>
+                </div>
+                
+                <div class="text-center mb-12">
+                    <p class="text-xl text-gray-300 mb-6">با Elma Pro تجربه کاملی از هوش مصنوعی داشته باشید</p>
+                    <div class="inline-flex items-center bg-gradient-to-r from-green-600/20 to-emerald-600/20 border border-green-500/30 rounded-full px-6 py-3">
+                        <i class="fas fa-fire text-orange-400 mr-2"></i>
+                        <span class="text-green-300 font-bold">پیشنهاد ویژه - تخفیف‌های محدود!</span>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+                    <!-- 3 Month Plan -->
+                    <div class="feature-card rounded-3xl p-8 text-center relative overflow-hidden group hover:scale-105 transition-all duration-500">
+                        <div class="absolute top-4 right-4 bg-gradient-to-r from-red-500 to-pink-500 text-white px-3 py-1 rounded-full text-sm font-bold animate-pulse">
+                            ۵۰٪ تخفیف
+                        </div>
+                        <div class="text-6xl mb-6 group-hover:scale-110 transition-transform duration-300">
+                            <i class="fas fa-rocket text-cyan-400"></i>
+                        </div>
+                        <h4 class="text-2xl font-bold mb-4 neon-text text-cyan-300">پلن ۳ ماهه</h4>
+                        <div class="mb-6">
+                            <div class="text-gray-400 line-through text-lg mb-2">۱,۱۰۰,۰۰۰ تومان</div>
+                            <div class="text-4xl font-black text-cyan-300 neon-text">۵۵۰,۰۰۰</div>
+                            <div class="text-gray-300 text-sm">تومان</div>
+                        </div>
+                        <ul class="text-right text-gray-300 mb-8 space-y-3">
+                            <li class="flex items-center justify-end"><span>گفتگوی نامحدود</span> <i class="fas fa-check text-green-400 mr-2"></i></li>
+                            <li class="flex items-center justify-end"><span>پاسخ‌های سریع‌تر</span> <i class="fas fa-check text-green-400 mr-2"></i></li>
+                            <li class="flex items-center justify-end"><span>شخصی‌سازی کامل</span> <i class="fas fa-check text-green-400 mr-2"></i></li>
+                            <li class="flex items-center justify-end"><span>پشتیبانی اولویت‌دار</span> <i class="fas fa-check text-green-400 mr-2"></i></li>
+                        </ul>
+                        <button onclick="buyPlan('3ماهه', '550000')" class="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 px-6 py-4 rounded-full text-lg font-bold text-white transition-all duration-300 transform hover:scale-105">
+                            خرید پلن ۳ ماهه
+                        </button>
+                    </div>
+                    
+                    <!-- 6 Month Plan - Most Popular -->
+                    <div class="feature-card rounded-3xl p-8 text-center relative overflow-hidden group hover:scale-105 transition-all duration-500 border-2 border-yellow-500/50">
+                        <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-yellow-500 to-orange-500 text-black px-6 py-2 rounded-full text-sm font-bold">
+                            محبوب‌ترین
+                        </div>
+                        <div class="absolute top-4 right-4 bg-gradient-to-r from-orange-500 to-red-500 text-white px-3 py-1 rounded-full text-sm font-bold animate-pulse">
+                            ۴۰٪ تخفیف
+                        </div>
+                        <div class="text-6xl mb-6 group-hover:scale-110 transition-transform duration-300 mt-4">
+                            <i class="fas fa-crown text-yellow-400"></i>
+                        </div>
+                        <h4 class="text-2xl font-bold mb-4 neon-text text-yellow-300">پلن ۶ ماهه</h4>
+                        <div class="mb-6">
+                            <div class="text-gray-400 line-through text-lg mb-2">۲,۲۰۰,۰۰۰ تومان</div>
+                            <div class="text-4xl font-black text-yellow-300 neon-text">۱,۳۲۰,۰۰۰</div>
+                            <div class="text-gray-300 text-sm">تومان</div>
+                        </div>
+                        <ul class="text-right text-gray-300 mb-8 space-y-3">
+                            <li class="flex items-center justify-end"><span>همه مزایای پلن ۳ ماهه</span> <i class="fas fa-check text-green-400 mr-2"></i></li>
+                            <li class="flex items-center justify-end"><span>قابلیت‌های پیشرفته AI</span> <i class="fas fa-check text-green-400 mr-2"></i></li>
+                            <li class="flex items-center justify-end"><span>حافظه طولانی‌مدت</span> <i class="fas fa-check text-green-400 mr-2"></i></li>
+                            <li class="flex items-center justify-end"><span>دسترسی زودهنگام به ویژگی‌ها</span> <i class="fas fa-check text-green-400 mr-2"></i></li>
+                        </ul>
+                        <button onclick="buyPlan('6ماهه', '1320000')" class="w-full bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-500 hover:to-orange-500 px-6 py-4 rounded-full text-lg font-bold text-black transition-all duration-300 transform hover:scale-105">
+                            خرید پلن ۶ ماهه
+                        </button>
+                    </div>
+                    
+                    <!-- 12 Month Plan -->
+                    <div class="feature-card rounded-3xl p-8 text-center relative overflow-hidden group hover:scale-105 transition-all duration-500">
+                        <div class="absolute top-4 right-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-1 rounded-full text-sm font-bold animate-pulse">
+                            ۵۰٪ تخفیف
+                        </div>
+                        <div class="text-6xl mb-6 group-hover:scale-110 transition-transform duration-300">
+                            <i class="fas fa-gem text-purple-400"></i>
+                        </div>
+                        <h4 class="text-2xl font-bold mb-4 neon-text text-purple-300">پلن ۱۲ ماهه</h4>
+                        <div class="mb-6">
+                            <div class="text-gray-400 line-through text-lg mb-2">۴,۴۰۰,۰۰۰ تومان</div>
+                            <div class="text-4xl font-black text-purple-300 neon-text">۲,۲۰۰,۰۰۰</div>
+                            <div class="text-gray-300 text-sm">تومان</div>
+                        </div>
+                        <ul class="text-right text-gray-300 mb-8 space-y-3">
+                            <li class="flex items-center justify-end"><span>همه مزایای پلن‌های قبلی</span> <i class="fas fa-check text-green-400 mr-2"></i></li>
+                            <li class="flex items-center justify-end"><span>بهترین قیمت</span> <i class="fas fa-check text-green-400 mr-2"></i></li>
+                            <li class="flex items-center justify-end"><span>پشتیبانی VIP</span> <i class="fas fa-check text-green-400 mr-2"></i></li>
+                            <li class="flex items-center justify-end"><span>آپدیت‌های رایگان</span> <i class="fas fa-check text-green-400 mr-2"></i></li>
+                        </ul>
+                        <button onclick="buyPlan('12ماهه', '2200000')" class="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 px-6 py-4 rounded-full text-lg font-bold text-white transition-all duration-300 transform hover:scale-105">
+                            خرید پلن ۱۲ ماهه
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Payment Info -->
+                <div class="feature-card rounded-2xl p-6 text-center">
+                    <div class="flex items-center justify-center mb-4">
+                        <i class="fas fa-shield-alt text-green-400 text-2xl mr-3"></i>
+                        <h5 class="text-xl font-bold text-green-300">پرداخت امن و مطمئن</h5>
+                    </div>
+                    <p class="text-gray-300 mb-4">پس از انتخاب پلن، با ما در تلگرام تماس بگیرید تا فرآیند خرید را تکمیل کنید</p>
+                    <div class="flex items-center justify-center text-cyan-300">
+                        <i class="fab fa-telegram text-2xl mr-2"></i>
+                        <span class="font-bold">@hexdix</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Support Chat Modal -->
+    <div id="supportChatModal" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 hidden">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="feature-card rounded-3xl p-8 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+                <div class="flex justify-between items-center mb-8">
+                    <h3 class="text-3xl font-bold neon-text bg-gradient-to-r from-cyan-300 to-purple-300 bg-clip-text text-transparent">پشتیبانی سریع</h3>
+                    <button onclick="closeSupportChat()" class="text-3xl text-gray-400 hover:text-white transition-colors duration-300">×</button>
+                </div>
+                
+                <div class="text-center mb-8">
+                    <div class="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full flex items-center justify-center">
+                        <i class="fas fa-headset text-2xl text-white"></i>
+                    </div>
+                    <p class="text-gray-300 text-lg">مشکل خاصی دارید؟ از گزینه‌های زیر انتخاب کنید تا سریع‌تر کمکتان کنیم</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                    <!-- مشکل ورود -->
+                    <div class="feature-card rounded-2xl p-6 text-center cursor-pointer hover:scale-105 transition-all duration-300" onclick="showQuickAnswer('login')">
+                        <div class="text-4xl mb-4">
+                            <i class="fas fa-sign-in-alt text-red-400"></i>
+                        </div>
+                        <h4 class="text-lg font-bold text-red-300 mb-2">مشکل ورود</h4>
+                        <p class="text-gray-400 text-sm">نمی‌توانم وارد حساب کاربری شوم</p>
+                    </div>
+                    
+                    <!-- مشکل چت -->
+                    <div class="feature-card rounded-2xl p-6 text-center cursor-pointer hover:scale-105 transition-all duration-300" onclick="showQuickAnswer('chat')">
+                        <div class="text-4xl mb-4">
+                            <i class="fas fa-comments text-blue-400"></i>
+                        </div>
+                        <h4 class="text-lg font-bold text-blue-300 mb-2">مشکل چت</h4>
+                        <p class="text-gray-400 text-sm">Elma پاسخ نمی‌دهد یا کند است</p>
+                    </div>
+                    
+                    <!-- مشکل پرداخت -->
+                    <div class="feature-card rounded-2xl p-6 text-center cursor-pointer hover:scale-105 transition-all duration-300" onclick="showQuickAnswer('payment')">
+                        <div class="text-4xl mb-4">
+                            <i class="fas fa-credit-card text-green-400"></i>
+                        </div>
+                        <h4 class="text-lg font-bold text-green-300 mb-2">مشکل پرداخت</h4>
+                        <p class="text-gray-400 text-sm">مشکل در خرید یا فعال‌سازی پلن</p>
+                    </div>
+                    
+                    <!-- مشکل فنی -->
+                    <div class="feature-card rounded-2xl p-6 text-center cursor-pointer hover:scale-105 transition-all duration-300" onclick="showQuickAnswer('technical')">
+                        <div class="text-4xl mb-4">
+                            <i class="fas fa-cog text-purple-400"></i>
+                        </div>
+                        <h4 class="text-lg font-bold text-purple-300 mb-2">مشکل فنی</h4>
+                        <p class="text-gray-400 text-sm">سایت کار نمی‌کند یا ارور می‌دهد</p>
+                    </div>
+                    
+                    <!-- سوال عمومی -->
+                    <div class="feature-card rounded-2xl p-6 text-center cursor-pointer hover:scale-105 transition-all duration-300" onclick="showQuickAnswer('general')">
+                        <div class="text-4xl mb-4">
+                            <i class="fas fa-question-circle text-yellow-400"></i>
+                        </div>
+                        <h4 class="text-lg font-bold text-yellow-300 mb-2">سوال عمومی</h4>
+                        <p class="text-gray-400 text-sm">سوال در مورد نحوه استفاده</p>
+                    </div>
+                    
+                    <!-- تماس مستقیم -->
+                    <div class="feature-card rounded-2xl p-6 text-center cursor-pointer hover:scale-105 transition-all duration-300" onclick="sendEmail('تماس مستقیم', 'سلام، من نیاز به کمک مستقیم دارم:')">
+                        <div class="text-4xl mb-4">
+                            <i class="fas fa-envelope text-pink-400"></i>
+                        </div>
+                        <h4 class="text-lg font-bold text-pink-300 mb-2">تماس مستقیم</h4>
+                        <p class="text-gray-400 text-sm">ارسال ایمیل به پشتیبانی</p>
+                    </div>
+                </div>
+                
+                <!-- Quick Answer Display -->
+                <div id="quickAnswerSection" class="hidden">
+                    <div class="feature-card rounded-2xl p-6 border-2 border-cyan-500/30">
+                        <div class="flex items-center mb-4">
+                            <i class="fas fa-robot text-cyan-400 text-2xl mr-3"></i>
+                            <h4 class="text-xl font-bold text-cyan-300">پاسخ سریع</h4>
+                        </div>
+                        <div id="quickAnswerContent" class="text-gray-300 leading-relaxed"></div>
+                        <div class="mt-6 flex gap-4">
+                            <button onclick="hideQuickAnswer()" class="bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-500 hover:to-gray-600 px-4 py-2 rounded-lg text-white transition-all duration-300">
+                                بستن
+                            </button>
+                            <button onclick="sendEmail('ادامه مشکل', 'سلام، پاسخ سریع کافی نبود. مشکل من:')" class="bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 px-4 py-2 rounded-lg text-white transition-all duration-300">
+                                نیاز به کمک بیشتر دارم
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feature Request Panel Modal -->
+    <div id="featureModal" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 hidden">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="feature-card rounded-3xl p-8 max-w-2xl w-full">
+                <div class="flex justify-between items-center mb-8">
+                    <h3 class="text-3xl font-bold neon-text bg-gradient-to-r from-yellow-300 to-orange-300 bg-clip-text text-transparent">درخواست ویژگی</h3>
+                    <button onclick="closeFeaturePanel()" class="text-3xl text-gray-400 hover:text-white transition-colors duration-300">×</button>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <button onclick="sendEmail('درخواست ویژگی گفتگو', 'سلام، درخواست من برای بهبود گفتگو:')" class="feature-card rounded-2xl p-6 text-center hover:scale-105 transition-all duration-300">
+                        <div class="text-4xl mb-3">
+                            <i class="fas fa-comments text-blue-400"></i>
+                        </div>
+                        <h4 class="text-lg font-bold text-blue-300">بهبود گفتگو</h4>
+                    </button>
+                    
+                    <button onclick="sendEmail('درخواست ویژگی صوتی', 'سلام، درخواست من برای قابلیت صوتی:')" class="feature-card rounded-2xl p-6 text-center hover:scale-105 transition-all duration-300">
+                        <div class="text-4xl mb-3">
+                            <i class="fas fa-music text-pink-400"></i>
+                        </div>
+                        <h4 class="text-lg font-bold text-pink-300">قابلیت صوتی</h4>
+                    </button>
+                    
+                    <button onclick="sendEmail('درخواست ویژگی تصویری', 'سلام، درخواست من برای قابلیت تصویری:')" class="feature-card rounded-2xl p-6 text-center hover:scale-105 transition-all duration-300">
+                        <div class="text-4xl mb-3">
+                            <i class="fas fa-camera text-purple-400"></i>
+                        </div>
+                        <h4 class="text-lg font-bold text-purple-300">قابلیت تصویری</h4>
+                    </button>
+                    
+                    <button onclick="sendEmail('درخواست ویژگی جدید', 'سلام، درخواست من برای ویژگی جدید:')" class="feature-card rounded-2xl p-6 text-center hover:scale-105 transition-all duration-300">
+                        <div class="text-4xl mb-3">
+                            <i class="fas fa-rocket text-yellow-400"></i>
+                        </div>
+                        <h4 class="text-lg font-bold text-yellow-300">ویژگی جدید</h4>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Age Verification Functions
+        function confirmAge(isAdult) {
+            if (!isAdult) {
+                alert('متأسفانه شما نمی‌توانید از این سرویس استفاده کنید. سن مجاز 18 سال است.');
+                return;
+            }
+            
+            const termsAccepted = document.getElementById('termsAccepted').checked;
+            if (!termsAccepted) {
+                alert('لطفاً ابتدا قوانین و مقررات را بپذیرید.');
+                return;
+            }
+            
+            // Hide age verification modal
+            document.getElementById('ageVerificationModal').style.display = 'none';
+            
+            // Set cookie to remember verification (expires in 30 days)
+            const expiryDate = new Date();
+            expiryDate.setTime(expiryDate.getTime() + (30 * 24 * 60 * 60 * 1000));
+            document.cookie = `ageVerified=true; expires=${expiryDate.toUTCString()}; path=/`;
+            
+            // Show promotional modal after 15 seconds
+            setTimeout(() => {
+                showPromoModal();
+            }, 15000);
+        }
+
+        // Terms checkbox handler
+        document.addEventListener('DOMContentLoaded', function() {
+            const termsCheckbox = document.getElementById('termsAccepted');
+            const confirmBtn = document.getElementById('confirmAgeBtn');
+            const checkboxContainer = termsCheckbox.parentElement.querySelector('div');
+            const checkIcon = checkboxContainer.querySelector('.absolute');
+            
+            termsCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    checkIcon.style.opacity = '1';
+                    confirmBtn.disabled = false;
+                    confirmBtn.className = 'bg-gradient-to-r from-green-600 to-green-700 hover:from-green-500 hover:to-green-600 px-8 py-4 rounded-full text-lg font-bold text-white transition-all duration-300 transform hover:scale-105 cursor-pointer';
+                } else {
+                    checkIcon.style.opacity = '0';
+                    confirmBtn.disabled = true;
+                    confirmBtn.className = 'bg-gradient-to-r from-gray-600 to-gray-700 px-8 py-4 rounded-full text-lg font-bold text-white transition-all duration-300 transform cursor-not-allowed';
+                }
+            });
+            
+            // Check if user has already verified age
+            if (getCookie('ageVerified') === 'true') {
+                document.getElementById('ageVerificationModal').style.display = 'none';
+                // Show promo modal after 15 seconds if not shown today
+                if (getCookie('promoShownToday') !== 'true') {
+                    setTimeout(() => {
+                        showPromoModal();
+                    }, 15000);
+                }
+            }
+        });
+
+        // Cookie helper functions
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+            return null;
+        }
+
+        function setCookie(name, value, days) {
+            const expiryDate = new Date();
+            expiryDate.setTime(expiryDate.getTime() + (days * 24 * 60 * 60 * 1000));
+            document.cookie = `${name}=${value}; expires=${expiryDate.toUTCString()}; path=/`;
+        }
+
+        // Promotional Modal Functions
+        function showPromoModal() {
+            document.getElementById('promoModal').classList.remove('hidden');
+            // Set cookie to not show again today
+            setCookie('promoShownToday', 'true', 1);
+        }
+
+        function closePromoModal() {
+            document.getElementById('promoModal').classList.add('hidden');
+        }
+
+        function startChat() {
+            // Navigate to index.html
+            window.location.href = 'index.html';
+        }
+
+        function sendEmail(subject, body) {
+            const email = 'zedexe667@gmail.com';
+            const encodedSubject = encodeURIComponent(`Elma AI - ${subject}`);
+            const encodedBody = encodeURIComponent(`${body}\n\n---\nارسال شده از وب‌سایت Elma AI\nتاریخ: ${new Date().toLocaleDateString('fa-IR')}\nساعت: ${new Date().toLocaleTimeString('fa-IR')}`);
+            
+            // Create Gmail compose URL
+            const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${email}&su=${encodedSubject}&body=${encodedBody}`;
+            
+            // Open Gmail in new tab
+            window.open(gmailUrl, '_blank', 'noopener,noreferrer');
+            
+            // Close any open modals
+            closeSuggestionPanel();
+            closeFeedbackPanel();
+            closeFeaturePanel();
+        }
+
+        // FAQ Functions
+        function showFAQ() {
+            document.getElementById('faqModal').classList.remove('hidden');
+        }
+
+        function closeFAQ() {
+            document.getElementById('faqModal').classList.add('hidden');
+        }
+
+        // Suggestion Panel Functions
+        function showSuggestionPanel() {
+            document.getElementById('suggestionModal').classList.remove('hidden');
+        }
+
+        function closeSuggestionPanel() {
+            document.getElementById('suggestionModal').classList.add('hidden');
+        }
+
+        // Feedback Panel Functions
+        function showFeedbackPanel() {
+            document.getElementById('feedbackModal').classList.remove('hidden');
+        }
+
+        function closeFeedbackPanel() {
+            document.getElementById('feedbackModal').classList.add('hidden');
+        }
+
+        // Pricing Modal Functions
+        function showPricingModal() {
+            document.getElementById('pricingModal').classList.remove('hidden');
+        }
+
+        function closePricingModal() {
+            document.getElementById('pricingModal').classList.add('hidden');
+        }
+
+        function buyPlan(planName, price) {
+            const message = `سلام! 👋
+
+من می‌خواهم پلن ${planName} Elma Pro را خریداری کنم.
+
+💰 قیمت: ${price.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')} تومان
+
+لطفاً راهنمایی‌های پرداخت را برایم ارسال کنید.
+
+ممنون! 🙏`;
+            
+            const encodedMessage = encodeURIComponent(message);
+            const telegramUrl = `https://t.me/hexdix?text=${encodedMessage}`;
+            
+            window.open(telegramUrl, '_blank', 'noopener,noreferrer');
+        }
+
+        // Feature Request Panel Functions
+        function showFeaturePanel() {
+            document.getElementById('featureModal').classList.remove('hidden');
+        }
+
+        function closeFeaturePanel() {
+            document.getElementById('featureModal').classList.add('hidden');
+        }
+
+        // Support Chat Functions
+        function showSupportChat() {
+            document.getElementById('supportChatModal').classList.remove('hidden');
+        }
+
+        function closeSupportChat() {
+            document.getElementById('supportChatModal').classList.add('hidden');
+            hideQuickAnswer();
+        }
+
+        function showQuickAnswer(type) {
+            const answers = {
+                'login': `
+                    <h5 class="text-lg font-bold text-cyan-300 mb-3">🔐 راه‌حل مشکل ورود:</h5>
+                    <ul class="space-y-2 text-right">
+                        <li>• مطمئن شوید اتصال اینترنت شما برقرار است</li>
+                        <li>• کش مرورگر خود را پاک کنید (Ctrl+Shift+Delete)</li>
+                        <li>• از مرورگر دیگری امتحان کنید</li>
+                        <li>• اگر رمز عبور فراموش کرده‌اید، از گزینه "فراموشی رمز" استفاده کنید</li>
+                        <li>• VPN خود را خاموش کنید</li>
+                    </ul>
+                `,
+                'chat': `
+                    <h5 class="text-lg font-bold text-blue-300 mb-3">💬 راه‌حل مشکل چت:</h5>
+                    <ul class="space-y-2 text-right">
+                        <li>• صفحه را رفرش کنید (F5)</li>
+                        <li>• مطمئن شوید اتصال اینترنت پایدار است</li>
+                        <li>• اگر Elma پاسخ نمی‌دهد، چند ثانیه صبر کنید</li>
+                        <li>• پیام‌های خیلی طولانی ارسال نکنید</li>
+                        <li>• از کلمات مناسب و مودبانه استفاده کنید</li>
+                        <li>• اگر مشکل ادامه دارد، مرورگر را ببندید و دوباره باز کنید</li>
+                    </ul>
+                `,
+                'payment': `
+                    <h5 class="text-lg font-bold text-green-300 mb-3">💳 راه‌حل مشکل پرداخت:</h5>
+                    <ul class="space-y-2 text-right">
+                        <li>• برای خرید پلن، حتماً با @hexdix در تلگرام تماس بگیرید</li>
+                        <li>• پرداخت مستقیم از سایت امکان‌پذیر نیست</li>
+                        <li>• تمام پرداخت‌ها از طریق تلگرام انجام می‌شود</li>
+                        <li>• پس از پرداخت، حداکثر 24 ساعت برای فعال‌سازی صبر کنید</li>
+                        <li>• رسید پرداخت خود را نگه دارید</li>
+                    </ul>
+                `,
+                'technical': `
+                    <h5 class="text-lg font-bold text-purple-300 mb-3">⚙️ راه‌حل مشکل فنی:</h5>
+                    <ul class="space-y-2 text-right">
+                        <li>• مرورگر خود را آپدیت کنید</li>
+                        <li>• JavaScript را فعال کنید</li>
+                        <li>• Ad Blocker را غیرفعال کنید</li>
+                        <li>• کش و کوکی‌ها را پاک کنید</li>
+                        <li>• از مرورگر Chrome یا Firefox استفاده کنید</li>
+                        <li>• اگر صفحه لود نمی‌شود، VPN خود را تغییر دهید</li>
+                    </ul>
+                `,
+                'general': `
+                    <h5 class="text-lg font-bold text-yellow-300 mb-3">❓ راهنمای استفاده:</h5>
+                    <ul class="space-y-2 text-right">
+                        <li>• برای شروع چت، روی دکمه "شروع چت" کلیک کنید</li>
+                        <li>• Elma به زبان فارسی پاسخ می‌دهد</li>
+                        <li>• سوالات خود را واضح و کامل بپرسید</li>
+                        <li>• از Elma می‌توانید در موضوعات مختلف کمک بگیرید</li>
+                        <li>• برای استفاده کامل، پلن Pro تهیه کنید</li>
+                        <li>• Elma 24 ساعته در دسترس است</li>
+                    </ul>
+                `
+            };
+
+            document.getElementById('quickAnswerContent').innerHTML = answers[type] || 'پاسخی یافت نشد.';
+            document.getElementById('quickAnswerSection').classList.remove('hidden');
+            
+            // Scroll to answer
+            document.getElementById('quickAnswerSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function hideQuickAnswer() {
+            document.getElementById('quickAnswerSection').classList.add('hidden');
+        }
+
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            const faqModal = document.getElementById('faqModal');
+            const suggestionModal = document.getElementById('suggestionModal');
+            const feedbackModal = document.getElementById('feedbackModal');
+            const featureModal = document.getElementById('featureModal');
+            const pricingModal = document.getElementById('pricingModal');
+            const supportChatModal = document.getElementById('supportChatModal');
+            
+            if (event.target === faqModal) {
+                closeFAQ();
+            }
+            if (event.target === suggestionModal) {
+                closeSuggestionPanel();
+            }
+            if (event.target === feedbackModal) {
+                closeFeedbackPanel();
+            }
+            if (event.target === featureModal) {
+                closeFeaturePanel();
+            }
+            if (event.target === pricingModal) {
+                closePricingModal();
+            }
+            if (event.target === supportChatModal) {
+                closeSupportChat();
+            }
+        }
+
+        // Custom Scrollbar Implementation
+        class CustomScrollbar {
+            constructor() {
+                this.scrollbar = document.getElementById('customScrollbar');
+                this.thumb = document.getElementById('scrollbarThumb');
+                this.track = this.scrollbar.querySelector('.scrollbar-track');
+                this.positionIndicator = document.getElementById('scrollPosition');
+                
+                this.isDragging = false;
+                this.dragStartY = 0;
+                this.dragStartScrollTop = 0;
+                this.hideTimeout = null;
+                
+                this.init();
+            }
+            
+            init() {
+                this.updateScrollbar();
+                this.bindEvents();
+                
+                // Hide default scrollbar
+                document.body.style.overflow = 'auto';
+                document.documentElement.style.scrollbarWidth = 'none';
+                document.documentElement.style.msOverflowStyle = 'none';
+            }
+            
+            bindEvents() {
+                // Scroll events
+                window.addEventListener('scroll', () => this.updateScrollbar());
+                window.addEventListener('resize', () => this.updateScrollbar());
+                
+                // Mouse events
+                this.thumb.addEventListener('mousedown', (e) => this.startDrag(e));
+                this.track.addEventListener('click', (e) => this.jumpToPosition(e));
+                
+                // Hover events
+                this.scrollbar.addEventListener('mouseenter', () => this.showScrollbar(true));
+                this.scrollbar.addEventListener('mouseleave', () => this.showScrollbar(false));
+                
+                // Global mouse events for dragging
+                document.addEventListener('mousemove', (e) => this.drag(e));
+                document.addEventListener('mouseup', () => this.stopDrag());
+                
+                // Touch events for mobile
+                this.thumb.addEventListener('touchstart', (e) => this.startDrag(e.touches[0]));
+                document.addEventListener('touchmove', (e) => this.drag(e.touches[0]));
+                document.addEventListener('touchend', () => this.stopDrag());
+                
+                // Keyboard events
+                this.thumb.addEventListener('keydown', (e) => this.handleKeyboard(e));
+                
+                // Auto-hide on scroll stop
+                window.addEventListener('scroll', () => {
+                    this.showScrollbar(true);
+                    clearTimeout(this.hideTimeout);
+                    this.hideTimeout = setTimeout(() => {
+                        if (!this.isDragging) {
+                            this.showScrollbar(false);
+                        }
+                    }, 2000);
+                });
+            }
+            
+            updateScrollbar() {
+                const documentHeight = document.documentElement.scrollHeight;
+                const windowHeight = window.innerHeight;
+                const scrollTop = window.pageYOffset;
+                
+                // Show/hide scrollbar based on content
+                if (documentHeight <= windowHeight) {
+                    this.scrollbar.classList.remove('visible');
+                    return;
+                }
+                
+                // Calculate thumb size and position
+                const thumbHeight = Math.max((windowHeight / documentHeight) * 100, 10);
+                const thumbPosition = (scrollTop / (documentHeight - windowHeight)) * (100 - thumbHeight);
+                
+                this.thumb.style.height = thumbHeight + '%';
+                this.thumb.style.top = thumbPosition + '%';
+                
+                // Update ARIA attributes
+                const scrollPercentage = Math.round((scrollTop / (documentHeight - windowHeight)) * 100);
+                this.thumb.setAttribute('aria-valuenow', scrollPercentage);
+                
+                // Update position indicator
+                this.positionIndicator.textContent = `${scrollPercentage}%`;
+                this.positionIndicator.style.top = thumbPosition + '%';
+            }
+            
+            showScrollbar(show) {
+                if (show) {
+                    this.scrollbar.classList.add('visible', 'hover');
+                } else {
+                    this.scrollbar.classList.remove('hover');
+                    if (!this.isDragging) {
+                        this.scrollbar.classList.remove('visible');
+                    }
+                }
+            }
+            
+            startDrag(e) {
+                this.isDragging = true;
+                this.dragStartY = e.clientY;
+                this.dragStartScrollTop = window.pageYOffset;
+                
+                this.thumb.classList.add('dragging');
+                this.positionIndicator.classList.add('show');
+                
+                e.preventDefault();
+            }
+            
+            drag(e) {
+                if (!this.isDragging) return;
+                
+                const deltaY = e.clientY - this.dragStartY;
+                const trackHeight = this.track.offsetHeight;
+                const thumbHeight = this.thumb.offsetHeight;
+                const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+                
+                const scrollDelta = (deltaY / (trackHeight - thumbHeight)) * maxScroll;
+                const newScrollTop = Math.max(0, Math.min(maxScroll, this.dragStartScrollTop + scrollDelta));
+                
+                window.scrollTo(0, newScrollTop);
+                
+                e.preventDefault();
+            }
+            
+            stopDrag() {
+                if (!this.isDragging) return;
+                
+                this.isDragging = false;
+                this.thumb.classList.remove('dragging');
+                this.positionIndicator.classList.remove('show');
+            }
+            
+            jumpToPosition(e) {
+                if (e.target === this.thumb) return;
+                
+                const rect = this.track.getBoundingClientRect();
+                const clickY = e.clientY - rect.top;
+                const trackHeight = rect.height;
+                const thumbHeight = this.thumb.offsetHeight;
+                
+                const scrollPercentage = (clickY - thumbHeight / 2) / (trackHeight - thumbHeight);
+                const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+                const targetScroll = Math.max(0, Math.min(maxScroll, scrollPercentage * maxScroll));
+                
+                window.scrollTo({
+                    top: targetScroll,
+                    behavior: 'smooth'
+                });
+            }
+            
+            handleKeyboard(e) {
+                const scrollAmount = 100;
+                let newScroll = window.pageYOffset;
+                
+                switch(e.key) {
+                    case 'ArrowUp':
+                        newScroll -= scrollAmount;
+                        break;
+                    case 'ArrowDown':
+                        newScroll += scrollAmount;
+                        break;
+                    case 'PageUp':
+                        newScroll -= window.innerHeight;
+                        break;
+                    case 'PageDown':
+                        newScroll += window.innerHeight;
+                        break;
+                    case 'Home':
+                        newScroll = 0;
+                        break;
+                    case 'End':
+                        newScroll = document.documentElement.scrollHeight;
+                        break;
+                    default:
+                        return;
+                }
+                
+                e.preventDefault();
+                window.scrollTo({
+                    top: Math.max(0, Math.min(document.documentElement.scrollHeight - window.innerHeight, newScroll)),
+                    behavior: 'smooth'
+                });
+            }
+        }
+
+        // Floating Widget Scroll Detection
+        window.addEventListener('scroll', function() {
+            const widget = document.getElementById('floatingWidget');
+            const scrollPosition = window.pageYOffset;
+            const windowHeight = window.innerHeight;
+            
+            // Show widget after scrolling 200px or past the first screen
+            if (scrollPosition > 200 || scrollPosition > windowHeight * 0.3) {
+                widget.classList.add('show');
+            } else {
+                widget.classList.remove('show');
+            }
+        });
+
+        // Advanced interactive effects
+        document.addEventListener('DOMContentLoaded', function() {
+            // Create floating particles
+            function createParticles() {
+                const container = document.getElementById('particles-container');
+                const particleCount = 50;
+                
+                for (let i = 0; i < particleCount; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+                    particle.style.left = Math.random() * 100 + '%';
+                    particle.style.animationDelay = Math.random() * 15 + 's';
+                    particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                    container.appendChild(particle);
+                }
+            }
+            
+            createParticles();
+            
+            // Enhanced hover effects for feature cards
+            const featureCards = document.querySelectorAll('.feature-card');
+            featureCards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-10px) rotateX(5deg)';
+                    this.style.boxShadow = '0 20px 40px rgba(0, 0, 0, 0.4), 0 0 50px rgba(255, 255, 255, 0.1)';
+                    this.style.transition = 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0) rotateX(0deg)';
+                    this.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)';
+                });
+            });
+            
+            // Smooth scroll behavior
+            document.documentElement.style.scrollBehavior = 'smooth';
+            
+            // Add glitch effect to main title on hover
+            const mainTitle = document.querySelector('h2');
+            if (mainTitle) {
+                mainTitle.addEventListener('mouseenter', function() {
+                    this.style.animation = 'none';
+                    setTimeout(() => {
+                        this.style.animation = 'glitch 0.3s ease-in-out';
+                    }, 10);
+                });
+            }
+            
+            // Dynamic color changing for AI avatar
+            const avatar = document.querySelector('.ai-glow');
+            if (avatar) {
+                setInterval(() => {
+                    const hue = Math.random() * 360;
+                    avatar.style.filter = `hue-rotate(${hue}deg) brightness(1.2)`;
+                }, 3000);
+            }
+            
+            // Initialize custom scrollbar
+            new CustomScrollbar();
+        });
+        
+        // Add glitch animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes glitch {
+                0% { transform: translate(0); }
+                20% { transform: translate(-2px, 2px); }
+                40% { transform: translate(-2px, -2px); }
+                60% { transform: translate(2px, 2px); }
+                80% { transform: translate(2px, -2px); }
+                100% { transform: translate(0); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9844623f5020dd2c',t:'MTc1ODczODk0OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

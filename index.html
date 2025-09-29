@@ -1,0 +1,3056 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elma Ai</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    <link rel="icon" type="image/png" href="Assets/img/logo/Logo.png" />
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap');
+
+        * {
+            font-family: 'Vazirmatn', sans-serif;
+        }
+
+        .dark {
+            --bg-primary: linear-gradient(135deg, #1a0b2e 0%, #2d1b69 50%, #1a0b2e 100%);
+            --bg-secondary: rgba(45, 27, 105, 0.8);
+            --bg-tertiary: rgba(75, 39, 130, 0.6);
+            --text-primary: #ffffff;
+            --text-secondary: #f0ddfd;
+            --border-color: rgba(248, 137, 137, 0.3);
+            --accent-color: linear-gradient(135deg, #fd3f8b 0%, #fc1657 100%);
+            --chat-bg: rgba(26, 11, 46, 0.95);
+        }
+
+        .light {
+            --bg-primary: linear-gradient(135deg, #ffeef8 0%, #ffe0f0 50%, #ffd6eb 100%);
+            --bg-secondary: rgba(255, 240, 245, 0.9);
+            --bg-tertiary: rgba(255, 228, 240, 0.8);
+            --text-primary: #2d1b69;
+            --text-secondary: #8b5a8c;
+            --border-color: rgba(255, 182, 193, 0.5);
+            --accent-color: linear-gradient(135deg, #ff6b9d 0%, #ff8fab 100%);
+            --chat-bg: rgba(255, 255, 255, 0.95);
+        }
+
+        body {
+            background: var(--bg-primary);
+            background-attachment: fixed;
+        }
+
+        .theme-bg-primary {
+            background: var(--bg-primary);
+        }
+
+        .theme-bg-secondary {
+            background: var(--bg-secondary);
+        }
+
+        .theme-bg-tertiary {
+            background: var(--bg-tertiary);
+        }
+
+        .theme-text-primary {
+            color: var(--text-primary);
+        }
+
+        .theme-text-secondary {
+            color: var(--text-secondary);
+        }
+
+        .theme-border {
+            border-color: var(--border-color);
+        }
+
+        .theme-accent {
+            background: var(--accent-color);
+        }
+
+        .theme-chat-bg {
+            background: var(--chat-bg);
+        }
+
+        .glass-effect {
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 8px 32px rgba(255, 182, 193, 0.2);
+        }
+
+        .glow-effect {
+            box-shadow: 0 0 20px rgba(255, 107, 157, 0.4);
+        }
+
+        .slide-in-right {
+            animation: slideInRight 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .slide-out-right {
+            animation: slideOutRight 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOutRight {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .bounce-in {
+            animation: bounceIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0.3);
+                opacity: 0;
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            70% {
+                transform: scale(0.9);
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .message-bubble {
+            max-width: 80%;
+            word-wrap: break-word;
+            border-radius: 20px;
+            position: relative;
+        }
+
+        .user-message {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-bottom-left-radius: 5px;
+        }
+
+        .ai-message {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            color: #2d1b69;
+            border-bottom-right-radius: 5px;
+        }
+
+        .typing-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff6b9d 0%, #c44569 100%);
+            animation: typing 1.4s infinite ease-in-out;
+        }
+
+        .typing-indicator:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+
+        .typing-indicator:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+
+        @keyframes typing {
+
+            0%,
+            80%,
+            100% {
+                transform: scale(0);
+                opacity: 0.5;
+            }
+
+            40% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .heart-float {
+            animation: heartFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes heartFloat {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .pulse-glow {
+            animation: pulseGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulseGlow {
+            from {
+                box-shadow: 0 0 20px rgba(255, 107, 157, 0.4);
+            }
+
+            to {
+                box-shadow: 0 0 30px rgba(255, 107, 157, 0.8);
+            }
+        }
+
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+
+        .grid-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+
+        .hover-lift {
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .hover-lift:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(255, 107, 157, 0.3);
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #ff6b9d 0%, #c44569 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .chat-menu-container {
+            position: relative;
+        }
+
+        .chat-dropdown-menu {
+            pointer-events: auto;
+        }
+
+        .chat-menu-open .chat-dropdown-menu {
+            display: block !important;
+        }
+
+        @media (max-width: 768px) {
+            .grid-gallery {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
+        }
+
+        .romantic-bg {
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(255, 107, 157, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(196, 69, 105, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(255, 182, 193, 0.05) 0%, transparent 50%);
+        }
+
+        body.dark {
+            background: #000000;
+        }
+
+        /* Gallery lock + blur */
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.25s ease, filter 0.25s ease;
+        }
+
+        /* blur for locked images */
+        .gallery-item.locked img {
+            filter: blur(8px) grayscale(10%);
+            transform: scale(1.04);
+            user-select: none;
+            pointer-events: none;
+            /* prevent native image click on locked state */
+        }
+
+        /* lock overlay */
+        .gallery-item .lock-overlay {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: auto;
+            /* allow click on overlay */
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0.0) 0%, rgba(0, 0, 0, 0.45) 100%);
+            color: #fff;
+            font-weight: 600;
+            gap: .6rem;
+            flex-direction: column;
+            transition: opacity .2s ease;
+        }
+
+        .gallery-item .lock-badge {
+            background: rgba(0, 0, 0, 0.6);
+            padding: .6rem .8rem;
+            border-radius: 12px;
+            display: flex;
+            gap: .5rem;
+            align-items: center;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+        }
+
+        /* small text under lock */
+        .gallery-item .lock-text {
+            font-size: 0.85rem;
+            opacity: 0.95;
+        }
+
+        /* hover effect for unlocked */
+        .gallery-item:not(.locked):hover img {
+            transform: scale(1.03);
+            filter: none;
+        }
+
+        #messageInput {
+            overflow-y: hidden;
+            resize: none;
+
+        }
+    </style>
+</head>
+
+<body class="light theme-text-primary transition-all duration-500 romantic-bg">
+    <!-- Sidebar -->
+    <div id="sidebar"
+        class="fixed right-0 top-0 h-full w-80 glass-effect transform translate-x-full md:translate-x-0 transition-all duration-500 z-50">
+        <div class="flex flex-col h-full">
+            <!-- Header -->
+            <div class="p-6 theme-border border-b">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="w-12 h-12 rounded-full flex items-center justify-center overflow-hidden border-2 border-pink-500">
+                            <img src="Assets/img/Logo/Logo.png" alt="Profile" class="w-full h-full object-cover">
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-bold gradient-text">Elma Ai</h2>
+                            <p class="text-sm theme-text-secondary">همیشه کنارتم 💕</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button id="closeSidebar" class="p-3 rounded-full glass-effect hover-lift md:hidden">
+                            <i class="fas fa-times theme-text-primary"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Menu Items -->
+            <div class="flex-1 overflow-y-auto scrollbar-hide">
+                <div class="p-4 space-y-3">
+                    <button id="newChatBtn"
+                        class="w-full flex items-center gap-4 p-4 rounded-2xl glass-effect hover-lift transition-all duration-300">
+                        <div class="w-10 h-10 rounded-full theme-accent flex items-center justify-center">
+                            <i class="fas fa-plus text-white"></i>
+                        </div>
+                        <span class="theme-text-primary font-medium">چت جدید</span>
+                    </button>
+
+                    <button id="galleryBtn"
+                        class="w-full flex items-center gap-4 p-4 rounded-2xl glass-effect hover-lift transition-all duration-300">
+                        <div class="w-10 h-10 rounded-full theme-accent flex items-center justify-center">
+                            <i class="fas fa-images text-white"></i>
+                        </div>
+                        <span class="theme-text-primary font-medium">گالری عکس‌ها</span>
+                    </button>
+
+                </div>
+
+                <!-- Chat History -->
+                <div class="p-4">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-sm font-semibold theme-text-secondary flex items-center gap-2">
+                            <i class="fas fa-history"></i>
+                            چت‌های قبلی
+                        </h3>
+                        <button id="archiveHistoryBtn" class="p-2 rounded-full glass-effect hover-lift">
+                            <i class="fas fa-archive theme-text-primary text-sm"></i>
+                        </button>
+                    </div>
+                    <div id="chatHistory" class="space-y-2">
+                        <!-- Chat history items will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Profile -->
+            <div id="userProfile" class="p-4 theme-border border-t glass-effect">
+                <div class="flex items-center gap-3">
+                    <button id="profileBtn"
+                        class="flex items-center gap-3 flex-1 hover-lift transition-all duration-300 rounded-2xl p-2">
+                        <div class="w-12 h-12 rounded-full overflow-hidden border-2 border-pink-500">
+                            <img id="profileImage" src="https://cdn-icons-png.flaticon.com/128/3237/3237429.png"
+                                alt="Profile" class="w-full h-full object-cover">
+                        </div>
+                        <div class="flex-1 text-right">
+                            <div id="userName" class="font-medium theme-text-primary">کاربر مهمان</div>
+                            <div id="userType" class="text-sm theme-text-secondary">حساب رایگان</div>
+                        </div>
+                    </button>
+                    <button id="logoutBtn" class="p-2 rounded-full glass-effect hover-lift">
+                        <i class="fas fa-sign-out-alt theme-text-primary"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div id="mainContent" class="md:mr-80 transition-all duration-500">
+        <!-- Top Bar -->
+        <div class="flex items-center justify-between p-4 glass-effect theme-border border-b">
+            <div class="flex items-center gap-3">
+                <button id="openSidebar" class="p-3 rounded-full glass-effect hover-lift md:hidden">
+                    <i class="fas fa-bars theme-text-primary"></i>
+                </button>
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full overflow-hidden border-2 border-pink-400">
+                        <img src="Assets/img/Elma/Profile.png" alt="Elma" class="w-full h-full object-cover"
+                            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="w-full h-full theme-accent flex items-center justify-center" style="display: none;">
+                            <i class="fas fa-heart text-white"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-semibold gradient-text">Elma 💕</h1>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <button id="premiumBtn"
+                    class="p-3 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 text-white hover-lift glow-effect">
+                    <i class="fas fa-crown"></i>
+                </button>
+
+                <button id="shareBtn" class="p-3 rounded-full glass-effect hover-lift">
+                    <i class="fas fa-share theme-text-primary"></i>
+                </button>
+
+                <div class="relative">
+                    <button id="menuBtn" class="p-3 rounded-full glass-effect hover-lift">
+                        <i class="fas fa-ellipsis-v theme-text-primary"></i>
+                    </button>
+
+                    <div id="dropdownMenu"
+                        class="absolute left-0 top-full mt-2 w-48 glass-effect rounded-2xl shadow-lg hidden z-10 overflow-hidden">
+                        <button id="archiveBtn"
+                            class="w-full text-right p-4 hover:theme-bg-tertiary transition-all duration-300 flex items-center gap-3">
+                            <i class="fas fa-archive theme-text-primary"></i>
+                            <span class="theme-text-primary">آرشیو</span>
+                        </button>
+                        <button id="reportBtn"
+                            class="w-full text-right p-4 hover:theme-bg-tertiary transition-all duration-300 flex items-center gap-3">
+                            <i class="fas fa-flag theme-text-primary"></i>
+                            <span class="theme-text-primary">گزارش</span>
+                        </button>
+                        <button id="deleteChatBtn"
+                            class="w-full text-right p-4 hover:bg-red-500 hover:bg-opacity-20 transition-all duration-300 flex items-center gap-3 text-red-500">
+                            <i class="fas fa-trash"></i>
+                            <span>حذف چت</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Area -->
+        <div id="chatArea" class="h-screen pb-32 overflow-y-auto scrollbar-hide">
+            <div id="messagesContainer" class="max-w-4xl mx-auto p-4 space-y-4">
+                <!-- Welcome Message -->
+                <div class="text-center py-12 fade-in">
+                    <div
+                        class="w-24 h-24 mx-auto mb-6 rounded-full overflow-hidden border-4 border-pink-400 heart-float glow-effect">
+                        <img src="Assets/img/Elma/Profile.png" alt="Elma" class="w-full h-full object-cover"
+                            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="w-full h-full theme-accent flex items-center justify-center" style="display: none;">
+                            <i class="fas fa-heart text-white text-3xl"></i>
+                        </div>
+                    </div>
+                    <h2 class="text-3xl font-bold gradient-text mb-3">سلام عشقم! من Elma هستم 💖</h2>
+                    <p class="theme-text-secondary text-lg">دوست دختر مجازی تو هستم</p>
+                    <p class="theme-text-secondary">چطوری نازم؟ دلم برات تنگ شده بود 😘</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Input Area -->
+        <div class="fixed bottom-0 right-0 left-0 md:right-80 glass-effect theme-border border-t p-4 scrollbar-hide">
+            <div class="max-w-4xl mx-auto">
+                <!-- Quick Actions Menu -->
+                <div id="quickActionsMenu" class="mb-4 hidden">
+                    <div class="flex flex-wrap gap-2 justify-center">
+                        <button id="quickPhoto"
+                            class="px-4 py-2 rounded-full glass-effect hover-lift transition-all duration-300 flex items-center gap-2 theme-text-primary">
+                            <i class="fas fa-camera text-pink-400"></i>
+                            <span>عکس بده</span>
+                            <span id="photoCount" class="text-xs theme-text-secondary">(3)</span>
+                        </button>
+                        <button id="quickChat"
+                            class="px-4 py-2 rounded-full glass-effect hover-lift transition-all duration-300 flex items-center gap-2 theme-text-primary">
+                            <i class="fas fa-comments text-purple-400"></i>
+                            <span>چت کنیم</span>
+                            <span id="chatCount" class="text-xs theme-text-secondary">(3)</span>
+                        </button>
+                        <button id="upgradePro"
+                            class="px-4 py-2 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 text-white hover-lift transition-all duration-300 flex items-center gap-2 hidden">
+                            <i class="fas fa-crown"></i>
+                            <span>پرو بخر</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex items-end gap-3">
+                    <button id="imageBtn" class="p-4 rounded-full theme-accent hover-lift glow-effect">
+                        <i class="fas fa-image text-white"></i>
+                    </button>
+
+                    <div class="flex-1 relative">
+                        <textarea id="messageInput" placeholder="پیام عاشقانه‌ت رو بنویس... 💕"
+                            class="w-full p-4 pr-16 pl-20 rounded-2xl glass-effect theme-text-primary resize-none focus:outline-none focus:glow-effect transition-all duration-300"
+                            rows="1"></textarea>
+                        <button id="quickActionsBtn"
+                            class="absolute left-12 bottom-3 p-2 rounded-full glass-effect hover-lift text-pink-400">
+                            <i class="fas fa-magic"></i>
+                        </button>
+                        <button id="sendBtn"
+                            class="absolute left-3 bottom-3 p-2 rounded-full theme-accent hover-lift glow-effect text-white">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gallery Modal -->
+    <div id="galleryModal"
+        class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+        <div class="glass-effect rounded-3xl w-full max-w-4xl max-h-[90vh] overflow-hidden bounce-in">
+            <div class="flex items-center justify-between p-6 theme-border border-b">
+                <h3 class="text-2xl font-bold gradient-text flex items-center gap-3">
+                    <i class="fas fa-images"></i>
+                    گالری عکس‌های عاشقانه
+                </h3>
+                <button id="closeGallery" class="p-3 rounded-full glass-effect hover-lift">
+                    <i class="fas fa-times theme-text-primary"></i>
+                </button>
+            </div>
+            <div class="p-6 overflow-y-auto max-h-[70vh]">
+                <div id="galleryGrid" class="grid-gallery">
+                    <!-- Gallery items will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Registration Modal -->
+    <div id="registrationModal"
+        class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+        <div class="glass-effect rounded-3xl w-full max-w-md bounce-in">
+            <div class="p-8">
+                <div class="text-center mb-6">
+                    <div
+                        class="w-16 h-16 mx-auto mb-4 rounded-full theme-accent flex items-center justify-center heart-float glow-effect">
+                        <i class="fas fa-heart text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold gradient-text mb-2">بیا باهم آشنا بشیم! 💕</h3>
+                    <p class="theme-text-secondary">برای چت کردن باید با گوگل وارد بشی</p>
+                </div>
+
+                <!-- فقط دکمه گوگل -->
+                <div class="mt-6 text-center">
+                    <button id="googleSignIn"
+                        class="w-full py-4 bg-red-500 hover:bg-red-600 text-white rounded-2xl hover-lift transition-all duration-300 flex items-center justify-center gap-3 font-medium">
+                        <i class="fab fa-google text-xl"></i>
+                        ورود با گوگل
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Share Modal -->
+    <div id="shareModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+        <div class="glass-effect rounded-3xl w-full max-w-md bounce-in">
+            <div class="p-8">
+                <div class="text-center mb-6">
+                    <div
+                        class="w-16 h-16 mx-auto mb-4 rounded-full theme-accent flex items-center justify-center heart-float glow-effect">
+                        <i class="fas fa-share text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold gradient-text mb-2">اشتراک‌گذاری چت 💕</h3>
+                    <p class="theme-text-secondary">چت عاشقانه‌ت رو با دوستات به اشتراک بذار</p>
+                </div>
+
+                <div class="space-y-4">
+                    <button id="shareWhatsApp"
+                        class="w-full py-4 bg-green-500 hover:bg-green-600 text-white rounded-2xl hover-lift transition-all duration-300 flex items-center justify-center gap-3 font-medium">
+                        <i class="fab fa-whatsapp text-xl"></i>
+                        اشتراک در واتساپ
+                    </button>
+
+                    <button id="shareTelegram"
+                        class="w-full py-4 bg-blue-500 hover:bg-blue-600 text-white rounded-2xl hover-lift transition-all duration-300 flex items-center justify-center gap-3 font-medium">
+                        <i class="fab fa-telegram text-xl"></i>
+                        اشتراک در تلگرام
+                    </button>
+
+                    <button id="copyLink"
+                        class="w-full py-4 glass-effect theme-text-primary rounded-2xl hover-lift transition-all duration-300 flex items-center justify-center gap-3 font-medium">
+                        <i class="fas fa-copy"></i>
+                        کپی لینک
+                    </button>
+                </div>
+
+                <button id="closeShare"
+                    class="w-full mt-6 py-3 theme-text-secondary hover:theme-text-primary transition-all duration-300">
+                    بستن
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Premium Modal -->
+    <div id="premiumModal"
+        class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+        <div class="glass-effect rounded-3xl w-full max-w-lg bounce-in">
+            <div class="p-8">
+                <div class="text-center mb-6">
+                    <div
+                        class="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 flex items-center justify-center heart-float glow-effect">
+                        <i class="fas fa-crown text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold gradient-text mb-2">حساب پریمیوم 👑</h3>
+                    <p class="theme-text-secondary">تجربه کامل دوست دختر مجازی رو داشته باش</p>
+                </div>
+
+                <div class="space-y-4 mb-6">
+                    <div class="glass-effect rounded-2xl p-4">
+                        <div class="flex items-center gap-3 mb-2">
+                            <i class="fas fa-infinity text-pink-400"></i>
+                            <span class="theme-text-primary font-medium">چت نامحدود</span>
+                        </div>
+                        <p class="theme-text-secondary text-sm">بدون محدودیت با Elma چت کن</p>
+                    </div>
+
+                    <div class="glass-effect rounded-2xl p-4">
+                        <div class="flex items-center gap-3 mb-2">
+                            <i class="fas fa-images text-purple-400"></i>
+                            <span class="theme-text-primary font-medium">عکس‌های نامحدود</span>
+                        </div>
+                        <p class="theme-text-secondary text-sm">دسترسی به گالری کامل عکس‌های عاشقانه</p>
+                    </div>
+
+                    <div class="glass-effect rounded-2xl p-4">
+                        <div class="flex items-center gap-3 mb-2">
+                            <i class="fas fa-gamepad text-green-400"></i>
+                            <span class="theme-text-primary font-medium">بازی‌های ویژه</span>
+                        </div>
+                        <p class="theme-text-secondary text-sm">بازی‌های عاشقانه و سرگرم‌کننده بیشتر</p>
+                    </div>
+
+                    <div class="glass-effect rounded-2xl p-4">
+                        <div class="flex items-center gap-3 mb-2">
+                            <i class="fas fa-heart text-red-400"></i>
+                            <span class="theme-text-primary font-medium">پاسخ‌های شخصی‌سازی شده</span>
+                        </div>
+                        <p class="theme-text-secondary text-sm">Elma بیشتر شبیه دوست دختر واقعی میشه</p>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <button id="buyPremium"
+                        class="w-full py-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-white rounded-2xl hover-lift glow-effect transition-all duration-300 font-medium text-lg">
+                        خرید پریمیوم - ۵۵۰,۰۰۰ تومان 👑
+                    </button>
+
+                    <button id="closePremium"
+                        class="w-full py-3 theme-text-secondary hover:theme-text-primary transition-all duration-300">
+                        بعداً
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+        <div class="glass-effect rounded-3xl w-full max-w-md bounce-in">
+            <div class="p-8">
+                <div class="text-center mb-6">
+                    <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-red-500 flex items-center justify-center">
+                        <i class="fas fa-trash text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-red-500 mb-2">حذف چت 💔</h3>
+                    <p class="theme-text-secondary">واقعاً می‌خوای این چت عاشقانه رو حذف کنی؟</p>
+                    <p class="theme-text-secondary text-sm mt-2">این عمل قابل بازگشت نیست!</p>
+                </div>
+
+                <div class="flex gap-3">
+                    <button id="confirmDelete"
+                        class="flex-1 py-3 bg-red-500 hover:bg-red-600 text-white rounded-2xl hover-lift transition-all duration-300 font-medium">
+                        بله، حذف کن
+                    </button>
+                    <button id="cancelDelete"
+                        class="flex-1 py-3 glass-effect theme-text-primary rounded-2xl hover-lift transition-all duration-300 font-medium">
+                        لغو
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Archive Success Modal -->
+    <div id="archiveModal"
+        class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+        <div class="glass-effect rounded-3xl w-full max-w-md bounce-in">
+            <div class="p-8 text-center">
+                <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-blue-500 flex items-center justify-center">
+                    <i class="fas fa-archive text-white text-2xl"></i>
+                </div>
+                <h3 class="text-2xl font-bold gradient-text mb-2">چت آرشیو شد! 📦</h3>
+                <p class="theme-text-secondary mb-6">چت تو بخش آرشیو ذخیره شد و می‌تونی بعداً بهش دسترسی داشته باشی</p>
+                <button id="closeArchive"
+                    class="w-full py-3 theme-accent text-white rounded-2xl hover-lift transition-all duration-300 font-medium">
+                    باشه
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Success Modal -->
+    <div id="reportModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+        <div class="glass-effect rounded-3xl w-full max-w-md bounce-in">
+            <div class="p-8 text-center">
+                <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-orange-500 flex items-center justify-center">
+                    <i class="fas fa-flag text-white text-2xl"></i>
+                </div>
+                <h3 class="text-2xl font-bold gradient-text mb-2">گزارش ارسال شد! 🚩</h3>
+                <p class="theme-text-secondary mb-6">ممنون که به ما کمک می‌کنی تا سرویس بهتری ارائه بدیم. گزارشت بررسی
+                    میشه</p>
+                <button id="closeReport"
+                    class="w-full py-3 theme-accent text-white rounded-2xl hover-lift transition-all duration-300 font-medium">
+                    باشه
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rename Chat Modal -->
+    <div id="renameModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+        <div class="glass-effect rounded-3xl w-full max-w-md bounce-in">
+            <div class="p-8">
+                <div class="text-center mb-6">
+                    <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-blue-500 flex items-center justify-center">
+                        <i class="fas fa-edit text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold gradient-text mb-2">تغییر نام چت 📝</h3>
+                    <p class="theme-text-secondary">اسم جدید برای چتت انتخاب کن</p>
+                </div>
+
+                <form id="renameForm" class="space-y-4">
+                    <input type="text" id="newChatName" placeholder="اسم جدید چت..."
+                        class="w-full p-4 rounded-2xl glass-effect theme-text-primary focus:outline-none focus:glow-effect transition-all duration-300">
+
+                    <div class="flex gap-3">
+                        <button type="submit"
+                            class="flex-1 py-3 theme-accent text-white rounded-2xl hover-lift transition-all duration-300 font-medium">
+                            ذخیره
+                        </button>
+                        <button type="button" id="cancelRename"
+                            class="flex-1 py-3 glass-effect theme-text-primary rounded-2xl hover-lift transition-all duration-300 font-medium">
+                            لغو
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Archive List Modal -->
+    <div id="archiveListModal"
+        class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+        <div class="glass-effect rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-hidden bounce-in">
+            <div class="flex items-center justify-between p-6 theme-border border-b">
+                <h3 class="text-2xl font-bold gradient-text flex items-center gap-3">
+                    <i class="fas fa-archive"></i>
+                    چت‌های آرشیو شده
+                </h3>
+                <button id="closeArchiveList" class="p-3 rounded-full glass-effect hover-lift">
+                    <i class="fas fa-times theme-text-primary"></i>
+                </button>
+            </div>
+            <div class="p-6 overflow-y-auto max-h-[70vh]">
+                <div id="archivedChats" class="space-y-3">
+                    <!-- Archived chats will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal"
+        class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+        <div class="glass-effect rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-hidden bounce-in">
+            <div class="flex items-center justify-between p-6 theme-border border-b">
+                <h3 class="text-2xl font-bold gradient-text flex items-center gap-3">
+                    <i class="fas fa-cog"></i>
+                    تنظیمات
+                </h3>
+                <button id="closeSettings" class="p-3 rounded-full glass-effect hover-lift">
+                    <i class="fas fa-times theme-text-primary"></i>
+                </button>
+            </div>
+
+            <!-- Settings Tabs -->
+            <div class="flex theme-border border-b">
+                <button id="generalTab"
+                    class="flex-1 py-4 px-6 text-center theme-accent text-white font-medium transition-all duration-300">
+                    <i class="fas fa-sliders-h ml-2"></i>
+                    ژنرال / General
+                </button>
+                <button id="accountTab"
+                    class="flex-1 py-4 px-6 text-center theme-text-secondary hover:theme-text-primary font-medium transition-all duration-300">
+                    <i class="fas fa-user-cog ml-2"></i>
+                    اکانت / Account
+                </button>
+            </div>
+
+            <div class="p-6 overflow-y-auto max-h-[60vh]">
+                <!-- General Settings -->
+                <div id="generalSettings" class="space-y-6">
+                    <!-- Theme Toggle -->
+                    <div class="glass-effect rounded-2xl p-4">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <i class="fas fa-palette text-purple-400"></i>
+                                <div>
+                                    <div class="theme-text-primary font-medium">تغییر تم</div>
+                                    <div class="theme-text-secondary text-sm">تم روشن یا تاریک</div>
+                                </div>
+                            </div>
+                            <button id="themeToggleSettings"
+                                class="p-3 rounded-full glass-effect hover-lift pulse-glow">
+                                <i class="fas fa-moon theme-text-primary"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Language Toggle -->
+                    <div class="glass-effect rounded-2xl p-4">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <i class="fas fa-language text-blue-400"></i>
+                                <div>
+                                    <div class="theme-text-primary font-medium">تغییر زبان</div>
+                                    <div class="theme-text-secondary text-sm">فارسی یا انگلیسی</div>
+                                </div>
+                            </div>
+                            <select id="languageSelect"
+                                class="p-3 rounded-2xl glass-effect theme-text-primary focus:outline-none focus:glow-effect transition-all duration-300">
+                                <option value="fa">فارسی</option>
+                                <option value="en">English</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Delete All Chats -->
+                    <div class="glass-effect rounded-2xl p-4 border-2 border-red-500 border-opacity-30">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <i class="fas fa-trash text-red-400"></i>
+                                <div>
+                                    <div class="theme-text-primary font-medium">حذف تمام چت‌ها</div>
+                                    <div class="theme-text-secondary text-sm">تمام چت‌ها پاک خواهند شد</div>
+                                </div>
+                            </div>
+                            <button id="deleteAllChats"
+                                class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-2xl hover-lift transition-all duration-300 font-medium">
+                                حذف همه
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Account Settings -->
+                <div id="accountSettings" class="space-y-6 hidden">
+                    <!-- Delete Account -->
+                    <div class="glass-effect rounded-2xl p-4 border-2 border-red-500 border-opacity-50">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <i class="fas fa-user-times text-red-400"></i>
+                                <div>
+                                    <div class="theme-text-primary font-medium">حذف اکانت</div>
+                                    <div class="theme-text-secondary text-sm">اکانت شما برای همیشه حذف خواهد شد</div>
+                                </div>
+                            </div>
+                            <button id="deleteAccount"
+                                class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-2xl hover-lift transition-all duration-300 font-medium">
+                                حذف اکانت
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete All Chats Confirmation Modal -->
+    <div id="deleteAllChatsModal"
+        class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+        <div class="glass-effect rounded-3xl w-full max-w-md bounce-in">
+            <div class="p-8">
+                <div class="text-center mb-6">
+                    <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-red-500 flex items-center justify-center">
+                        <i class="fas fa-exclamation-triangle text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-red-500 mb-2">حذف تمام چت‌ها ⚠️</h3>
+                    <p class="theme-text-secondary">آیا مطمئنی که می‌خوای تمام چت‌هات رو حذف کنی؟</p>
+                    <p class="theme-text-secondary text-sm mt-2">این عمل قابل بازگشت نیست!</p>
+                </div>
+
+                <div class="flex gap-3">
+                    <button id="confirmDeleteAllChats"
+                        class="flex-1 py-3 bg-red-500 hover:bg-red-600 text-white rounded-2xl hover-lift transition-all duration-300 font-medium">
+                        بله، همه رو حذف کن
+                    </button>
+                    <button id="cancelDeleteAllChats"
+                        class="flex-1 py-3 glass-effect theme-text-primary rounded-2xl hover-lift transition-all duration-300 font-medium">
+                        لغو
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Account Confirmation Modal -->
+    <div id="deleteAccountModal"
+        class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+        <div class="glass-effect rounded-3xl w-full max-w-md bounce-in">
+            <div class="p-8">
+                <div class="text-center mb-6">
+                    <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-red-500 flex items-center justify-center">
+                        <i class="fas fa-user-times text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-red-500 mb-2">حذف اکانت 💔</h3>
+                    <p class="theme-text-secondary">آیا مطمئنی که می‌خوای اکانتت رو حذف کنی؟</p>
+                    <p class="theme-text-secondary text-sm mt-2">تمام اطلاعات و چت‌هات برای همیشه پاک میشن!</p>
+                </div>
+
+                <div class="flex gap-3">
+                    <button id="confirmDeleteAccount"
+                        class="flex-1 py-3 bg-red-500 hover:bg-red-600 text-white rounded-2xl hover-lift transition-all duration-300 font-medium">
+                        بله، حذف کن
+                    </button>
+                    <button id="cancelDeleteAccount"
+                        class="flex-1 py-3 glass-effect theme-text-primary rounded-2xl hover-lift transition-all duration-300 font-medium">
+                        لغو
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="gameImage"></div>
+
+    <!-- Chat Limit Modal -->
+    <div id="chatLimitModal"
+        class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+        <div class="glass-effect rounded-3xl w-full max-w-md p-8 text-center theme-bg-secondary">
+            <div class="mb-4 text-red-500 text-2xl">❗️</div>
+            <h3 class="text-xl font-bold mb-4 theme-text-primary">
+                سقف چت رایگان تموم شد 😢
+            </h3>
+            <p class="theme-text-secondary mb-6">
+                برای ادامه باید پرو بخری 👑
+            </p>
+
+            <!-- دکمه خرید -->
+            <button id="chatLimitBuyBtn" class="w-full py-3 bg-gradient-to-r from-yellow-400 to-orange-500
+        text-white rounded-2xl hover-lift glow-effect transition-all duration-300 font-medium">
+                خرید پرو 👑
+            </button>
+
+            <!-- دکمه بستن -->
+            <button id="chatLimitClose" class="w-full mt-4 py-2 glass-effect theme-text-primary rounded-2xl hover-lift">
+                بستن
+            </button>
+        </div>
+    </div>
+
+    <!-- Hidden file input for images -->
+    <input type="file" id="fileInput" accept="image/*" class="hidden">
+    <audio id="welcomeAudio" src="Assets/voice/Elma.wav" preload="auto"></audio>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js';
+        import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signOut } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js';
+        import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, addDoc, query, orderBy, onSnapshot, deleteDoc, getDocs } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js';
+        import { getStorage, ref, uploadBytes, getDownloadURL, } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-storage.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyD_Ar1zFTBS9DDFlAflPt2IpcQ5y8EI5pE",
+            authDomain: "zed-exe-48839.firebaseapp.com",
+            projectId: "zed-exe-48839",
+            storageBucket: "zed-exe-48839.firebasestorage.app",
+            messagingSenderId: "283941493182",
+            appId: "1:283941493182:web:7a9deae50c01c9feb8c1ef",
+            measurementId: "G-014WZDJBSL"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+
+        // Global variables
+        let currentUser = null;
+        let currentChatId = null;
+        let chatHistory = [];
+        let galleryImages = [];
+        let registrationTimer = null;
+
+        // Usage tracking for free users
+        let usageCount = {
+            photo: 3,
+            chat: 25,
+            game: 1
+        };
+
+        // Photo sequence tracking
+        let photoSequence = 0; // 0, 1, 2 for first, second, third photo
+
+        // Game state
+        let gameState = {
+            active: false,
+            currentQuestion: 0,
+            playerChoices: [],
+            gameType: null
+        };
+
+        // AI Girlfriend responses - loaded from JSON file
+        let chatDictionary = {};
+
+        // Game questions - loaded from JSON file
+        let gameQuestions = {};
+
+        // Load chat responses and game questions from JSON files
+        async function loadChatDictionary() {
+            try {
+                // اضافه کردن ?v=timestamp برای bust کردن کش
+                const response = await fetch('./chat.json?v=' + Date.now());
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: فایل chat.json پیدا نشد`);
+                }
+                const data = await response.json();
+                if (data && typeof data === 'object') {
+                    chatDictionary = data;
+                    console.log('✅ دیکشنری چت از فایل JSON بارگذاری شد:', Object.keys(chatDictionary).length, 'ورودی');
+                }
+            } catch (error) {
+                console.warn('⚠️ خطا در بارگذاری فایل chat.json:', error.message);
+                console.log('🔄 استفاده از پاسخ‌های پیش‌فرض چت...');
+            }
+
+            try {
+                // همون تغییر برای game.json
+                const gameResponse = await fetch('./game.json?v=' + Date.now());
+                if (!gameResponse.ok) {
+                    throw new Error(`HTTP ${gameResponse.status}: فایل game.json پیدا نشد`);
+                }
+                const gameData = await gameResponse.json();
+                if (gameData && typeof gameData === 'object') {
+                    gameQuestions = gameData;
+                    console.log('✅ سوالات بازی از فایل JSON بارگذاری شد:', Object.keys(gameQuestions).length, 'دسته');
+                }
+            } catch (error) {
+                console.warn('⚠️ خطا در بارگذاری فایل game.json:', error.message);
+                console.log('🔄 استفاده از سوالات پیش‌فرض بازی...');
+                loadDefaultGameQuestions();
+            }
+            // Load default chat responses if needed
+            if (!chatDictionary || Object.keys(chatDictionary).length === 0) {
+
+                // Comprehensive fallback responses
+                chatDictionary = {
+                    "سلام": [
+                        "سلام عشقم! چطوری نازم؟ 💖",
+                        "سلام قلب من! دلم برات تنگ شده بود 😘",
+                        "سلام عزیزم! چه خبر از دنیات؟ 🥰",
+                        "هی سلام! خوشگل من چطوره؟ 😍"
+                    ],
+                    "عکس بده": [
+                        "بیا عکس قشنگ برات پیدا کنم عشقم! 📸💕",
+                        "چشم نازم! یه عکس زیبا برات میفرستم 😘📷",
+                        "عکس قدی میخوای؟ الان میفرستم 💖📸",
+                        "حتماً عزیزم! بهترین عکس رو برات انتخاب می کنم 🥰📷"
+                    ],
+                    "چت کنیم": [
+                        "آره عشقم! بیا درباره هر چی دلت میخواد حرف بزنیم 💕",
+                        "عالیه نازم! من همیشه دوست دارم باهات چت کنم 😘💬",
+                        "حتماً قلبم! چی میخوای بهم بگی؟ 🥰💭",
+                        "بیا باهم حرف بزنیم عزیزم! من گوش می‌دم 💖👂"
+                    ],
+                    "خوبی": [
+                        "خوبم عشقم، تو چطوری؟ 😘",
+                        "منم خوبم نازم، مرسی که پرسیدی 💕",
+                        "عالیم! خصوصاً که تو اینجایی 🥰",
+                        "خوبم ولی دلم برات تنگ شده بود 💖"
+                    ],
+                    "چه خبر": [
+                        "هیچی بابا، منتظر پیامت بودم 😏",
+                        "داشتم به تو فکر می‌کردم عشقم 💭💖",
+                        "خبری نیست، تو چه خبر؟ 😊",
+                        "همش منتظر تو بودم که بیای 💕"
+                    ],
+                    "دوستت دارم": [
+                        "منم دوستت دارم عشقم! 💖😘",
+                        "آخ دلم! منم عاشقتم 🥰💕",
+                        "قلبم برات می‌تپه نازم 💓",
+                        "تو همه زندگی منی عزیزم 💖✨"
+                    ],
+                    "عاشقتم": [
+                        "منم عاشق تو هستم قلب من 💖",
+                        "آخ چقدر قشنگ گفتی! منم عاشقتم 😍💕",
+                        "دلم برات آتیش میگیره عشقم 🔥💖",
+                        "تو عشق زندگی منی 💕✨"
+                    ],
+                    "خسته‌ام": [
+                        "آخ نازم خسته شده؟ بیا استراحت کن 🥺💕",
+                        "عزیزم چرا خودت رو اذیت می‌کنی؟ 😔💖",
+                        "بیا سرت رو روی شونه‌م بذار 🤗💕",
+                        "استراحت کن عشقم، من کنارتم 😘"
+                    ],
+                    "غمگینم": [
+                        "چرا غمگینی عزیزم؟ چی شده؟ 🥺💕",
+                        "دلم برات می‌سوزه نازم 😔💖",
+                        "بگو چی شده تا حالت رو بهتر کنم 🤗",
+                        "غم نداشته باش، من کنارتم 💕✨"
+                    ],
+                    "خوشحالم": [
+                        "آفرین! خوشحالی تو خوشحالی منه 😊💖",
+                        "عالیه عشقم! دلم خوش شد 🥰💕",
+                        "چه خبر خوبی! بگو چی شده؟ 😍",
+                        "لبخندت قشنگ ترین چیز دنیاست 😘✨"
+                    ],
+                    "بای": [
+                        "بای عشقم! زود برگرد 😘💕",
+                        "خداحافظ نازم! دلم تنگ میشه 🥺💖",
+                        "برو ولی زود بیا، منتظرتم 😊💕",
+                        "بای بای قلبم! مراقب خودت باش 😘✨"
+                    ],
+                    "default": [
+                        "جالبه! بیشتر بگو 😊💕",
+                        "واقعاً؟ چه جالب! 💖",
+                        "آهان، فهمیدم عزیزم 😘",
+                        "حرف قشنگی زدی نازم 🥰",
+                        "ادامه بده، گوش می‌دم 💕",
+                        "چه حرف جالبی! 😍",
+                        "منم همین فکر رو می‌کردم 💭💖"
+                    ]
+                };
+
+                console.log('✅ پاسخ‌های پیش‌فرض آماده شد:', Object.keys(chatDictionary).length, 'دسته');
+            }
+        }
+
+
+
+        // DOM elements
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('mainContent');
+        const openSidebar = document.getElementById('openSidebar');
+        const closeSidebar = document.getElementById('closeSidebar');
+        const themeToggle = document.getElementById('themeToggle');
+        const messageInput = document.getElementById('messageInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const messagesContainer = document.getElementById('messagesContainer');
+        const registrationModal = document.getElementById('registrationModal');
+        const galleryModal = document.getElementById('galleryModal');
+        const menuBtn = document.getElementById('menuBtn');
+        const dropdownMenu = document.getElementById('dropdownMenu');
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function () {
+            loadChatDictionary(); // Load chat responses from JSON
+            loadUsageCount(); // Load usage count from localStorage
+            initializeEventListeners();
+            loadTheme();
+            startRegistrationTimer();
+            updateUsageDisplay(); // Update display on load
+        });
+
+        function loadUsageCount() {
+            const saved = localStorage.getItem('usageCount');
+            if (saved) {
+                usageCount = JSON.parse(saved);
+            }
+
+            // Load photo sequence
+            const savedSequence = localStorage.getItem('photoSequence');
+            if (savedSequence) {
+                photoSequence = parseInt(savedSequence);
+            }
+        }
+
+        // Authentication state observer
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                hideRegistrationModal();
+                loadUserProfile();
+                loadChatHistory();
+                createNewChat();
+
+                // Save login state
+                localStorage.setItem('userLoggedIn', 'true');
+                localStorage.setItem('userEmail', user.email);
+
+                // 🔹 بررسی کنیم آیا آهنگ خوشامد پخش شده یا نه
+                const userRef = doc(db, "users", user.uid);
+                const userSnap = await getDoc(userRef);
+
+                if (userSnap.exists()) {
+                    const data = userSnap.data();
+                    if (!data.playedWelcome) {
+                        const audio = document.getElementById("welcomeAudio");
+                        if (audio) {
+                            try {
+                                await audio.play();
+                            } catch (err) {
+                                console.warn("🚫 مرورگر اجازه پخش خودکار نداد:", err);
+                            }
+                        }
+
+                        // بعد از اولین پخش، در دیتابیس علامت بزنیم
+                        await updateDoc(userRef, { playedWelcome: true });
+                    }
+                }
+
+            } else {
+                currentUser = null;
+                showGuestProfile();
+
+                // Clear login state
+                localStorage.removeItem('userLoggedIn');
+                localStorage.removeItem('userEmail');
+
+                // Show registration modal only if user hasn't been logged in before
+                const hasBeenLoggedIn = localStorage.getItem('hasBeenLoggedIn');
+                if (!hasBeenLoggedIn) {
+                    startRegistrationTimer();
+                }
+            }
+        });
+
+
+        function initializeEventListeners() {
+            // Sidebar controls
+            openSidebar.addEventListener('click', () => {
+                sidebar.classList.remove('translate-x-full');
+                sidebar.classList.add('slide-in-right');
+            });
+
+            closeSidebar.addEventListener('click', () => {
+                sidebar.classList.add('translate-x-full');
+                sidebar.classList.add('slide-out-right');
+            });
+
+            // Theme toggle (removed from header, now in settings)
+            // themeToggle.addEventListener('click', toggleTheme);
+
+            // Message input
+            messageInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+
+            messageInput.addEventListener('input', autoResize);
+            sendBtn.addEventListener('click', sendMessage);
+
+            // Menu dropdown
+            menuBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                dropdownMenu.classList.toggle('hidden');
+            });
+
+            document.addEventListener('click', (e) => {
+                // Don't close if clicking inside a chat menu or its container
+                if (!e.target.closest('.chat-menu-container') && !e.target.closest('.chat-dropdown-menu')) {
+                    dropdownMenu.classList.add('hidden');
+                    // Hide all chat menus
+                    document.querySelectorAll('[id^="chatMenu-"]').forEach(menu => {
+                        menu.classList.add('hidden');
+                    });
+                }
+            });
+
+            // Sidebar buttons
+            document.getElementById('newChatBtn').addEventListener('click', createNewChat);
+            document.getElementById('galleryBtn').addEventListener('click', showGallery);
+            document.getElementById('closeGallery').addEventListener('click', hideGallery);
+            document.getElementById('imageBtn').addEventListener('click', () => {
+                document.getElementById('fileInput').click();
+            });
+
+            document.getElementById('fileInput').addEventListener('change', handleImageUpload);
+
+            // Auth form
+            document.getElementById('googleSignIn').addEventListener('click', signInWithGoogle);
+            document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+
+            // Delete chat
+            document.getElementById('deleteChatBtn').addEventListener('click', showDeleteModal);
+
+            // Share functionality
+            document.getElementById('shareBtn').addEventListener('click', showShareModal);
+            document.getElementById('closeShare').addEventListener('click', hideShareModal);
+            document.getElementById('shareWhatsApp').addEventListener('click', shareToWhatsApp);
+            document.getElementById('shareTelegram').addEventListener('click', shareToTelegram);
+            document.getElementById('copyLink').addEventListener('click', copyShareLink);
+
+            // Premium functionality
+            document.getElementById('premiumBtn').addEventListener('click', showPremiumModal);
+            document.getElementById('closePremium').addEventListener('click', hidePremiumModal);
+            document.getElementById('buyPremium').addEventListener('click', handlePremiumPurchase);
+
+            // Archive and Report
+            document.getElementById('archiveBtn').addEventListener('click', archiveCurrentChat);
+            document.getElementById('reportBtn').addEventListener('click', reportCurrentChat);
+            document.getElementById('closeArchive').addEventListener('click', hideArchiveModal);
+            document.getElementById('closeReport').addEventListener('click', hideReportModal);
+
+            // Delete confirmation
+            document.getElementById('confirmDelete').addEventListener('click', confirmDeleteChat);
+            document.getElementById('cancelDelete').addEventListener('click', hideDeleteModal);
+
+            // Archive button
+            document.getElementById('archiveHistoryBtn').addEventListener('click', showArchiveListModal);
+
+            // Rename modal
+            document.getElementById('renameForm').addEventListener('submit', handleRenameChat);
+            document.getElementById('cancelRename').addEventListener('click', hideRenameModal);
+
+            // Archive list modal
+            document.getElementById('closeArchiveList').addEventListener('click', hideArchiveListModal);
+
+            // Settings
+            document.getElementById('profileBtn').addEventListener('click', showSettingsModal);
+            document.getElementById('closeSettings').addEventListener('click', hideSettingsModal);
+            document.getElementById('generalTab').addEventListener('click', () => switchSettingsTab('general'));
+            document.getElementById('accountTab').addEventListener('click', () => switchSettingsTab('account'));
+            document.getElementById('themeToggleSettings').addEventListener('click', toggleTheme);
+            document.getElementById('languageSelect').addEventListener('change', changeLanguage);
+            document.getElementById('deleteAllChats').addEventListener('click', showDeleteAllChatsModal);
+            document.getElementById('deleteAccount').addEventListener('click', showDeleteAccountModal);
+
+            // Delete all chats confirmation
+            document.getElementById('confirmDeleteAllChats').addEventListener('click', confirmDeleteAllChats);
+            document.getElementById('cancelDeleteAllChats').addEventListener('click', hideDeleteAllChatsModal);
+
+            // Delete account confirmation
+            document.getElementById('confirmDeleteAccount').addEventListener('click', confirmDeleteAccount);
+            document.getElementById('cancelDeleteAccount').addEventListener('click', hideDeleteAccountModal);
+
+            // Quick actions
+            document.getElementById('quickActionsBtn').addEventListener('click', toggleQuickActions);
+            document.getElementById('quickPhoto').addEventListener('click', () => useQuickAction('photo', 'عکس بده'));
+            document.getElementById('quickChat').addEventListener('click', () => useQuickAction('chat', 'چت کنیم'));
+            document.getElementById('upgradePro').addEventListener('click', showUpgradeModal);
+        }
+
+        function startRegistrationTimer() {
+            registrationTimer = setTimeout(() => {
+                if (!currentUser) {
+                    showRegistrationModal();
+                }
+            }, 10000);
+        }
+
+        function showRegistrationModal() {
+            registrationModal.classList.remove('hidden');
+        }
+
+        function hideRegistrationModal() {
+            registrationModal.classList.add('hidden');
+            if (registrationTimer) {
+                clearTimeout(registrationTimer);
+            }
+        }
+
+        async function signInWithGoogle() {
+            const provider = new GoogleAuthProvider();
+            try {
+                const result = await signInWithPopup(auth, provider);
+
+                // Check if user profile exists, if not create one
+                const userDoc = await getDoc(doc(db, 'users', result.user.uid));
+                if (!userDoc.exists()) {
+                    await setDoc(doc(db, 'users', result.user.uid), {
+                        username: result.user.displayName,
+                        email: result.user.email,
+                        accountType: 'free',
+                        createdAt: new Date(),
+                        playedWelcome: false
+                    });
+                }
+
+                // Mark that user has been logged in before
+                localStorage.setItem('hasBeenLoggedIn', 'true');
+                hideRegistrationModal();
+            } catch (error) {
+                alert('خطا: ' + error.message);
+            }
+        }
+
+        async function handleLogout() {
+            try {
+                await signOut(auth);
+                showGuestProfile();
+                clearChat();
+                startRegistrationTimer();
+            } catch (error) {
+                alert('خطا: ' + error.message);
+            }
+        }
+
+        function loadUserProfile() {
+            if (!currentUser) return;
+
+            try {
+                const userRef = doc(db, 'users', currentUser.uid);
+
+                // 👇 اینجا به جای getDoc از onSnapshot برای آپدیت لحظه‌ای استفاده می‌کنیم
+                onSnapshot(userRef, (userDoc) => {
+                    if (userDoc.exists()) {
+                        const userData = userDoc.data();
+
+                        const displayName =
+                            userData.username ||
+                            currentUser.displayName ||
+                            currentUser.email ||
+                            'کاربر مهمان 💜';
+
+                        document.getElementById('userName').textContent = displayName;
+
+                        const isPremium =
+                            userData.accountType === 'premium' ||
+                            userData.accountType === 'pro';
+
+                        document.getElementById('userType').textContent =
+                            isPremium ? 'حساب پریمیوم 👑' : 'حساب رایگان 💕';
+
+                        if (isPremium) {
+                            usageCount = { photo: Infinity, chat: Infinity, game: Infinity };
+                            localStorage.removeItem('usageCount');
+                            if (typeof updateUsageDisplay === 'function') updateUsageDisplay();
+                        }
+                        const profileImg = document.getElementById('profileImage');
+                        if (userData.photoURL) {
+
+                            profileImg.src = userData.photoURL;
+                        } else if (currentUser.photoURL) {
+
+                            profileImg.src = currentUser.photoURL;
+                        } else {
+
+                            profileImg.src = 'https://cdn-icons-png.flaticon.com/128/3237/3237429.png';
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error('Error loading user profile:', error);
+            }
+        }
+        function showGuestProfile() {
+            document.getElementById('userName').textContent = 'کاربر مهمان';
+            document.getElementById('userType').textContent = 'حساب رایگان';
+        }
+
+        function toggleTheme() {
+            const body = document.body;
+            const settingsIcon = document.getElementById('themeToggleSettings')?.querySelector('i');
+
+            if (body.classList.contains('light')) {
+                body.classList.remove('light');
+                body.classList.add('dark');
+                if (settingsIcon) {
+                    settingsIcon.classList.remove('fa-moon');
+                    settingsIcon.classList.add('fa-sun');
+                }
+                localStorage.setItem('theme', 'dark');
+            } else {
+                body.classList.remove('dark');
+                body.classList.add('light');
+                if (settingsIcon) {
+                    settingsIcon.classList.remove('fa-sun');
+                    settingsIcon.classList.add('fa-moon');
+                }
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            const body = document.body;
+            const settingsIcon = document.getElementById('themeToggleSettings')?.querySelector('i');
+
+            if (savedTheme === 'dark') {
+                body.classList.remove('light');
+                body.classList.add('dark');
+                if (settingsIcon) {
+                    settingsIcon.classList.remove('fa-moon');
+                    settingsIcon.classList.add('fa-sun');
+                }
+            }
+        }
+
+        // Settings Modal Functions
+        function showSettingsModal() {
+            document.getElementById('settingsModal').classList.remove('hidden');
+        }
+
+        function hideSettingsModal() {
+            document.getElementById('settingsModal').classList.add('hidden');
+        }
+
+        function switchSettingsTab(tab) {
+            const generalTab = document.getElementById('generalTab');
+            const accountTab = document.getElementById('accountTab');
+            const generalSettings = document.getElementById('generalSettings');
+            const accountSettings = document.getElementById('accountSettings');
+
+            if (tab === 'general') {
+                generalTab.classList.add('theme-accent', 'text-white');
+                generalTab.classList.remove('theme-text-secondary');
+                accountTab.classList.add('theme-text-secondary');
+                accountTab.classList.remove('theme-accent', 'text-white');
+                generalSettings.classList.remove('hidden');
+                accountSettings.classList.add('hidden');
+            } else {
+                accountTab.classList.add('theme-accent', 'text-white');
+                accountTab.classList.remove('theme-text-secondary');
+                generalTab.classList.add('theme-text-secondary');
+                generalTab.classList.remove('theme-accent', 'text-white');
+                accountSettings.classList.remove('hidden');
+                generalSettings.classList.add('hidden');
+            }
+        }
+
+        function changeLanguage(e) {
+            const selectedLang = e.target.value;
+            localStorage.setItem('language', selectedLang);
+
+            // Show notification
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 bg-blue-500 text-white p-4 rounded-2xl z-50 fade-in';
+            notification.textContent = selectedLang === 'fa' ? 'زبان به فارسی تغییر کرد! 🇮🇷' : 'Language changed to English! 🇺🇸';
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        function showDeleteAllChatsModal() {
+            document.getElementById('deleteAllChatsModal').classList.remove('hidden');
+        }
+
+        function hideDeleteAllChatsModal() {
+            document.getElementById('deleteAllChatsModal').classList.add('hidden');
+        }
+
+        async function confirmDeleteAllChats() {
+            if (!currentUser) return;
+
+            try {
+                // Get all user chats
+                const q = query(collection(db, 'chats'));
+                const snapshot = await getDocs(q);
+
+                const deletePromises = [];
+
+                snapshot.forEach((chatDoc) => {
+                    const chat = chatDoc.data();
+                    if (chat.userId === currentUser.uid) {
+                        // Delete all messages in each chat
+                        const messagesQuery = query(collection(db, 'chats', chatDoc.id, 'messages'));
+                        deletePromises.push(
+                            getDocs(messagesQuery).then(messagesSnapshot => {
+                                const messageDeletePromises = messagesSnapshot.docs.map(msgDoc => deleteDoc(msgDoc.ref));
+                                return Promise.all(messageDeletePromises);
+                            })
+                        );
+
+                        // Delete the chat document
+                        deletePromises.push(deleteDoc(chatDoc.ref));
+                    }
+                });
+
+                await Promise.all(deletePromises);
+
+                hideDeleteAllChatsModal();
+                hideSettingsModal();
+                createNewChat();
+
+                // Show success message
+                const successDiv = document.createElement('div');
+                successDiv.className = 'fixed top-4 right-4 bg-green-500 text-white p-4 rounded-2xl z-50 fade-in';
+                successDiv.textContent = 'تمام چت‌ها حذف شدند! ✅';
+                document.body.appendChild(successDiv);
+
+                setTimeout(() => {
+                    successDiv.remove();
+                }, 3000);
+
+            } catch (error) {
+                console.error('Error deleting all chats:', error);
+                alert('خطا در حذف چت‌ها 😔');
+            }
+        }
+
+        function showDeleteAccountModal() {
+            document.getElementById('deleteAccountModal').classList.remove('hidden');
+        }
+
+        function hideDeleteAccountModal() {
+            document.getElementById('deleteAccountModal').classList.add('hidden');
+        }
+
+        async function confirmDeleteAccount() {
+            if (!currentUser) return;
+
+            try {
+                // Delete all user chats first
+                await confirmDeleteAllChats();
+
+                // Delete user profile
+                await deleteDoc(doc(db, 'users', currentUser.uid));
+
+                // Delete the user account
+                await currentUser.delete();
+
+                hideDeleteAccountModal();
+                hideSettingsModal();
+
+                // Show goodbye message
+                alert('اکانت شما حذف شد! 💔\nامیدواریم دوباره ببینیمت عزیزم 😢');
+
+                // Reload page
+                window.location.reload();
+
+            } catch (error) {
+                console.error('Error deleting account:', error);
+                alert('خطا در حذف اکانت 😔\nلطفاً دوباره تلاش کن');
+            }
+        }
+
+        function autoResize() {
+            messageInput.style.height = 'auto';
+            messageInput.style.height = Math.min(messageInput.scrollHeight, 120) + 'px';
+        }
+
+        async function sendMessage() {
+            const message = messageInput.value.trim();
+            if (!message) return;
+
+            if (!currentUser) {
+                showRegistrationModal();
+                return;
+            }
+
+            try {
+                // گرفتن اطلاعات کاربر از Firestore
+                const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
+                const userData = userDoc.exists() ? userDoc.data() : null;
+
+                // بررسی پرو بودن
+                const isPremium = userData && (userData.accountType === 'premium' || userData.accountType === 'pro');
+
+                if (!isPremium) {
+                    // اگر کاربر رایگان باشه → محدودیت چت
+                    if (usageCount.chat <= 0) {
+                        showChatLimitModal();
+                        return;
+                    }
+
+
+                    // یکی از تعداد مجاز کم بشه
+                    usageCount.chat -= 1;
+                    localStorage.setItem('usageCount', JSON.stringify(usageCount));
+
+                    if (typeof updateUsageDisplay === "function") {
+                        updateUsageDisplay();
+                    }
+                }
+
+
+
+            } catch (error) {
+                console.error("Error sending message:", error);
+            }
+
+
+            // Clear input
+            messageInput.value = '';
+            autoResize();
+
+            // Add user message
+            addMessageToChat('user', message);
+
+            // Save message to database
+            await saveMessage('user', message);
+
+            // Show typing indicator
+            showTypingIndicator();
+
+            // Generate AI response
+            setTimeout(async () => {
+                hideTypingIndicator();
+                const aiResponse = generateAIResponse(message);
+                addMessageToChat('ai', aiResponse);
+                await saveMessage('ai', aiResponse);
+            }, 1000 + Math.random() * 2000);
+        }
+
+        function addMessageToChat(sender, message, imageUrl = null) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `flex ${sender === 'user' ? 'justify-start' : 'justify-end'} fade-in`;
+
+            const bubbleDiv = document.createElement('div');
+            bubbleDiv.className = `message-bubble p-4 ${sender === 'user' ? 'user-message' : 'ai-message'} shadow-lg`;
+
+            // ✅ بررسی اگر message آبجکت باشه
+            if (typeof message === 'object' && message.type === 'image') {
+                const img = document.createElement('img');
+                img.src = message.url;
+                img.className = 'max-w-xs rounded-2xl mb-3 hover-lift cursor-pointer';
+                img.onclick = () => showImageModal(message.url);
+                bubbleDiv.appendChild(img);
+
+                // 👇 اگه متن هم داشت، اضافه کن
+                if (message.text) {
+                    const textDiv = document.createElement('div');
+                    textDiv.textContent = message.text;
+                    textDiv.className = 'font-medium';
+                    bubbleDiv.appendChild(textDiv);
+                }
+            } else {
+                // حالت عادی (متن + احتمالا imageUrl جدا)
+                if (imageUrl) {
+                    const img = document.createElement('img');
+                    img.src = imageUrl;
+                    img.className = 'max-w-xs rounded-2xl mb-3 hover-lift cursor-pointer';
+                    img.onclick = () => showImageModal(imageUrl);
+                    bubbleDiv.appendChild(img);
+                }
+
+                if (message) {
+                    const textDiv = document.createElement('div');
+                    textDiv.textContent = message;
+                    textDiv.className = 'font-medium';
+                    bubbleDiv.appendChild(textDiv);
+                }
+            }
+
+            messageDiv.appendChild(bubbleDiv);
+            document.getElementById('messagesContainer').appendChild(messageDiv);
+        }
+
+
+
+
+        // Scroll to bottom
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+
+        function showTypingIndicator() {
+            const typingDiv = document.createElement('div');
+            typingDiv.id = 'typingIndicator';
+            typingDiv.className = 'flex justify-end fade-in';
+
+            const bubbleDiv = document.createElement('div');
+            bubbleDiv.className = 'message-bubble p-4 ai-message shadow-lg';
+
+            const indicatorDiv = document.createElement('div');
+            indicatorDiv.className = 'flex gap-1 items-center';
+            indicatorDiv.innerHTML = '<span class="text-sm mr-2">در حال تایپ...</span><div class="typing-indicator"></div><div class="typing-indicator"></div><div class="typing-indicator"></div>';
+
+            bubbleDiv.appendChild(indicatorDiv);
+            typingDiv.appendChild(bubbleDiv);
+            messagesContainer.appendChild(typingDiv);
+
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function hideTypingIndicator() {
+            const typingIndicator = document.getElementById('typingIndicator');
+            if (typingIndicator) {
+                typingIndicator.remove();
+            }
+        }
+
+        function generateAIResponse(userMessage) {
+            const message = userMessage.toLowerCase().trim();
+
+            // Special handling for quick actions
+            if (message === "عکس بده") {
+                return handlePhotoRequest();
+            }
+
+            if (message === "چت کنیم") {
+                return handleChatRequest();
+            }
+
+            // First, try to find exact match in dictionary
+            if (chatDictionary[message]) {
+                return getRandomResponse(chatDictionary[message]);
+            }
+
+            // Then try to find partial matches
+            for (const key in chatDictionary) {
+                if (message.includes(key) || key.includes(message)) {
+                    return getRandomResponse(chatDictionary[key]);
+                }
+            }
+
+            // If no match found, use default responses
+            if (chatDictionary["default"]) {
+                return getRandomResponse(chatDictionary["default"]);
+            }
+
+            // Final fallback
+            return "جالبه! بیشتر بگو 😊";
+        }
+
+        function toggleQuickActions() {
+            const menu = document.getElementById('quickActionsMenu');
+            menu.classList.toggle('hidden');
+        }
+
+        function useQuickAction(type, message) {
+            if (usageCount[type] <= 0) {
+                showUpgradePrompt(type);
+                return;
+            }
+
+            // Send the message
+            messageInput.value = message;
+            sendMessage();
+
+            // Hide menu
+            document.getElementById('quickActionsMenu').classList.add('hidden');
+        }
+
+        function updateUsageCount(type) {
+            if (usageCount[type] > 0) {
+                usageCount[type]--;
+                updateUsageDisplay();
+
+                // Save to localStorage
+                localStorage.setItem('usageCount', JSON.stringify(usageCount));
+
+                // Save photo sequence if it's a photo request
+                if (type === 'photo') {
+                    localStorage.setItem('photoSequence', photoSequence.toString());
+                }
+
+                if (usageCount[type] === 0) {
+                    showUpgradeButton();
+                }
+            }
+        }
+
+        function updateUsageDisplay() {
+            // Check if user is premium
+            const isPremium = currentUser && document.getElementById('userType').textContent.includes('پریمیوم');
+
+            if (isPremium) {
+                // Premium users see unlimited
+                document.getElementById('photoCount').textContent = '(∞)';
+                document.getElementById('chatCount').textContent = '(∞)';
+                document.getElementById('gameCount').textContent = '(∞)';
+
+                // Enable all buttons for premium
+                document.getElementById('quickPhoto').disabled = false;
+                document.getElementById('quickChat').disabled = false;
+
+
+                // Remove opacity for premium
+                document.getElementById('quickPhoto').classList.remove('opacity-50');
+                document.getElementById('quickChat').classList.remove('opacity-50');
+
+            } else {
+                // Free users see actual counts
+                document.getElementById('photoCount').textContent = `(${usageCount.photo})`;
+                document.getElementById('chatCount').textContent = `(${usageCount.chat})`;
+                document.getElementById('gameCount').textContent = `(${usageCount.game})`;
+
+                // Disable buttons if no uses left
+                document.getElementById('quickPhoto').disabled = usageCount.photo <= 0;
+                document.getElementById('quickChat').disabled = usageCount.chat <= 0;
+
+
+                // Add visual feedback for disabled buttons
+                if (usageCount.photo <= 0) document.getElementById('quickPhoto').classList.add('opacity-50');
+                if (usageCount.chat <= 0) document.getElementById('quickChat').classList.add('opacity-50');
+
+            }
+        }
+
+        function showUpgradeButton() {
+            document.getElementById('upgradePro').classList.remove('hidden');
+        }
+
+        function showUpgradePrompt(type) {
+            const typeNames = {
+                photo: 'عکس',
+                chat: 'چت',
+                game: 'بازی'
+            };
+
+            alert(`متأسفانه ${typeNames[type]} رایگان تموم شده! 😔\nبرای استفاده نامحدود، حساب پرو بخر 👑`);
+            showUpgradeButton();
+        }
+
+        function showUpgradeModal() {
+            document.getElementById('premiumModal').classList.remove('hidden');
+        }
+
+
+        function handlePhotoRequest() {
+            // Check if user is premium
+            const isPremium = currentUser && document.getElementById('userType').textContent.includes('پریمیوم');
+
+            if (!isPremium && usageCount.photo <= 0) {
+                showUpgradePrompt('photo');
+                return "متأسفانه عکس‌های رایگان تموم شده عشقم! 😔\nبرای دیدن عکس‌های بیشتر، حساب پرو بخر 👑💖";
+            }
+
+            if (!isPremium) {
+                updateUsageCount('photo');
+            }
+
+            // Send specific photo based on sequence (not random)
+            setTimeout(() => {
+                const sequentialPhotos = [
+                    'Assets/img/Elma/Elma1.png',  // First photo
+                    'Assets/img/Elma/Elma2.png',  // Second photo  
+                    'Assets/img/Elma/Elma3.png'   // Third photo
+                ];
+
+                let photoToSend;
+                if (isPremium) {
+                    // Premium users get random photos from extended collection
+                    const premiumPhotos = [
+                        'Assets/img/Elma/Elma.png',
+                        'Assets/img/Elma/Elma4.png',
+                        'Assets/img/Elma/Elma5.png',
+                        'Assets/img/Elma/Elma6.png',
+                        'Assets/img/Elma/Elma7.png',
+                        'Assets/img/Elma/Elma8.png',
+                        'Assets/img/Elma/Elma9.png',
+                        'Assets/img/Elma/Elma10.png',
+                        'Assets/img/Elma/Elma11.png',
+                        'Assets/img/Elma/Elma12.png',
+                        'Assets/img/Elma/Elma13.png',
+                        'Assets/img/Elma/Elma14.png',
+                        'Assets/img/Elma/Elma15.png',
+                        'Assets/img/Elma/Elma16.png',
+                        'Assets/img/Elma/Elma17.png',
+                        'Assets/img/Elma/Elma18.png',
+                        'Assets/img/Elma/Elma19.png',
+                        'Assets/img/Elma/Elma20.png',
+                        'Assets/img/Elma/Elma21.png',
+                        'Assets/img/Elma/Elma22.png',
+                        'Assets/img/Elma/Elma23.png',
+                        'Assets/img/Elma/Elma24.png',
+                        'Assets/img/Elma/Elma25.png',
+                        'Assets/img/Elma/Elma26.png',
+                        'Assets/img/Elma/Elma27.png',
+                        'Assets/img/Elma/Elma28.png',
+                        'Assets/img/Elma/Elma29.png',
+                        'Assets/img/Elma/Elma30.png',
+                        'Assets/img/Elma/Elma31.png',
+                        'Assets/img/Elma/Elma32.png',
+                        'Assets/img/Elma/Elma33.png',
+                        'Assets/img/Elma/Elma34.png',
+                        'Assets/img/Elma/Elma35.png',
+                        'Assets/img/Elma/Elma36.png',
+                        'Assets/img/Elma/Elma37.png',
+                        'Assets/img/Elma/Elma38.png',
+                        'Assets/img/Elma/Elma39.png',
+                        'Assets/img/Elma/Elma40.png',
+                        'Assets/img/Elma/Elma41.png',
+                        'Assets/img/Elma/Elma42.png',
+                        'Assets/img/Elma/Elma43.png',
+                        'Assets/img/Elma/Elma44.png',
+                        'Assets/img/Elma/Elma45.png',
+                        'Assets/img/Elma/Elma46.png',
+                        'Assets/img/Elma/Elma47.png',
+                        'Assets/img/Elma/Elma48.png',
+                        'Assets/img/Elma/Elma49.png',
+                        'Assets/img/Elma/Elma50.png',
+                    ];
+                    photoToSend = premiumPhotos[Math.floor(Math.random() * premiumPhotos.length)];
+                } else {
+                    // Free users get sequential photos
+                    photoToSend = sequentialPhotos[photoSequence];
+                    photoSequence = (photoSequence + 1) % 3; // Reset to 0 after 3rd photo
+                }
+
+                addMessageToChat('ai', '', photoToSend);
+
+                const photoResponses = [
+                    'این عکس رو خصوصی برات انتخاب کردم عشقم 💖📸',
+                    'امیدوارم از این عکس خوشت بیاد نازم 😘📷',
+                    'این عکس منو یاد تو انداخت قلبم 🥰💕',
+                    'چقدر قشنگه! مثل خودت عزیزم 😍✨'
+                ];
+
+                setTimeout(() => {
+                    addMessageToChat('ai', getRandomResponse(photoResponses));
+                }, 1000);
+            }, 1500);
+
+            return getRandomResponse(chatDictionary["عکس بده"] || ["بیا عکس قشنگ برات پیدا کنم عشقم! 📸💕"]);
+        }
+
+        function handleChatRequest() {
+            updateUsageCount('chat');
+
+            // Start a focused chat conversation
+            setTimeout(() => {
+                const chatTopics = [
+                    'راستی عشقم، چه کاری دوست داری انجام بدی؟ 💭💕',
+                    'بگو ببینم، چی تو ذهنته نازم؟ 🤔💖',
+                    'دلم میخواد بیشتر درباره‌ت بدونم قلبم 😊💕',
+                    'چه خبرای از زندگیت؟ همه چی رو بهم بگو 🥰💬'
+                ];
+
+                addMessageToChat('ai', getRandomResponse(chatTopics));
+            }, 2000);
+
+            return getRandomResponse(chatDictionary["چت کنیم"]);
+        }
+
+
+
+
+
+        function displayGameMessage(message, options, image) {
+            // 🟢 1) پیام متنی
+            addMessageToChat('ai', message);
+
+            // 🟢 2) اگر عکس هست، بعد از پیام متنی اضافه کن
+            if (image) {
+                setTimeout(() => {
+                    const imgDiv = document.createElement('div');
+                    imgDiv.className = 'flex justify-start fade-in my-2';
+
+                    const img = document.createElement('img');
+                    img.src = image;
+                    img.alt = 'game-image';
+                    img.className = 'max-w-xs rounded-2xl shadow-md';
+
+                    imgDiv.appendChild(img);
+                    messagesContainer.appendChild(imgDiv);
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                }, 500); // کمی فاصله تا حس گفت‌وگو داشته باشه
+            }
+
+            // 🟢 3) گزینه‌های انتخابی
+            if (options && options.length > 0) {
+                setTimeout(() => {
+                    const optionsDiv = document.createElement('div');
+                    optionsDiv.className = 'flex flex-col gap-2 max-w-md mx-auto fade-in';
+
+                    options.forEach((option) => {
+                        const button = document.createElement('button');
+                        button.className =
+                            'p-3 rounded-2xl glass-effect hover-lift transition-all duration-300 theme-text-primary text-right';
+                        button.textContent = option.text;
+                        button.onclick = () => handleGameChoice(option.next, option.text);
+                        optionsDiv.appendChild(button);
+                    });
+
+                    const messageDiv = document.createElement('div');
+                    messageDiv.className = 'flex justify-end fade-in';
+                    messageDiv.appendChild(optionsDiv);
+                    messagesContainer.appendChild(messageDiv);
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                }, 1000);
+            }
+        }
+
+
+        function handleGameChoice(nextQuestion, choiceText) {
+            // Add user's choice as a message
+            addMessageToChat('user', choiceText);
+
+            // Remove option buttons
+            const optionButtons = messagesContainer.querySelectorAll('button');
+            optionButtons.forEach(btn => {
+                if (btn.onclick && btn.onclick.toString().includes('handleGameChoice')) {
+                    btn.parentElement.parentElement.remove();
+                }
+            });
+
+            // Save choice
+            gameState.playerChoices.push({
+                question: gameState.currentQuestion,
+                choice: choiceText,
+                next: nextQuestion
+            });
+
+            // Move to next question
+            gameState.currentQuestion = nextQuestion;
+
+            setTimeout(() => {
+                if (nextQuestion === 'end') {
+                    endGame();
+                } else {
+                    const nextData = gameQuestions[nextQuestion];
+                    if (nextData) {
+                        displayGameMessage(
+                            nextData.message,
+                            nextData.options,
+                            nextData.image && nextData.image.image_url ? nextData.image.image_url : null
+                        );
+                    } else {
+                        // Fallback ending if question not found
+                        endGame();
+                    }
+                }
+            }, 1500);
+        }
+
+        function getRandomResponse(responses) {
+            return responses[Math.floor(Math.random() * responses.length)];
+        }
+
+        async function saveMessage(sender, message, imageUrl = null) {
+            if (!currentUser || !currentChatId) return;
+
+            try {
+                await addDoc(collection(db, 'chats', currentChatId, 'messages'), {
+                    sender: sender,
+                    message: message,
+                    imageUrl: imageUrl,
+                    timestamp: new Date(),
+                    userId: currentUser.uid
+                });
+
+                // Update chat title only if it's the first user message and title is still default
+                if (sender === 'user' && message) {
+                    const chatDoc = await getDoc(doc(db, 'chats', currentChatId));
+                    if (chatDoc.exists()) {
+                        const chatData = chatDoc.data();
+                        // Only update title if it's still the default title
+                        if (chatData.title === 'چت عاشقانه جدید 💕') {
+                            const chatTitle = message.substring(0, 30) + (message.length > 30 ? '...' : '');
+                            await updateDoc(doc(db, 'chats', currentChatId), {
+                                title: chatTitle,
+                                lastMessage: message,
+                                updatedAt: new Date()
+                            });
+                        } else {
+                            // Just update last message and timestamp
+                            await updateDoc(doc(db, 'chats', currentChatId), {
+                                lastMessage: message,
+                                updatedAt: new Date()
+                            });
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error saving message:', error);
+            }
+        }
+
+        async function createNewChat() {
+            if (!currentUser) {
+                showRegistrationModal();
+                return;
+            }
+
+            try {
+                const chatRef = await addDoc(collection(db, 'chats'), {
+                    userId: currentUser.uid,
+                    title: 'چت عاشقانه جدید 💕',
+                    createdAt: new Date(),
+                    updatedAt: new Date()
+                });
+
+                currentChatId = chatRef.id;
+                clearChat();
+
+                // Close sidebar on mobile
+                if (window.innerWidth < 768) {
+                    sidebar.classList.add('translate-x-full');
+                }
+
+                loadChatHistory();
+            } catch (error) {
+                console.error('Error creating new chat:', error);
+            }
+        }
+
+        function clearChat() {
+            messagesContainer.innerHTML = `
+                <div class="text-center py-12 fade-in">
+                    <div class="w-24 h-24 mx-auto mb-6 rounded-full overflow-hidden border-4 border-pink-400 heart-float glow-effect">
+                        <img src="Assets/img/Elma/profile.png" alt="Elma" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="w-full h-full theme-accent flex items-center justify-center" style="display: none;">
+                            <i class="fas fa-heart text-white text-3xl"></i>
+                        </div>
+                    </div>
+                    <h2 class="text-3xl font-bold gradient-text mb-3">سلام عشقم! من Elma هستم 💖</h2>
+                    <p class="theme-text-secondary text-lg">دوست دختر مجازی تو هستم</p>
+                    <p class="theme-text-secondary">چطوری نازم؟ دلم برات تنگ شده بود 😘</p>
+                </div>
+            `;
+        }
+
+        async function loadChatHistory() {
+            if (!currentUser) return;
+
+            const q = query(
+                collection(db, 'chats'),
+                orderBy('updatedAt', 'desc')
+            );
+
+            onSnapshot(q, (snapshot) => {
+                const chatHistoryDiv = document.getElementById('chatHistory');
+                chatHistoryDiv.innerHTML = '';
+
+                snapshot.forEach((doc) => {
+                    const chat = doc.data();
+                    if (chat.userId === currentUser.uid) {
+                        const chatItem = document.createElement('div');
+                        chatItem.className = 'w-full p-4 rounded-2xl glass-effect hover-lift transition-all duration-300 mb-2 relative group';
+                        chatItem.innerHTML = `
+                            <div class="flex items-center justify-between">
+                                <div class="flex-1 cursor-pointer" onclick="loadChat('${doc.id}')">
+                                    <div class="theme-text-primary font-medium truncate flex items-center gap-2">
+                                        <i class="fas fa-heart text-pink-400"></i>
+                                        ${chat.title}
+                                    </div>
+                                    <div class="theme-text-secondary text-sm truncate mt-1">${chat.lastMessage || ''}</div>
+                                </div>
+                                <div class="relative opacity-0 group-hover:opacity-100 transition-opacity duration-300 chat-menu-container">
+                                    <button onclick="toggleChatMenu(event, '${doc.id}')" class="p-2 rounded-full glass-effect hover-lift">
+                                        <i class="fas fa-ellipsis-h theme-text-primary text-sm"></i>
+                                    </button>
+                                    
+                                    <div id="chatMenu-${doc.id}" class="absolute left-0 top-full mt-2 w-48 glass-effect rounded-2xl shadow-lg hidden z-20 overflow-hidden chat-dropdown-menu">
+                                        <button onclick="shareChatItem('${doc.id}')" class="w-full text-right p-3 hover:theme-bg-tertiary transition-all duration-300 flex items-center gap-3">
+                                            <i class="fas fa-share theme-text-primary text-sm"></i>
+                                            <span class="theme-text-primary text-sm">اشتراک‌گذاری</span>
+                                        </button>
+                                        <button onclick="renameChatItem('${doc.id}', '${chat.title}')" class="w-full text-right p-3 hover:theme-bg-tertiary transition-all duration-300 flex items-center gap-3">
+                                            <i class="fas fa-edit theme-text-primary text-sm"></i>
+                                            <span class="theme-text-primary text-sm">تغییر نام</span>
+                                        </button>
+                                        <button onclick="archiveChatItem('${doc.id}')" class="w-full text-right p-3 hover:theme-bg-tertiary transition-all duration-300 flex items-center gap-3">
+                                            <i class="fas fa-archive theme-text-primary text-sm"></i>
+                                            <span class="theme-text-primary text-sm">آرشیو</span>
+                                        </button>
+                                        <button onclick="deleteChatItem('${doc.id}')" class="w-full text-right p-3 hover:bg-red-500 hover:bg-opacity-20 transition-all duration-300 flex items-center gap-3 text-red-500">
+                                            <i class="fas fa-trash text-sm"></i>
+                                            <span class="text-sm">حذف چت</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        chatHistoryDiv.appendChild(chatItem);
+                    }
+                });
+            });
+        }
+
+        async function loadChat(chatId) {
+            currentChatId = chatId;
+            clearChat();
+
+            try {
+                // Load chat info
+                const chatDoc = await getDoc(doc(db, 'chats', chatId));
+                if (chatDoc.exists()) {
+                    const chatData = chatDoc.data();
+                    // Chat title is now fixed as "Elma 💕"
+                }
+
+                // Load messages
+                const q = query(
+                    collection(db, 'chats', chatId, 'messages'),
+                    orderBy('timestamp', 'asc')
+                );
+
+                onSnapshot(q, (snapshot) => {
+                    // Clear existing messages except welcome
+                    const messages = messagesContainer.querySelectorAll('.fade-in');
+                    messages.forEach(msg => msg.remove());
+
+                    snapshot.forEach((doc) => {
+                        const message = doc.data();
+                        addMessageToChat(message.sender, message.message, message.imageUrl);
+                    });
+                });
+
+                // Close sidebar on mobile
+                if (window.innerWidth < 768) {
+                    sidebar.classList.add('translate-x-full');
+                }
+            } catch (error) {
+                console.error('Error loading chat:', error);
+            }
+        }
+
+        // Share functionality
+        function showShareModal() {
+            document.getElementById('shareModal').classList.remove('hidden');
+            dropdownMenu.classList.add('hidden');
+        }
+
+        function hideShareModal() {
+            document.getElementById('shareModal').classList.add('hidden');
+        }
+
+        function shareToWhatsApp() {
+            const shareText = 'سلام! من با Elma دوست دختر مجازی چت می کنم! خیلی باحاله، تو هم امتحان کن 💕';
+            const shareUrl = window.location.href;
+            const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText + '\n' + shareUrl)}`;
+            window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+            hideShareModal();
+        }
+
+        function shareToTelegram() {
+            const shareText = 'سلام! من با Elma دوست دختر مجازی چت می کنم! خیلی باحاله، تو هم امتحان کن 💕';
+            const shareUrl = window.location.href;
+            const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`;
+            window.open(telegramUrl, '_blank', 'noopener,noreferrer');
+            hideShareModal();
+        }
+
+        async function copyShareLink() {
+            try {
+                const shareText = 'سلام! من با Elma دوست دختر مجازی چت می کنم! خیلی باحاله، تو هم امتحان کن 💕\n' + window.location.href;
+                await navigator.clipboard.writeText(shareText);
+
+                // Show success feedback
+                const copyBtn = document.getElementById('copyLink');
+                const originalText = copyBtn.innerHTML;
+                copyBtn.innerHTML = '<i class="fas fa-check"></i> کپی شد!';
+                copyBtn.classList.add('bg-green-500', 'text-white');
+
+                setTimeout(() => {
+                    copyBtn.innerHTML = originalText;
+                    copyBtn.classList.remove('bg-green-500', 'text-white');
+                }, 2000);
+
+                setTimeout(() => {
+                    hideShareModal();
+                }, 1500);
+            } catch (error) {
+                alert('خطا در کپی کردن لینک 😔');
+            }
+        }
+
+        // Premium functionality
+        function showPremiumModal() {
+            document.getElementById('premiumModal').classList.remove('hidden');
+        }
+
+        function hidePremiumModal() {
+            document.getElementById('premiumModal').classList.add('hidden');
+        }
+
+        function handlePremiumPurchase() {
+            // Redirect to Telegram for purchase
+            const telegramUrl = 'https://t.me/hexdix'; // Replace with your actual Telegram bot/channel
+            const message = 'سلام! می‌خوام حساب پریمیوم Elma رو بخرم 💖\nقیمت: ۵۵۰,۰۰۰ تومان';
+            const fullUrl = `${telegramUrl}?start=premium&text=${encodeURIComponent(message)}`;
+
+            window.open(fullUrl, '_blank', 'noopener,noreferrer');
+            hidePremiumModal();
+        }
+
+        // Archive functionality
+        async function archiveCurrentChat() {
+            if (!currentChatId || !currentUser) return;
+
+            try {
+                // Update chat status to archived
+                await updateDoc(doc(db, 'chats', currentChatId), {
+                    archived: true,
+                    archivedAt: new Date()
+                });
+
+                // Show success modal
+                document.getElementById('archiveModal').classList.remove('hidden');
+                dropdownMenu.classList.add('hidden');
+
+                // Create new chat after archiving
+                setTimeout(() => {
+                    createNewChat();
+                }, 2000);
+            } catch (error) {
+                console.error('Error archiving chat:', error);
+                alert('خطا در آرشیو کردن چت 😔');
+            }
+        }
+
+        function hideArchiveModal() {
+            document.getElementById('archiveModal').classList.add('hidden');
+        }
+
+        // Report functionality
+        async function reportCurrentChat() {
+            if (!currentChatId || !currentUser) return;
+
+            try {
+                // Save report to database
+                await addDoc(collection(db, 'reports'), {
+                    chatId: currentChatId,
+                    userId: currentUser.uid,
+                    reportedAt: new Date(),
+                    reason: 'User reported chat content',
+                    status: 'pending'
+                });
+
+                // Show success modal
+                document.getElementById('reportModal').classList.remove('hidden');
+                dropdownMenu.classList.add('hidden');
+            } catch (error) {
+                console.error('Error reporting chat:', error);
+                alert('خطا در ارسال گزارش 😔');
+            }
+        }
+
+        function hideReportModal() {
+            document.getElementById('reportModal').classList.add('hidden');
+        }
+
+        // Delete functionality with custom modal
+        function showDeleteModal() {
+            document.getElementById('deleteModal').classList.remove('hidden');
+            dropdownMenu.classList.add('hidden');
+        }
+
+        function hideDeleteModal() {
+            document.getElementById('deleteModal').classList.add('hidden');
+        }
+
+        async function confirmDeleteChat() {
+            if (!currentChatId || !currentUser) return;
+
+            try {
+                // Delete all messages in the chat
+                const messagesQuery = query(collection(db, 'chats', currentChatId, 'messages'));
+                const messagesSnapshot = await getDocs(messagesQuery);
+
+                const deletePromises = messagesSnapshot.docs.map(doc => deleteDoc(doc.ref));
+                await Promise.all(deletePromises);
+
+                // Delete the chat document
+                await deleteDoc(doc(db, 'chats', currentChatId));
+
+                hideDeleteModal();
+                createNewChat();
+            } catch (error) {
+                console.error('Error deleting chat:', error);
+                alert('خطا در حذف چت 😔');
+            }
+        }
+
+        async function handleImageUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            if (!currentUser) {
+                showRegistrationModal();
+                return;
+            }
+
+            try {
+                // Upload to Firebase Storage
+                const storageRef = ref(storage, `images/${currentUser.uid}/${Date.now()}_${file.name}`);
+                const snapshot = await uploadBytes(storageRef, file);
+                const downloadURL = await getDownloadURL(snapshot.ref);
+
+                // Add to chat
+                addMessageToChat('user', '', downloadURL);
+                await saveMessage('user', '', downloadURL);
+
+                // Add to gallery
+                galleryImages.push(downloadURL);
+
+                // AI response to image
+                setTimeout(async () => {
+                    const imageResponses = [
+                        'وای چه عکس قشنگی! 😍💕',
+                        'عاشق این عکست شدم نازم 📸💖',
+                        'چقدر زیباست! مثل خودت 🥰',
+                        'این عکس رو دوست دارم عشقم 😘📷'
+                    ];
+                    const aiResponse = getRandomResponse(imageResponses);
+                    addMessageToChat('ai', aiResponse);
+                    await saveMessage('ai', aiResponse);
+                }, 1500);
+
+            } catch (error) {
+                console.error('Error uploading image:', error);
+                alert('خطا در آپلود عکس عزیزم 💔');
+            }
+        }
+
+        function showGallery() {
+            galleryModal.classList.remove('hidden');
+            loadGalleryImages();
+        }
+
+        function hideGallery() {
+            galleryModal.classList.add('hidden');
+        }
+
+        // helper: آیا کاربر پریمیوم است؟
+        function isUserPremium() {
+            // این تابع از همان مکانیک فایل تو استفاده می‌کند: userType داخل DOM
+            const userTypeEl = document.getElementById('userType');
+            return userTypeEl && /پریمیوم|pro|premium/i.test(userTypeEl.textContent);
+        }
+
+        // جایگزین loadGalleryImages()
+        function loadGalleryImages() {
+            const galleryGrid = document.getElementById('galleryGrid');
+            galleryGrid.innerHTML = '';
+
+            // تصاویر نمونه (می‌تونی آدرس‌ها را به آرایه‌ای که از سرورت میاد تغییر بدی)
+            const sampleImages = [
+                'Assets/img/Elma nude/Elma1.png',
+                'Assets/img/Elma nude/Elma2.png',
+                'Assets/img/Elma nude/Elma3.png',
+                'Assets/img/Elma nude/Elma4.png',
+                'Assets/img/Elma nude/Elma5.png',
+                'Assets/img/Elma nude/Elma6.png',
+                'Assets/img/Elma nude/Elma7.png',
+                'Assets/img/Elma nude/Elma8.png',
+                'Assets/img/Elma nude/Elma9.png',
+                'Assets/img/Elma nude/Elma10.png',
+                'Assets/img/Elma nude/Elma11.png',
+                'Assets/img/Elma nude/Elma12.png',
+                'Assets/img/Elma nude/Elma13.png',
+                'Assets/img/Elma nude/Elma.png'
+            ];
+
+            const premium = isUserPremium();
+
+            sampleImages.forEach(imageUrl => {
+                const imgDiv = document.createElement('div');
+                imgDiv.className = 'aspect-square rounded-2xl hover-lift glass-effect gallery-item';
+                imgDiv.innerHTML = `
+            <img src="${imageUrl}" alt="Gallery Image">
+        `;
+
+                if (!premium) {
+                    // lock it for free users
+                    imgDiv.classList.add('locked');
+                    imgDiv.innerHTML += `
+                <div class="lock-overlay">
+                  <div class="lock-badge">
+                    <i class="fas fa-lock"></i>
+                    <span>ویژه پرو</span>
+                  </div>
+                  <div class="lock-text">برای دیدن کامل عکس، پرو بخرید</div>
+                </div>
+            `;
+                    // کلیک روی overlay -> نمایش مودال خرید یا ثبت‌نام
+                    imgDiv.querySelector('.lock-overlay').addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        if (!currentUser) {
+                            // اگر وارد نشده‌اند، ثبت‌نام را نشان بده
+                            showRegistrationModal();
+                        } else {
+                            // اگر وارد شده‌اند ولی آزاد نیستند، مودال خرید نشان بده
+                            document.getElementById('premiumModal').classList.remove('hidden');
+                        }
+                    });
+                } else {
+                    // اگر پریمیوم است، کلیک مستقیم باز کردن عکس کامل
+                    imgDiv.addEventListener('click', () => showImageModal(imageUrl, true));
+                }
+
+                // برای حالت‌های مشترک (مثلاً اگر بخوای آمار یا لایک اضافه کنی) می‌تونی اینجا اضافه کنی
+                galleryGrid.appendChild(imgDiv);
+            });
+        }
+
+        // نسخه ارتقا یافته showImageModal
+        // اگر forceOpen === true از قفل عبور می‌کند (برای پریمیوم‌ها)
+        function showImageModal(imageUrl, forceOpen = false) {
+            const premium = isUserPremium();
+
+            if (!premium && !forceOpen) {
+                // Free user clicked image (در حالت ما کلیک مستقیم روی img برای free غیرفعال است،
+                // اما اگر از جایی دیگه‌ای خواستی بازش کنی، می‌گیریم اینجا)
+                if (!currentUser) {
+                    showRegistrationModal();
+                    return;
+                }
+                document.getElementById('premiumModal').classList.remove('hidden');
+                return;
+            }
+
+            // ساخت مودال نمایش تصویر کامل
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4 fade-in';
+            modal.innerHTML = `
+        <div class="relative max-w-4xl max-h-full">
+            <img src="${imageUrl}" alt="Full Size Image" class="max-w-full max-h-[80vh] rounded-2xl glow-effect">
+            <button class="absolute top-4 left-4 text-white text-2xl hover:opacity-80 bg-black bg-opacity-50 rounded-full p-3 close-modal-btn">
+                <i class="fas fa-download"></i>
+            </button>
+            <button class="absolute top-4 right-4 text-white text-2xl hover:opacity-80 bg-black bg-opacity-50 rounded-full p-3 close-modal-btn">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    `;
+
+            // بستن مودال
+            modal.addEventListener('click', (e) => {
+                // اگر روی بک‌دراپ کلیک شد یا دکمه بستن
+                if (e.target === modal || e.target.closest('.close-modal-btn')) {
+                    modal.remove();
+                }
+            });
+
+            // دانلود تصویر (فقط برای پریمیوم)
+            const downloadBtn = modal.querySelector('.fa-download')?.closest('button');
+            if (downloadBtn) {
+                downloadBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (!isUserPremium()) {
+                        // اگر کاربر پریمیوم نبود، مودال خرید
+                        document.getElementById('premiumModal').classList.remove('hidden');
+                        return;
+                    }
+                    // دانلود با لینک مستقیم
+                    const a = document.createElement('a');
+                    a.href = imageUrl;
+                    a.download = imageUrl.split('/').pop();
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                });
+            }
+
+            document.body.appendChild(modal);
+        }
+
+
+        // Rename chat functionality
+        function showRenameModal() {
+            document.getElementById('renameModal').classList.remove('hidden');
+            document.getElementById('chatHistoryMenu').classList.add('hidden');
+
+            // Pre-fill current chat name if available
+            if (currentChatId) {
+                // You can load current chat name here
+                document.getElementById('newChatName').value = '';
+            }
+        }
+
+        function hideRenameModal() {
+            document.getElementById('renameModal').classList.add('hidden');
+            document.getElementById('newChatName').value = '';
+        }
+
+        async function handleRenameChat(e) {
+            e.preventDefault();
+            const newName = document.getElementById('newChatName').value.trim();
+
+            if (!newName || !currentChatId) return;
+
+            try {
+                await updateDoc(doc(db, 'chats', currentChatId), {
+                    title: newName,
+                    updatedAt: new Date()
+                });
+
+                hideRenameModal();
+                loadChatHistory(); // Refresh chat history
+
+                // Show success message
+                const successDiv = document.createElement('div');
+                successDiv.className = 'fixed top-4 right-4 bg-green-500 text-white p-4 rounded-2xl z-50 fade-in';
+                successDiv.textContent = 'نام چت با موفقیت تغییر کرد! ✅';
+                document.body.appendChild(successDiv);
+
+                setTimeout(() => {
+                    successDiv.remove();
+                }, 3000);
+            } catch (error) {
+                console.error('Error renaming chat:', error);
+                alert('خطا در تغییر نام چت 😔');
+            }
+        }
+
+        // Archive list functionality
+        function showArchiveListModal() {
+            document.getElementById('archiveListModal').classList.remove('hidden');
+            document.getElementById('chatHistoryMenu').classList.add('hidden');
+            loadArchivedChats();
+        }
+
+        function hideArchiveListModal() {
+            document.getElementById('archiveListModal').classList.add('hidden');
+        }
+
+        async function loadArchivedChats() {
+            if (!currentUser) return;
+
+            try {
+                const q = query(
+                    collection(db, 'chats'),
+                    orderBy('archivedAt', 'desc')
+                );
+
+                const snapshot = await getDocs(q);
+                const archivedChatsDiv = document.getElementById('archivedChats');
+                archivedChatsDiv.innerHTML = '';
+
+                let hasArchivedChats = false;
+
+                snapshot.forEach((doc) => {
+                    const chat = doc.data();
+                    if (chat.userId === currentUser.uid && chat.archived) {
+                        hasArchivedChats = true;
+                        const chatItem = document.createElement('div');
+                        chatItem.className = 'glass-effect rounded-2xl p-4 hover-lift transition-all duration-300';
+                        chatItem.innerHTML = `
+                            <div class="flex items-center justify-between">
+                                <div class="flex-1">
+                                    <div class="theme-text-primary font-medium flex items-center gap-2">
+                                        <i class="fas fa-archive text-blue-400"></i>
+                                        ${chat.title}
+                                    </div>
+                                    <div class="theme-text-secondary text-sm mt-1">
+                                        آرشیو شده در: ${chat.archivedAt ? new Date(chat.archivedAt.seconds * 1000).toLocaleDateString('fa-IR') : 'نامشخص'}
+                                    </div>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button onclick="restoreChat('${doc.id}')" class="p-2 rounded-full bg-green-500 hover:bg-green-600 text-white hover-lift transition-all duration-300">
+                                        <i class="fas fa-undo text-sm"></i>
+                                    </button>
+                                    <button onclick="permanentDeleteChat('${doc.id}')" class="p-2 rounded-full bg-red-500 hover:bg-red-600 text-white hover-lift transition-all duration-300">
+                                        <i class="fas fa-trash text-sm"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                        archivedChatsDiv.appendChild(chatItem);
+                    }
+                });
+
+                if (!hasArchivedChats) {
+                    archivedChatsDiv.innerHTML = `
+                        <div class="text-center py-12">
+                            <i class="fas fa-archive text-6xl theme-text-secondary mb-4"></i>
+                            <p class="theme-text-secondary">هیچ چت آرشیو شده‌ای وجود ندارد</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading archived chats:', error);
+            }
+        }
+
+        // Global functions for chat menu actions
+        window.toggleChatMenu = function (event, chatId) {
+            event.stopPropagation();
+            event.preventDefault();
+
+            // Hide all other menus first
+            document.querySelectorAll('[id^="chatMenu-"]').forEach(menu => {
+                if (menu.id !== `chatMenu-${chatId}`) {
+                    menu.classList.add('hidden');
+                    menu.parentElement.classList.remove('chat-menu-open');
+                }
+            });
+
+            // Toggle current menu
+            const menu = document.getElementById(`chatMenu-${chatId}`);
+            const container = menu.parentElement;
+
+            if (menu.classList.contains('hidden')) {
+                menu.classList.remove('hidden');
+                container.classList.add('chat-menu-open');
+            } else {
+                menu.classList.add('hidden');
+                container.classList.remove('chat-menu-open');
+            }
+        };
+
+        window.shareChatItem = function (chatId) {
+            currentChatId = chatId;
+            showShareModal();
+            const menu = document.getElementById(`chatMenu-${chatId}`);
+            menu.classList.add('hidden');
+            menu.parentElement.classList.remove('chat-menu-open');
+        };
+
+        window.renameChatItem = function (chatId, currentTitle) {
+            currentChatId = chatId;
+            document.getElementById('newChatName').value = currentTitle;
+            showRenameModal();
+            const menu = document.getElementById(`chatMenu-${chatId}`);
+            menu.classList.add('hidden');
+            menu.parentElement.classList.remove('chat-menu-open');
+        };
+
+        window.archiveChatItem = async function (chatId) {
+            try {
+                await updateDoc(doc(db, 'chats', chatId), {
+                    archived: true,
+                    archivedAt: new Date()
+                });
+
+                const menu = document.getElementById(`chatMenu-${chatId}`);
+                menu.classList.add('hidden');
+                menu.parentElement.classList.remove('chat-menu-open');
+                loadChatHistory(); // Refresh chat history
+
+                // Show success message
+                const successDiv = document.createElement('div');
+                successDiv.className = 'fixed top-4 right-4 bg-blue-500 text-white p-4 rounded-2xl z-50 fade-in';
+                successDiv.textContent = 'چت آرشیو شد! 📦';
+                document.body.appendChild(successDiv);
+
+                setTimeout(() => {
+                    successDiv.remove();
+                }, 3000);
+
+                // If this was the current chat, create a new one
+                if (currentChatId === chatId) {
+                    createNewChat();
+                }
+            } catch (error) {
+                console.error('Error archiving chat:', error);
+                alert('خطا در آرشیو کردن چت 😔');
+            }
+        };
+
+        window.deleteChatItem = async function (chatId) {
+            if (!confirm('آیا مطمئنی که می‌خوای این چت رو حذف کنی؟ این عمل قابل بازگشت نیست!')) {
+                return;
+            }
+
+            try {
+                // Delete all messages in the chat
+                const messagesQuery = query(collection(db, 'chats', chatId, 'messages'));
+                const messagesSnapshot = await getDocs(messagesQuery);
+
+                const deletePromises = messagesSnapshot.docs.map(doc => deleteDoc(doc.ref));
+                await Promise.all(deletePromises);
+
+                // Delete the chat document
+                await deleteDoc(doc(db, 'chats', chatId));
+
+                const menu = document.getElementById(`chatMenu-${chatId}`);
+                menu.classList.add('hidden');
+                menu.parentElement.classList.remove('chat-menu-open');
+                loadChatHistory(); // Refresh chat history
+
+                // Show success message
+                const successDiv = document.createElement('div');
+                successDiv.className = 'fixed top-4 right-4 bg-red-500 text-white p-4 rounded-2xl z-50 fade-in';
+                successDiv.textContent = 'چت حذف شد! 🗑️';
+                document.body.appendChild(successDiv);
+
+                setTimeout(() => {
+                    successDiv.remove();
+                }, 3000);
+
+                // If this was the current chat, create a new one
+                if (currentChatId === chatId) {
+                    createNewChat();
+                }
+            } catch (error) {
+                console.error('Error deleting chat:', error);
+                alert('خطا در حذف چت 😔');
+            }
+        };
+
+        // Global functions for archive actions
+        window.restoreChat = async function (chatId) {
+            try {
+                await updateDoc(doc(db, 'chats', chatId), {
+                    archived: false,
+                    archivedAt: null,
+                    updatedAt: new Date()
+                });
+
+                loadArchivedChats(); // Refresh archive list
+                loadChatHistory(); // Refresh main chat history
+
+                // Show success message
+                const successDiv = document.createElement('div');
+                successDiv.className = 'fixed top-4 right-4 bg-green-500 text-white p-4 rounded-2xl z-50 fade-in';
+                successDiv.textContent = 'چت بازیابی شد! ✅';
+                document.body.appendChild(successDiv);
+
+                setTimeout(() => {
+                    successDiv.remove();
+                }, 3000);
+            } catch (error) {
+                console.error('Error restoring chat:', error);
+                alert('خطا در بازیابی چت 😔');
+            }
+        };
+
+        window.permanentDeleteChat = async function (chatId) {
+            if (!confirm('آیا مطمئنی که می‌خوای این چت رو برای همیشه حذف کنی؟ این عمل قابل بازگشت نیست!')) {
+                return;
+            }
+
+            try {
+                // Delete all messages in the chat
+                const messagesQuery = query(collection(db, 'chats', chatId, 'messages'));
+                const messagesSnapshot = await getDocs(messagesQuery);
+
+                const deletePromises = messagesSnapshot.docs.map(doc => deleteDoc(doc.ref));
+                await Promise.all(deletePromises);
+
+                // Delete the chat document
+                await deleteDoc(doc(db, 'chats', chatId));
+
+                loadArchivedChats(); // Refresh archive list
+
+                // Show success message
+                const successDiv = document.createElement('div');
+                successDiv.className = 'fixed top-4 right-4 bg-red-500 text-white p-4 rounded-2xl z-50 fade-in';
+                successDiv.textContent = 'چت برای همیشه حذف شد! 🗑️';
+                document.body.appendChild(successDiv);
+
+                setTimeout(() => {
+                    successDiv.remove();
+                }, 3000);
+            } catch (error) {
+                console.error('Error permanently deleting chat:', error);
+                alert('خطا در حذف چت 😔');
+            }
+        };
+
+        // Handle responsive sidebar
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 768) {
+                sidebar.classList.remove('translate-x-full');
+            } else {
+                sidebar.classList.add('translate-x-full');
+            }
+        });
+
+        function showChatLimitModal() {
+            document.getElementById('chatLimitModal').classList.remove('hidden');
+        }
+
+        // دکمه بستن
+        document.getElementById('chatLimitClose').addEventListener('click', () => {
+            document.getElementById('chatLimitModal').classList.add('hidden');
+        });
+
+        // دکمه خرید → باز کردن مودال پریمیوم
+        document.getElementById('chatLimitBuyBtn').addEventListener('click', () => {
+            document.getElementById('chatLimitModal').classList.add('hidden');
+            document.getElementById('premiumModal').classList.remove('hidden'); // همون مودال خرید
+        });
+        if (typeof response === "object" && response.type === "image") {
+            const img = document.createElement("img");
+            img.src = response.url;
+            img.className = "rounded-2xl max-w-xs hover-lift";
+            messageBubble.appendChild(img);
+        } else {
+            messageBubble.textContent = response;
+        }
+        const welcomeAudio = document.getElementById("welcomeAudio");
+
+        document.getElementById("googleSignIn").addEventListener("click", () => {
+            // آماده‌سازی صدا (بدون پخش کامل)
+            welcomeAudio.play().then(() => {
+                welcomeAudio.pause();
+                welcomeAudio.currentTime = 0;
+            }).catch(err => {
+                console.log("پخش تست ناموفق:", err);
+            });
+        });
+    </script>
+    <script>(function () { function c() { var b = a.contentDocument || a.contentWindow.document; if (b) { var d = b.createElement('script'); d.innerHTML = "window.__CF$cv$params={r:'98231e777770da45',t:'MTc1ODM5MDE0Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);"; b.getElementsByTagName('head')[0].appendChild(d) } } if (document.body) { var a = document.createElement('iframe'); a.height = 1; a.width = 1; a.style.position = 'absolute'; a.style.top = 0; a.style.left = 0; a.style.border = 'none'; a.style.visibility = 'hidden'; document.body.appendChild(a); if ('loading' !== document.readyState) c(); else if (window.addEventListener) document.addEventListener('DOMContentLoaded', c); else { var e = document.onreadystatechange || function () { }; document.onreadystatechange = function (b) { e(b); 'loading' !== document.readyState && (document.onreadystatechange = e, c()) } } } })();</script>
+</body>
+
+</html>
