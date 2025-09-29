@@ -435,10 +435,10 @@
             <!-- User Profile -->
             <div id="userProfile" class="p-4 theme-border border-t glass-effect">
                 <div class="flex items-center gap-3">
-                    <button id="profileBtn"
+                    <button id="ProfileBtn"
                         class="flex items-center gap-3 flex-1 hover-lift transition-all duration-300 rounded-2xl p-2">
                         <div class="w-12 h-12 rounded-full overflow-hidden border-2 border-pink-500">
-                            <img id="profileImage" src="https://cdn-icons-png.flaticon.com/128/3237/3237429.png"
+                            <img id="ProfileImage" src="https://cdn-icons-png.flaticon.com/128/3237/3237429.png"
                                 alt="Profile" class="w-full h-full object-cover">
                         </div>
                         <div class="flex-1 text-right">
@@ -1076,7 +1076,6 @@
         let usageCount = {
             photo: 3,
             chat: 25,
-            game: 1
         };
 
         // Photo sequence tracking
@@ -1113,6 +1112,7 @@
                 console.warn('⚠️ خطا در بارگذاری فایل chat.json:', error.message);
                 console.log('🔄 استفاده از پاسخ‌های پیش‌فرض چت...');
             }
+
 
             // Load default chat responses if needed
             if (!chatDictionary || Object.keys(chatDictionary).length === 0) {
@@ -1383,7 +1383,7 @@
             document.getElementById('closeArchiveList').addEventListener('click', hideArchiveListModal);
 
             // Settings
-            document.getElementById('profileBtn').addEventListener('click', showSettingsModal);
+            document.getElementById('ProfileBtn').addEventListener('click', showSettingsModal);
             document.getElementById('closeSettings').addEventListener('click', hideSettingsModal);
             document.getElementById('generalTab').addEventListener('click', () => switchSettingsTab('general'));
             document.getElementById('accountTab').addEventListener('click', () => switchSettingsTab('account'));
@@ -1431,7 +1431,7 @@
             try {
                 const result = await signInWithPopup(auth, provider);
 
-                // Check if user profile exists, if not create one
+                // Check if user Profile exists, if not create one
                 const userDoc = await getDoc(doc(db, 'users', result.user.uid));
                 if (!userDoc.exists()) {
                     await setDoc(doc(db, 'users', result.user.uid), {
@@ -1493,21 +1493,21 @@
                             localStorage.removeItem('usageCount');
                             if (typeof updateUsageDisplay === 'function') updateUsageDisplay();
                         }
-                        const profileImg = document.getElementById('profileImage');
+                        const ProfileImg = document.getElementById('ProfileImage');
                         if (userData.photoURL) {
 
-                            profileImg.src = userData.photoURL;
+                            ProfileImg.src = userData.photoURL;
                         } else if (currentUser.photoURL) {
 
-                            profileImg.src = currentUser.photoURL;
+                            ProfileImg.src = currentUser.photoURL;
                         } else {
 
-                            profileImg.src = 'https://cdn-icons-png.flaticon.com/128/3237/3237429.png';
+                            ProfileImg.src = 'https://cdn-icons-png.flaticon.com/128/3237/3237429.png';
                         }
                     }
                 });
             } catch (error) {
-                console.error('Error loading user profile:', error);
+                console.error('Error loading user Profile:', error);
             }
         }
         function showGuestProfile() {
@@ -1672,7 +1672,7 @@
                 // Delete all user chats first
                 await confirmDeleteAllChats();
 
-                // Delete user profile
+                // Delete user Profile
                 await deleteDoc(doc(db, 'users', currentUser.uid));
 
                 // Delete the user account
@@ -1917,7 +1917,6 @@
                 // Premium users see unlimited
                 document.getElementById('photoCount').textContent = '(∞)';
                 document.getElementById('chatCount').textContent = '(∞)';
-                document.getElementById('gameCount').textContent = '(∞)';
 
                 // Enable all buttons for premium
                 document.getElementById('quickPhoto').disabled = false;
@@ -1932,7 +1931,6 @@
                 // Free users see actual counts
                 document.getElementById('photoCount').textContent = `(${usageCount.photo})`;
                 document.getElementById('chatCount').textContent = `(${usageCount.chat})`;
-                document.getElementById('gameCount').textContent = `(${usageCount.game})`;
 
                 // Disable buttons if no uses left
                 document.getElementById('quickPhoto').disabled = usageCount.photo <= 0;
@@ -1954,7 +1952,6 @@
             const typeNames = {
                 photo: 'عکس',
                 chat: 'چت',
-                game: 'بازی'
             };
 
             alert(`متأسفانه ${typeNames[type]} رایگان تموم شده! 😔\nبرای استفاده نامحدود، حساب پرو بخر 👑`);
@@ -2038,7 +2035,7 @@
                         'Assets/img/Elma/Elma47.png',
                         'Assets/img/Elma/Elma48.png',
                         'Assets/img/Elma/Elma49.png',
-                        'Assets/img/Elma/Elma50.png'
+                        'Assets/img/Elma/Elma50.png',
                     ];
                     photoToSend = premiumPhotos[Math.floor(Math.random() * premiumPhotos.length)];
                 } else {
@@ -2248,7 +2245,7 @@
             messagesContainer.innerHTML = `
                 <div class="text-center py-12 fade-in">
                     <div class="w-24 h-24 mx-auto mb-6 rounded-full overflow-hidden border-4 border-pink-400 heart-float glow-effect">
-                        <img src="Assets/img/Elma/profile.png" alt="Elma" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <img src="Assets/img/Elma/Profile.png" alt="Elma" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                         <div class="w-full h-full theme-accent flex items-center justify-center" style="display: none;">
                             <i class="fas fa-heart text-white text-3xl"></i>
                         </div>
@@ -3038,5 +3035,3 @@
 </body>
 
 </html>
-
-
