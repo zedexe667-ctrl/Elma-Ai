@@ -1039,6 +1039,23 @@
         </div>
     </div>
 
+    <div id="tipsModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+        <div class="glass-effect w-full max-w-md rounded-3xl p-6 text-center space-y-4">
+            <h2 class="text-2xl font-bold gradient-text mb-2">👋 به Elma خوش اومدی!</h2>
+
+            <ul class="text-right space-y-3 theme-text-primary">
+                <li>💡 <b>نکته ۱:</b> می‌تونی با من هر زمان چت کنی و پیام عاشقانه بفرستی.</li>
+                <li>📸 <b>نکته ۲:</b> عکس‌های گالری فقط با اکانت پرو نامحدود میشه.</li>
+                <li>🔔 <b>نکته ۳:</b> برای جواب سریع‌تر می‌تونی از منوی بالا «چت جدید» بسازی.</li>
+            </ul>
+
+            <button id="closeTips"
+                class="w-full mt-6 py-3 theme-accent text-white rounded-2xl hover-lift transition-all duration-300 font-medium">
+                متوجه شدم ❤️
+            </button>
+        </div>
+    </div>
+
     <!-- Hidden file input for images -->
     <input type="file" id="fileInput" accept="image/*" class="hidden">
     <audio id="welcomeAudio" src="Assets/voice/Elma.wav" preload="auto"></audio>
@@ -1226,6 +1243,25 @@
             updateUsageDisplay(); // Update display on load
         });
 
+        document.addEventListener("DOMContentLoaded", function () {
+            const tipsModal = document.getElementById("tipsModal");
+            const closeTips = document.getElementById("closeTips");
+            const audio = document.getElementById("welcomeAudio");
+
+            // وقتی می‌خوای نشونش بدی (مثلاً بعد از ثبت‌نام)
+            // tipsModal.classList.remove("hidden");
+
+            closeTips.addEventListener("click", function () {
+                // بستن مودال
+                tipsModal.classList.add("hidden");
+
+                // پخش صدا
+                if (audio) {
+                    audio.currentTime = 0;
+                    audio.play().catch(err => console.warn("پخش نشد:", err));
+                }
+            });
+        });
         function loadUsageCount() {
             const saved = localStorage.getItem('usageCount');
             if (saved) {
@@ -1431,7 +1467,7 @@
             try {
                 const result = await signInWithPopup(auth, provider);
 
-                // Check if user Profile exists, if not create one
+                // اگه یوزر جدید بود
                 const userDoc = await getDoc(doc(db, 'users', result.user.uid));
                 if (!userDoc.exists()) {
                     await setDoc(doc(db, 'users', result.user.uid), {
@@ -1439,17 +1475,26 @@
                         email: result.user.email,
                         accountType: 'free',
                         createdAt: new Date(),
-                        playedWelcome: false
+                        playedWelcome: false,
+                        sawTips: false   // 👈 اضافه کن
                     });
                 }
 
-                // Mark that user has been logged in before
+                // 👇 بعد از ثبت‌نام یا ورود، مدال رو فقط اگه قبلاً ندیده نشون بده
+                const userRef = doc(db, 'users', result.user.uid);
+                const userSnap = await getDoc(userRef);
+                if (userSnap.exists() && !userSnap.data().sawTips) {
+                    document.getElementById('tipsModal').classList.remove('hidden');
+                    await updateDoc(userRef, { sawTips: true });
+                }
+
                 localStorage.setItem('hasBeenLoggedIn', 'true');
                 hideRegistrationModal();
             } catch (error) {
                 alert('خطا: ' + error.message);
             }
         }
+
 
         async function handleLogout() {
             try {
@@ -3021,18 +3066,20 @@
         }
         const welcomeAudio = document.getElementById("welcomeAudio");
 
-        document.getElementById("googleSignIn").addEventListener("click", () => {
-            // آماده‌سازی صدا (بدون پخش کامل)
-            welcomeAudio.play().then(() => {
-                welcomeAudio.pause();
-                welcomeAudio.currentTime = 0;
-            }).catch(err => {
-                console.log("پخش تست ناموفق:", err);
-            });
+        const audio = document.getElementById('welcomeAudio');
+
+        document.getElementById('closeTips').addEventListener('click', () => {
+            // بستن مودال
+            document.getElementById('tipsModal').classList.add('hidden');
+
+            // پخش صدا
+            if (audio) {
+                audio.currentTime = 0;
+                audio.play().catch(err => console.warn('پخش نشد:', err));
+            }
         });
     </script>
     <script>(function () { function c() { var b = a.contentDocument || a.contentWindow.document; if (b) { var d = b.createElement('script'); d.innerHTML = "window.__CF$cv$params={r:'98231e777770da45',t:'MTc1ODM5MDE0Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);"; b.getElementsByTagName('head')[0].appendChild(d) } } if (document.body) { var a = document.createElement('iframe'); a.height = 1; a.width = 1; a.style.position = 'absolute'; a.style.top = 0; a.style.left = 0; a.style.border = 'none'; a.style.visibility = 'hidden'; document.body.appendChild(a); if ('loading' !== document.readyState) c(); else if (window.addEventListener) document.addEventListener('DOMContentLoaded', c); else { var e = document.onreadystatechange || function () { }; document.onreadystatechange = function (b) { e(b); 'loading' !== document.readyState && (document.onreadystatechange = e, c()) } } } })();</script>
 </body>
 
 </html>
-
