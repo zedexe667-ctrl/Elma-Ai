@@ -1462,38 +1462,58 @@
             }
         }
 
+        import { GoogleAuthProvider, signInWithRedirect, getRedirectResult } from "firebase/auth";
+        import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+
         async function signInWithGoogle() {
             const provider = new GoogleAuthProvider();
             try {
-                const result = await signInWithPopup(auth, provider);
-
-                // اگه یوزر جدید بود
-                const userDoc = await getDoc(doc(db, 'users', result.user.uid));
-                if (!userDoc.exists()) {
-                    await setDoc(doc(db, 'users', result.user.uid), {
-                        username: result.user.displayName,
-                        email: result.user.email,
-                        accountType: 'free',
-                        createdAt: new Date(),
-                        playedWelcome: false,
-                        sawTips: false   // 👈 اضافه کن
-                    });
-                }
-
-                // 👇 بعد از ثبت‌نام یا ورود، مدال رو فقط اگه قبلاً ندیده نشون بده
-                const userRef = doc(db, 'users', result.user.uid);
-                const userSnap = await getDoc(userRef);
-                if (userSnap.exists() && !userSnap.data().sawTips) {
-                    document.getElementById('tipsModal').classList.remove('hidden');
-                    await updateDoc(userRef, { sawTips: true });
-                }
-
-                localStorage.setItem('hasBeenLoggedIn', 'true');
-                hideRegistrationModal();
+                // اینجا دیگه popup باز نمیشه → مستقیم redirect میشه
+                await signInWithRedirect(auth, provider);
             } catch (error) {
                 alert('خطا: ' + error.message);
             }
         }
+
+        // بعد از ریدایرکت شدن کاربر به سایتت (همون index.html یا صفحه اصلیت)
+        async function handleGoogleRedirect() {
+            try {
+                const result = await getRedirectResult(auth);
+
+                if (result) {
+                    const user = result.user;
+
+                    // اگه یوزر جدید بود
+                    const userDoc = await getDoc(doc(db, 'users', user.uid));
+                    if (!userDoc.exists()) {
+                        await setDoc(doc(db, 'users', user.uid), {
+                            username: user.displayName,
+                            email: user.email,
+                            accountType: 'free',
+                            createdAt: new Date(),
+                            playedWelcome: false,
+                            sawTips: false
+                        });
+                    }
+
+                    const userRef = doc(db, 'users', user.uid);
+                    const userSnap = await getDoc(userRef);
+                    if (userSnap.exists() && !userSnap.data().sawTips) {
+                        document.getElementById('tipsModal').classList.remove('hidden');
+                        await updateDoc(userRef, { sawTips: true });
+                    }
+
+                    localStorage.setItem('hasBeenLoggedIn', 'true');
+                    hideRegistrationModal();
+                }
+            } catch (error) {
+                console.error("خطا در گرفتن نتیجه ورود:", error);
+            }
+        }
+
+        // وقتی صفحه لود شد اجراش کن
+        document.addEventListener("DOMContentLoaded", handleGoogleRedirect);
+
 
 
         async function handleLogout() {
