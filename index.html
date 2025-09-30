@@ -1462,9 +1462,6 @@
             }
         }
 
-        import { GoogleAuthProvider, signInWithRedirect, getRedirectResult } from "firebase/auth";
-        import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
-
         async function signInWithGoogle() {
             const provider = new GoogleAuthProvider();
             try {
@@ -1513,7 +1510,6 @@
 
         // وقتی صفحه لود شد اجراش کن
         document.addEventListener("DOMContentLoaded", handleGoogleRedirect);
-
 
 
         async function handleLogout() {
