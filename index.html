@@ -19,8 +19,8 @@
             --bg-primary: linear-gradient(135deg, #1a0b2e 0%, #2d1b69 50%, #1a0b2e 100%);
             --bg-secondary: rgba(45, 27, 105, 0.8);
             --bg-tertiary: rgba(75, 39, 130, 0.6);
-            --text-primary: #ffffff;
-            --text-secondary: #f0ddfd;
+            --text-primary: #242323;
+            --text-secondary: #232224;
             --border-color: rgba(248, 137, 137, 0.3);
             --accent-color: linear-gradient(135deg, #fd3f8b 0%, #fc1657 100%);
             --chat-bg: rgba(26, 11, 46, 0.95);
@@ -291,10 +291,6 @@
                 radial-gradient(circle at 20% 80%, rgba(255, 107, 157, 0.1) 0%, transparent 50%),
                 radial-gradient(circle at 80% 20%, rgba(196, 69, 105, 0.1) 0%, transparent 50%),
                 radial-gradient(circle at 40% 40%, rgba(255, 182, 193, 0.05) 0%, transparent 50%);
-        }
-
-        body.dark {
-            background: #000000;
         }
 
         /* Gallery lock + blur */
@@ -1465,51 +1461,35 @@
         async function signInWithGoogle() {
             const provider = new GoogleAuthProvider();
             try {
-                // اینجا دیگه popup باز نمیشه → مستقیم redirect میشه
-                await signInWithRedirect(auth, provider);
+                const result = await signInWithPopup(auth, provider);
+
+                // اگه یوزر جدید بود
+                const userDoc = await getDoc(doc(db, 'users', result.user.uid));
+                if (!userDoc.exists()) {
+                    await setDoc(doc(db, 'users', result.user.uid), {
+                        username: result.user.displayName,
+                        email: result.user.email,
+                        accountType: 'free',
+                        createdAt: new Date(),
+                        playedWelcome: false,
+                        sawTips: false   
+                    });
+                }
+
+                
+                const userRef = doc(db, 'users', result.user.uid);
+                const userSnap = await getDoc(userRef);
+                if (userSnap.exists() && !userSnap.data().sawTips) {
+                    document.getElementById('tipsModal').classList.remove('hidden');
+                    await updateDoc(userRef, { sawTips: true });
+                }
+
+                localStorage.setItem('hasBeenLoggedIn', 'true');
+                hideRegistrationModal();
             } catch (error) {
                 alert('خطا: ' + error.message);
             }
         }
-
-        // بعد از ریدایرکت شدن کاربر به سایتت (همون index.html یا صفحه اصلیت)
-        async function handleGoogleRedirect() {
-            try {
-                const result = await getRedirectResult(auth);
-
-                if (result) {
-                    const user = result.user;
-
-                    // اگه یوزر جدید بود
-                    const userDoc = await getDoc(doc(db, 'users', user.uid));
-                    if (!userDoc.exists()) {
-                        await setDoc(doc(db, 'users', user.uid), {
-                            username: user.displayName,
-                            email: user.email,
-                            accountType: 'free',
-                            createdAt: new Date(),
-                            playedWelcome: false,
-                            sawTips: false
-                        });
-                    }
-
-                    const userRef = doc(db, 'users', user.uid);
-                    const userSnap = await getDoc(userRef);
-                    if (userSnap.exists() && !userSnap.data().sawTips) {
-                        document.getElementById('tipsModal').classList.remove('hidden');
-                        await updateDoc(userRef, { sawTips: true });
-                    }
-
-                    localStorage.setItem('hasBeenLoggedIn', 'true');
-                    hideRegistrationModal();
-                }
-            } catch (error) {
-                console.error("خطا در گرفتن نتیجه ورود:", error);
-            }
-        }
-
-        // وقتی صفحه لود شد اجراش کن
-        document.addEventListener("DOMContentLoaded", handleGoogleRedirect);
 
 
         async function handleLogout() {
