@@ -361,6 +361,48 @@
             resize: none;
 
         }
+
+        .image-wrapper {
+            position: relative;
+            display: inline-block;
+            overflow: hidden;
+        }
+
+        .image-wrapper img {
+            width: 100%;
+            border-radius: 20px;
+            filter: blur(12px);
+            opacity: 0.8;
+            transition: all 0.8s ease;
+        }
+
+        .image-wrapper.loaded img {
+            filter: blur(0);
+            opacity: 1;
+        }
+
+        .image-loader {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 4px solid rgba(255, 255, 255, 0.4);
+            border-top-color: #ff6b9d;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from {
+                transform: translate(-50%, -50%) rotate(0deg);
+            }
+
+            to {
+                transform: translate(-50%, -50%) rotate(360deg);
+            }
+        }
     </style>
 </head>
 
@@ -1927,12 +1969,30 @@
                     } else {
                         // حالت عادی (متن + احتمالا imageUrl جدا)
                         if (imageUrl) {
+                            // 📦 ساخت قاب مخصوص عکس
+                            const wrapper = document.createElement('div');
+                            wrapper.className = 'image-wrapper max-w-xs rounded-2xl mb-3 hover-lift cursor-pointer';
+                            wrapper.onclick = () => showImageModal(imageUrl);
+
+                            // ⏳ لودینگ وسط عکس
+                            const loader = document.createElement('div');
+                            loader.className = 'image-loader';
+                            wrapper.appendChild(loader);
+
+                            // 🖼️ خود عکس
                             const img = document.createElement('img');
                             img.src = imageUrl;
-                            img.className = 'max-w-xs rounded-2xl mb-3 hover-lift cursor-pointer';
-                            img.onclick = () => showImageModal(imageUrl);
-                            bubbleDiv.appendChild(img);
+
+                            // وقتی کامل لود شد، تاری برداشته بشه و لودینگ حذف شه
+                            img.onload = () => {
+                                wrapper.classList.add('loaded');
+                                loader.remove();
+                            };
+
+                            wrapper.appendChild(img);
+                            bubbleDiv.appendChild(wrapper);
                         }
+
 
                         if (message) {
                             const textDiv = document.createElement('div');
@@ -2072,6 +2132,20 @@
 
                     userMessage = userMessage.trim();
                     userMessage = userMessage.replace(/\s+/g, " ");
+
+                    // === QUICK-ACTIONS: handle exact commands first (prevent partial matches to chat.json) ===
+                    const normalized = userMessage.toString().trim();
+
+                    // exact photo requests — only run handlePhotoRequest when user typed exactly this
+                    if (normalized === "عکس بده" || normalized === "عکس" || normalized === "عکس بده لطفا") {
+                        return handlePhotoRequest();
+                    }
+
+                    // exact chat requests
+                    if (normalized === "چت کنیم" || normalized === "بزن بریم چت") {
+                        return handleChatRequest();
+                    }
+                    // =======================================================================
 
                     // 🔍 تشخیص کلید از روی جمله‌ی کاربر
                     let matchedKey = Object.keys(chatDictionary).find(key => userMessage.includes(key));
@@ -3380,8 +3454,6 @@
                     img.src = response.url;
                     img.className = "rounded-2xl max-w-xs hover-lift";
                     messageBubble.appendChild(img);
-                } else {
-                    messageBubble.textContent = response;
                 }
                 const welcomeAudio = document.getElementById("welcomeAudio");
 
@@ -3399,7 +3471,7 @@
                 });
 
             </script>
-            <script>(function () { function c() { var b = a.contentDocument || a.contentWindow.document; if (b) { var d = b.createElement('script'); d.innerHTML = "window.__CF$cv$params={r:'98231e777770da45',t:'MTc1ODM5MDE0Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);"; b.getElementsByTagName('head')[0].appendChild(d) } } if (document.body) { var a = document.createElement('iframe'); a.height = 1; a.width = 1; a.style.position = 'absolute'; a.style.top = 0; a.style.left = 0; a.style.border = 'none'; a.style.visibility = 'hidden'; document.body.appendChild(a); if ('loading' !== document.readyState) c(); else if (window.addEventListener) document.addEventListener('DOMContentLoaded', c); else { var e = document.onreadystatechange || function () { }; document.onreadystatechange = function (b) { e(b); 'loading' !== document.readyState && (document.onreadystatechange = e, c()) } } } })();</script>
+            <script>(function () { function c() { var b = a.contentDocument || a.contentWindow.document; if (b) { var d = b.createElement('script'); d.innerHTML = "window.__CF$cv$params={r:'98231e777770da45',t:'MTc1ODM5MDE0Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='';document.getElementsByTagName('head')[0].appendChild(a);"; b.getElementsByTagName('head')[0].appendChild(d) } } if (document.body) { var a = document.createElement('iframe'); a.height = 1; a.width = 1; a.style.position = 'absolute'; a.style.top = 0; a.style.left = 0; a.style.border = 'none'; a.style.visibility = 'hidden'; document.body.appendChild(a); if ('loading' !== document.readyState) c(); else if (window.addEventListener) document.addEventListener('DOMContentLoaded', c); else { var e = document.onreadystatechange || function () { }; document.onreadystatechange = function (b) { e(b); 'loading' !== document.readyState && (document.onreadystatechange = e, c()) } } } })();</script>
 </body>
 
 </html>
