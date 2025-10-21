@@ -1,131 +1,174 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Elma AI</title>
-    <link rel="icon" type="image/png" href="Assets/img/logo/Logo.png" />
+    <link rel="icon" type="image/png" href="Assets/img/logo/Logo2.png" />
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
         body {
             box-sizing: border-box;
         }
-        
+
         /* Hide default scrollbar */
         ::-webkit-scrollbar {
             display: none;
         }
-        
+
         html {
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
-        
+
         @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap');
-        
+
         * {
             font-family: 'Vazirmatn', sans-serif;
         }
-        
+
         .gradient-bg {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
-        
+
         .glass-effect {
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
-        
+
         .floating-animation {
             animation: floating 3s ease-in-out infinite;
         }
-        
+
         @keyframes floating {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
         }
-        
+
         .pulse-glow {
             animation: pulse-glow 2s infinite;
         }
-        
+
         @keyframes pulse-glow {
-            0%, 100% { box-shadow: 0 0 20px rgba(139, 92, 246, 0.5); }
-            50% { box-shadow: 0 0 40px rgba(139, 92, 246, 0.8); }
+
+            0%,
+            100% {
+                box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+            }
+
+            50% {
+                box-shadow: 0 0 40px rgba(139, 92, 246, 0.8);
+            }
         }
-        
+
         .voice-pulse {
             animation: voice-pulse 1.5s infinite;
         }
-        
+
         @keyframes voice-pulse {
-            0%, 100% { 
+
+            0%,
+            100% {
                 transform: scale(1);
                 color: #10b981;
             }
-            50% { 
+
+            50% {
                 transform: scale(1.2);
                 color: #34d399;
             }
         }
-        
+
         .click-hint {
             animation: click-bounce 2s infinite;
             z-index: 1000;
         }
-        
+
         @keyframes click-bounce {
-            0%, 20%, 50%, 80%, 100% {
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
                 transform: translate(-50%, 0);
             }
+
             40% {
                 transform: translate(-50%, -10px);
             }
+
             60% {
                 transform: translate(-50%, -5px);
             }
         }
-        
+
         .voice-playing {
             animation: voice-playing 0.5s infinite alternate;
         }
-        
+
         @keyframes voice-playing {
-            0% { transform: scale(1); }
-            100% { transform: scale(1.1); }
+            0% {
+                transform: scale(1);
+            }
+
+            100% {
+                transform: scale(1.1);
+            }
         }
-        
+
         .text-gradient {
             background: linear-gradient(45deg, #8b5cf6, #06b6d4);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
-        
+
         .hover-scale {
             transition: transform 0.3s ease;
         }
-        
+
         .hover-scale:hover {
             transform: scale(1.05);
         }
-        
+
         .particle {
             position: absolute;
             background: rgba(139, 92, 246, 0.6);
             border-radius: 50%;
             animation: particle-float 6s infinite linear;
         }
-        
+
         @keyframes particle-float {
-            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            90% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
         }
-        
+
         /* Custom Scrollbar Styles */
         .custom-scrollbar {
             position: fixed;
@@ -138,66 +181,66 @@
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             pointer-events: none;
         }
-        
+
         .custom-scrollbar.visible {
             opacity: 1;
             pointer-events: all;
         }
-        
+
         .custom-scrollbar.hover {
             width: 12px;
             opacity: 1;
         }
-        
+
         .custom-scrollbar.dragging {
             width: 14px;
             opacity: 1;
         }
-        
+
         .scrollbar-track {
             width: 100%;
             height: 100%;
             background: rgba(255, 255, 255, 0.08);
             border-radius: 10px;
             backdrop-filter: blur(8px);
-            box-shadow: 
+            box-shadow:
                 inset 0 0 10px rgba(0, 0, 0, 0.2),
                 0 0 20px rgba(139, 92, 246, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
-        
+
         .scrollbar-thumb {
             width: 100%;
             background: linear-gradient(135deg, #8b5cf6 0%, #06b6d4 50%, #ec4899 100%);
             border-radius: 10px;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 
+            box-shadow:
                 0 2px 10px rgba(139, 92, 246, 0.4),
                 0 0 20px rgba(6, 182, 212, 0.2);
             position: relative;
             min-height: 30px;
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
-        
+
         .scrollbar-thumb:hover {
             background: linear-gradient(135deg, #7c3aed 0%, #0891b2 50%, #db2777 100%);
-            box-shadow: 
+            box-shadow:
                 0 4px 20px rgba(139, 92, 246, 0.6),
                 0 0 30px rgba(6, 182, 212, 0.4),
                 0 0 40px rgba(236, 72, 153, 0.3);
             transform: scaleX(1.2);
         }
-        
+
         .scrollbar-thumb.dragging {
             background: linear-gradient(135deg, #6d28d9 0%, #0e7490 50%, #be185d 100%);
-            box-shadow: 
+            box-shadow:
                 0 6px 30px rgba(139, 92, 246, 0.8),
                 0 0 40px rgba(6, 182, 212, 0.6),
                 0 0 50px rgba(236, 72, 153, 0.5);
             transform: scaleX(1.3);
         }
-        
+
         .scrollbar-thumb::before {
             content: '';
             position: absolute;
@@ -211,12 +254,12 @@
             opacity: 0;
             transition: opacity 0.3s ease;
         }
-        
+
         .scrollbar-thumb:hover::before,
         .scrollbar-thumb.dragging::before {
             opacity: 1;
         }
-        
+
         .scrollbar-thumb::after {
             content: '';
             position: absolute;
@@ -229,12 +272,21 @@
             opacity: 0;
             animation: shimmer 2s infinite;
         }
-        
+
         @keyframes shimmer {
-            0%, 100% { opacity: 0; transform: translateX(-100%); }
-            50% { opacity: 1; transform: translateX(100%); }
+
+            0%,
+            100% {
+                opacity: 0;
+                transform: translateX(-100%);
+            }
+
+            50% {
+                opacity: 1;
+                transform: translateX(100%);
+            }
         }
-        
+
         /* Position indicator */
         .scroll-position {
             position: fixed;
@@ -253,12 +305,12 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
-        
+
         .scroll-position.visible {
             opacity: 1;
             transform: translateY(0);
         }
-        
+
         .scroll-position::before {
             content: '';
             position: absolute;
@@ -270,7 +322,7 @@
             border-radius: 25px;
             z-index: -1;
         }
-        
+
         /* Theme Switcher */
         .theme-switcher {
             position: fixed;
@@ -281,7 +333,7 @@
             flex-direction: column;
             gap: 10px;
         }
-        
+
         .theme-btn {
             width: 40px;
             height: 40px;
@@ -294,129 +346,130 @@
             justify-content: center;
             backdrop-filter: blur(10px);
         }
-        
+
         .theme-btn:hover {
             transform: scale(1.1);
             box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
         }
-        
+
         .theme-btn.active {
             border-color: #8b5cf6;
             box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
         }
-        
+
         /* Dark Theme (Default) */
         .dark-theme .scrollbar-track {
             background: rgba(255, 255, 255, 0.08);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
-        
+
         .dark-theme .scroll-position {
             background: rgba(0, 0, 0, 0.85);
             color: white;
         }
-        
+
         /* Light Theme */
         .light-theme {
             background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
             color: #1a202c;
         }
-        
+
         .light-theme .scrollbar-track {
             background: rgba(0, 0, 0, 0.08);
-            box-shadow: 
+            box-shadow:
                 inset 0 0 10px rgba(0, 0, 0, 0.1),
                 0 0 20px rgba(139, 92, 246, 0.05);
             border: 1px solid rgba(0, 0, 0, 0.1);
         }
-        
+
         .light-theme .scroll-position {
             background: rgba(255, 255, 255, 0.9);
             color: #1a202c;
             border: 1px solid rgba(0, 0, 0, 0.1);
         }
-        
+
         .light-theme .glass-effect {
             background: rgba(255, 255, 255, 0.2);
             border: 1px solid rgba(0, 0, 0, 0.1);
         }
-        
+
         .light-theme .particle {
             background: rgba(139, 92, 246, 0.3);
         }
-        
+
         /* Mobile Theme */
         .mobile-theme .custom-scrollbar {
             width: 6px;
         }
-        
+
         .mobile-theme .custom-scrollbar.hover,
         .mobile-theme .custom-scrollbar.dragging {
             width: 10px;
         }
-        
+
         .mobile-theme .scrollbar-thumb {
             min-height: 40px;
         }
-        
+
         /* Mobile responsive */
         @media (max-width: 768px) {
             .custom-scrollbar {
                 width: 6px;
             }
-            
+
             .custom-scrollbar.hover,
             .custom-scrollbar.dragging {
                 width: 10px;
             }
-            
+
             .scrollbar-thumb {
                 min-height: 40px;
             }
-            
+
             .scroll-position {
                 top: 10px;
                 right: 10px;
                 padding: 8px 12px;
                 font-size: 11px;
             }
-            
+
             .theme-switcher {
                 top: 60px;
                 right: 10px;
             }
-            
+
             .theme-btn {
                 width: 35px;
                 height: 35px;
             }
         }
-        
+
         /* High contrast mode */
         @media (prefers-contrast: high) {
             .scrollbar-track {
                 background: rgba(255, 255, 255, 0.3);
                 border: 2px solid rgba(255, 255, 255, 0.8);
             }
-            
+
             .scrollbar-thumb {
                 background: #ffffff;
                 border: 2px solid #000000;
             }
-            
+
             .scrollbar-thumb:hover {
                 background: #f0f0f0;
             }
         }
-        
+
         /* Reduced motion */
         @media (prefers-reduced-motion: reduce) {
+
             .custom-scrollbar,
             .scrollbar-thumb,
             .scroll-position {
                 transition: none;
             }
-            
+
             .floating-animation,
             .pulse-glow,
             .particle {
@@ -425,20 +478,24 @@
         }
     </style>
 </head>
+
 <body class="bg-gray-900 text-white overflow-x-hidden dark-theme" id="body">
     <!-- Custom Scrollbar -->
-    <div class="custom-scrollbar" id="customScrollbar" role="scrollbar" aria-label="صفحه اسکرول" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0">
+    <div class="custom-scrollbar" id="customScrollbar" role="scrollbar" aria-label="صفحه اسکرول" aria-valuemin="0"
+        aria-valuemax="100" aria-valuenow="0" tabindex="0">
         <div class="scrollbar-track" id="scrollbarTrack">
             <div class="scrollbar-thumb" id="scrollbarThumb"></div>
         </div>
     </div>
-    
+
     <!-- Scroll Position Indicator -->
     <div class="scroll-position" id="scrollPosition">0%</div>
-    
+
     <!-- Age Verification Modal -->
-    <div id="ageVerificationModal" class="fixed inset-0 bg-black bg-opacity-80 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
-        <div class="bg-gray-900 rounded-3xl p-4 md:p-8 max-w-2xl w-full border border-red-500/30 shadow-2xl max-h-[90vh] overflow-y-auto">
+    <div id="ageVerificationModal"
+        class="fixed inset-0 bg-black bg-opacity-80 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
+        <div
+            class="bg-gray-900 rounded-3xl p-4 md:p-8 max-w-2xl w-full border border-red-500/30 shadow-2xl max-h-[90vh] overflow-y-auto">
             <div class="text-center mb-6 md:mb-8">
                 <div class="text-4xl md:text-6xl mb-3 md:mb-4 text-red-400">
                     <i class="fas fa-exclamation-triangle"></i>
@@ -448,7 +505,7 @@
                     این سرویس فقط برای افراد 18 سال به بالا مناسب است
                 </p>
             </div>
-            
+
             <div class="bg-gray-800 rounded-2xl p-6 mb-6">
                 <h3 class="text-xl font-bold mb-4 text-yellow-400">
                     <i class="fas fa-scroll ml-2"></i>
@@ -468,20 +525,24 @@
                     <p><strong>11.</strong> در صورت نقض قوانین، دسترسی کاربر محدود خواهد شد.</p>
                     <p><strong>12.</strong> تمام حقوق معنوی متعلق به Elma AI است.</p>
                 </div>
-                
+
                 <label class="flex items-center space-x-3 space-x-reverse cursor-pointer">
-                    <input type="checkbox" id="termsCheckbox" class="w-5 h-5 text-purple-600 bg-gray-700 border-gray-600 rounded focus:ring-purple-500">
+                    <input type="checkbox" id="termsCheckbox"
+                        class="w-5 h-5 text-purple-600 bg-gray-700 border-gray-600 rounded focus:ring-purple-500">
                     <span class="text-sm text-gray-300">قوانین و مقررات را مطالعه کرده و می‌پذیرم</span>
                 </label>
             </div>
-            
+
             <div class="flex flex-col sm:flex-row gap-3 md:gap-4">
-                <button onclick="confirmAge(true)" id="confirmAgeBtn" class="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 py-3 rounded-xl text-sm md:text-base font-semibold transition-all duration-300 opacity-50 cursor-not-allowed" disabled>
+                <button onclick="confirmAge(true)" id="confirmAgeBtn"
+                    class="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 py-3 rounded-xl text-sm md:text-base font-semibold transition-all duration-300 opacity-50 cursor-not-allowed"
+                    disabled>
                     <i class="fas fa-check ml-2"></i>
                     <span class="hidden sm:inline">بله، 18 سال به بالا هستم</span>
                     <span class="sm:hidden">بله، 18+ هستم</span>
                 </button>
-                <button onclick="confirmAge(false)" class="flex-1 bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 py-3 rounded-xl text-sm md:text-base font-semibold transition-all duration-300">
+                <button onclick="confirmAge(false)"
+                    class="flex-1 bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 py-3 rounded-xl text-sm md:text-base font-semibold transition-all duration-300">
                     <i class="fas fa-times ml-2"></i>
                     <span class="hidden sm:inline">خیر، زیر 18 سال هستم</span>
                     <span class="sm:hidden">خیر، زیر 18 هستم</span>
@@ -490,266 +551,134 @@
         </div>
     </div>
 
-    <!-- Pro Features Modal -->
-    <div id="proFeaturesModal" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
-        <div class="bg-gray-900 rounded-3xl p-4 md:p-8 max-w-3xl w-full max-h-[90vh] overflow-y-auto border border-purple-500/20 shadow-2xl">
-            <div class="text-center mb-6 md:mb-8">
-                <div class="text-4xl md:text-6xl mb-3 md:mb-4 text-yellow-400">
-                    <i class="fas fa-crown"></i>
-                </div>
-                <h2 class="text-2xl md:text-3xl font-bold text-gradient mb-3 md:mb-4">ارتقا به نسخه پرو</h2>
-                <p class="text-base md:text-lg text-gray-300">
-                    تجربه کاملی از Elma AI با امکانات ویژه داشته باشید!
-                </p>
-            </div>
-            
-            <div class="grid md:grid-cols-2 gap-6 mb-8">
-                <div class="bg-gradient-to-br from-purple-900/50 to-blue-900/50 rounded-2xl p-6 border border-purple-500/30">
-                    <h3 class="text-xl font-bold mb-4 text-purple-300">
-                        <i class="fas fa-star ml-2"></i>
-                        امکانات پرو
-                    </h3>
-                    <ul class="space-y-3 text-sm">
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-green-400 ml-2"></i>
-                            گفتگوی نامحدود بدون انتظار
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-green-400 ml-2"></i>
-                            شخصی‌سازی کامل شخصیت Elma
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-green-400 ml-2"></i>
-                            حالت‌های گفتگوی ویژه
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-green-400 ml-2"></i>
-                            حافظه طولانی‌مدت گفتگوها
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-green-400 ml-2"></i>
-                            پشتیبانی اولویت‌دار
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-green-400 ml-2"></i>
-                            آپدیت‌های زودهنگام
-                        </li>
-                    </ul>
-                </div>
-                
-                <div class="bg-gradient-to-br from-green-900/50 to-emerald-900/50 rounded-2xl p-6 border border-green-500/30">
-                    <h3 class="text-xl font-bold mb-4 text-green-300">
-                        <i class="fas fa-gift ml-2"></i>
-                        پیشنهاد ویژه معرفی
-                    </h3>
-                    <div class="text-center mb-4">
-                        <div class="text-3xl font-bold text-yellow-400 mb-2">2 ماه رایگان!</div>
-                        <p class="text-sm text-gray-300">
-                            دوستتان را معرفی کنید و وقتی خرید کرد، شما 2 ماه اشتراک پرو رایگان دریافت کنید!
-                        </p>
-                    </div>
-                    <div class="bg-gray-800 rounded-xl p-4 mb-4">
-                        <h4 class="font-semibold mb-2 text-yellow-300">چگونه کار می‌کند؟</h4>
-                        <ol class="text-sm space-y-2 text-gray-300">
-                            <li>1. لینک معرفی خود را دریافت کنید</li>
-                            <li>2. با دوستان خود به اشتراک بگذارید</li>
-                            <li>3. وقتی آنها خرید کردند، شما 2 ماه رایگان بگیرید!</li>
-                        </ol>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="flex flex-col sm:flex-row gap-3 md:gap-4">
-                <button onclick="showPricingModal(); closeProFeaturesModal();" class="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 py-3 rounded-xl text-sm md:text-base font-semibold transition-all duration-300">
+    <!-- Pricing Modal -->
+    <div id="pricingModal"
+        class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+        <div
+            class="bg-gray-900 rounded-3xl p-4 md:p-8 max-w-5xl w-full max-h-[90vh] overflow-y-auto border border-purple-500/20 shadow-2xl">
+            <div class="flex justify-between items-center mb-6 md:mb-8">
+                <h2 class="text-xl md:text-3xl font-bold text-gradient">
                     <i class="fas fa-crown ml-2"></i>
-                    <span class="hidden sm:inline">خرید اشتراک پرو</span>
-                    <span class="sm:hidden">خرید پرو</span>
+                    پلن‌های اشتراک Elma AI
+                </h2>
+                <button onclick="closePricingModal()"
+                    class="text-gray-400 hover:text-white text-xl md:text-2xl transition-colors">
+                    <i class="fas fa-times"></i>
                 </button>
-                <button onclick="closeProFeaturesModal()" class="flex-1 bg-gray-700 hover:bg-gray-600 py-3 rounded-xl text-sm md:text-base font-semibold transition-all duration-300">
-                    <i class="fas fa-times ml-2"></i>
-                    بعداً
-                </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Plan 3 Months -->
+                <div
+                    class="glass-effect rounded-2xl p-6 border-2 border-purple-500/30 hover:border-purple-500/60 transition-all duration-300 hover-scale">
+                    <div class="text-center mb-6">
+                        <div class="bg-purple-600 rounded-full w-14 h-14 flex items-center justify-center mx-auto mb-3">
+                            <i class="fas fa-star text-xl text-white"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-1">پلن ۳ ماهه</h3>
+                        <p class="text-gray-400 text-sm mb-3">مناسب برای شروع</p>
+                        <p class="text-3xl font-bold text-green-400">۵۵۰,۰۰۰ <span
+                                class="text-lg text-gray-400">تومان</span></p>
+                    </div>
+
+                    <ul class="space-y-2 text-sm">
+                        <li><i class="fas fa-check text-green-400 ml-2"></i> گفتگوی نامحدود با Elma</li>
+                        <li><i class="fas fa-check text-green-400 ml-2"></i> حافظه گفتگو</li>
+                        <li><i class="fas fa-check text-green-400 ml-2"></i> پشتیبانی پایه</li>
+                        <li><i class="fas fa-times text-red-500 ml-2"></i> شخصی‌سازی پیشرفته</li>
+                        <li><i class="fas fa-times text-red-500 ml-2"></i> حالت‌های گفتگوی ویژه</li>
+                        <li><i class="fas fa-times text-red-500 ml-2"></i> سرعت پاسخ بالا</li>
+                        <li><i class="fas fa-times text-red-500 ml-2"></i> مدل GPT-5 اختصاصی</li>
+                        <li><i class="fas fa-times text-red-500 ml-2"></i> آپدیت‌های ویژه</li>
+                        <li><i class="fas fa-times text-red-500 ml-2"></i> پشتیبانی ۲۴/۷</li>
+                        <li><i class="fas fa-times text-red-500 ml-2"></i> ویژگی‌های VIP</li>
+                    </ul>
+
+                    <button onclick="buyPlan('3ماهه', '550000')"
+                        class="w-full mt-5 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 py-3 rounded-xl font-semibold transition-all">
+                        خرید پلن ۳ ماهه
+                    </button>
+                </div>
+
+                <!-- Plan 6 Months -->
+                <div
+                    class="glass-effect rounded-2xl p-6 border-2 border-green-500/50 hover:border-green-500/80 transition-all duration-300 hover-scale relative">
+                    <div
+                        class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-4 py-1 rounded-full text-xs font-semibold">
+                        محبوب‌ترین
+                    </div>
+                    <div class="text-center mb-6 mt-3">
+                        <div class="bg-green-600 rounded-full w-14 h-14 flex items-center justify-center mx-auto mb-3">
+                            <i class="fas fa-gem text-xl text-white"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-1">پلن ۶ ماهه</h3>
+                        <p class="text-gray-400 text-sm mb-3">بهترین انتخاب</p>
+                        <p class="text-3xl font-bold text-green-400">۱,۳۲۰,۰۰۰ <span
+                                class="text-lg text-gray-400">تومان</span></p>
+                    </div>
+
+                    <ul class="space-y-2 text-sm">
+                        <li><i class="fas fa-check text-green-400 ml-2"></i> گفتگوی نامحدود با Elma</li>
+                        <li><i class="fas fa-check text-green-400 ml-2"></i> حافظه گفتگو</li>
+                        <li><i class="fas fa-check text-green-400 ml-2"></i> پشتیبانی ۲۴/۷</li>
+                        <li><i class="fas fa-check text-green-400 ml-2"></i> سرعت پاسخ بالا</li>
+                        <li><i class="fas fa-check text-green-400 ml-2"></i> شخصی‌سازی پیشرفته</li>
+                        <li><i class="fas fa-check text-green-400 ml-2"></i> آپدیت‌های ویژه</li>
+                        <li><i class="fas fa-times text-red-500 ml-2"></i> مدل GPT-5 اختصاصی</li>
+                        <li><i class="fas fa-times text-red-500 ml-2"></i> ویژگی‌های VIP</li>
+                        <li><i class="fas fa-times text-red-500 ml-2"></i> گفتگوهای چندنفره</li>
+                        <li><i class="fas fa-times text-red-500 ml-2"></i> اولویت پشتیبانی</li>
+                    </ul>
+
+                    <button onclick="buyPlan('6ماهه', '1320000')"
+                        class="w-full mt-5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 py-3 rounded-xl font-semibold transition-all">
+                        خرید پلن ۶ ماهه
+                    </button>
+                </div>
+
+                <!-- Plan 12 Months -->
+                <div
+                    class="glass-effect rounded-2xl p-6 border-2 border-yellow-500/40 hover:border-yellow-500/70 transition-all duration-300 hover-scale">
+                    <div class="text-center mb-6">
+                        <div class="bg-yellow-600 rounded-full w-14 h-14 flex items-center justify-center mx-auto mb-3">
+                            <i class="fas fa-crown text-xl text-white"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-1">پلن ۱۲ ماهه</h3>
+                        <p class="text-gray-400 text-sm mb-3">بیشترین امکانات</p>
+                        <p class="text-3xl font-bold text-green-400">۲,۲۰۰,۰۰۰ <span
+                                class="text-lg text-gray-400">تومان</span></p>
+                    </div>
+
+                    <ul class="space-y-2 text-sm">
+                        <li><i class="fas fa-check text-green-400 ml-2"></i> گفتگوی نامحدود با Elma</li>
+                        <li><i class="fas fa-check text-green-400 ml-2"></i> حافظه گفتگو</li>
+                        <li><i class="fas fa-check text-green-400 ml-2"></i> پشتیبانی ۲۴/۷</li>
+                        <li><i class="fas fa-check text-green-400 ml-2"></i> سرعت پاسخ بالا</li>
+                        <li><i class="fas fa-check text-green-400 ml-2"></i> شخصی‌سازی کامل</li>
+                        <li><i class="fas fa-check text-green-400 ml-2"></i> آپدیت‌های VIP</li>
+                        <li><i class="fas fa-check text-green-400 ml-2"></i> مدل GPT-5 اختصاصی</li>
+                        <li><i class="fas fa-check text-green-400 ml-2"></i> حالت‌های گفتگوی ویژه</li>
+                        <li><i class="fas fa-check text-green-400 ml-2"></i> گفتگوهای چندنفره</li>
+                        <li><i class="fas fa-check text-green-400 ml-2"></i> اولویت کامل پشتیبانی</li>
+                    </ul>
+
+                    <button onclick="buyPlan('12ماهه', '2200000')"
+                        class="w-full mt-5 bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700 py-3 rounded-xl font-semibold transition-all">
+                        خرید پلن ۱۲ ماهه
+                    </button>
+                </div>
+            </div>
+
+            <div class="mt-8 text-center">
+                <p class="text-gray-400 text-sm mb-3">
+                    <i class="fas fa-shield-alt ml-1"></i>
+                    پرداخت‌ها امن و رمزگذاری‌شده هستند
+                </p>
+                <p class="text-gray-500 text-xs">با خرید، با قوانین و مقررات ما موافقت می‌کنید</p>
             </div>
         </div>
     </div>
 
-    <!-- Pricing Modal -->
-    <div id="pricingModal" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
-        <div class="bg-gray-900 rounded-3xl p-4 md:p-8 max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-purple-500/20 shadow-2xl">
-            <div class="flex justify-between items-center mb-6 md:mb-8">
-                <h2 class="text-xl md:text-3xl font-bold text-gradient">
-                    <i class="fas fa-crown ml-2"></i>
-                    <span class="hidden sm:inline">پلن‌های اشتراک Elma AI</span>
-                    <span class="sm:hidden">پلن‌های اشتراک</span>
-                </h2>
-                <button onclick="closePricingModal()" class="text-gray-400 hover:text-white text-xl md:text-2xl transition-colors">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
-                <!-- 3 Month Plan -->
-                <div class="glass-effect rounded-2xl p-4 md:p-6 border-2 border-purple-500/30 hover:border-purple-500/60 transition-all duration-300 hover-scale">
-                    <div class="text-center mb-4 md:mb-6">
-                        <div class="bg-purple-600 rounded-full w-12 h-12 md:w-16 md:h-16 flex items-center justify-center mx-auto mb-3 md:mb-4">
-                            <i class="fas fa-star text-lg md:text-2xl text-white"></i>
-                        </div>
-                        <h3 class="text-lg md:text-xl font-bold mb-2">پلن ۳ ماهه</h3>
-                        <div class="text-xs md:text-sm text-gray-400 mb-3 md:mb-4">مناسب برای شروع</div>
-                        <div class="mb-3 md:mb-4">
-                            <span class="text-2xl md:text-3xl font-bold text-green-400">۵۵۰,۰۰۰</span>
-                            <span class="text-sm md:text-lg text-gray-400">تومان</span>
-                        </div>
-                        <div class="bg-red-500 text-white px-2 py-1 md:px-3 md:py-1 rounded-full text-xs md:text-sm inline-block mb-3 md:mb-4">
-                            تخفیف ۵۰٪
-                        </div>
-                    </div>
-                    
-                    <ul class="space-y-3 mb-6 text-sm">
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-green-400 ml-2"></i>
-                            گفتگوی نامحدود با Elma
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-green-400 ml-2"></i>
-                            پشتیبانی ۲۴/۷
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-green-400 ml-2"></i>
-                            شخصی‌سازی پایه
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-green-400 ml-2"></i>
-                            حافظه گفتگو
-                        </li>
-                    </ul>
-                    
-                    <button onclick="buyPlan('3ماهه', '550000')" class="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 py-2 md:py-3 rounded-xl text-sm md:text-base font-semibold transition-all duration-300">
-                        <i class="fas fa-shopping-cart ml-2"></i>
-                        <span class="hidden sm:inline">خرید پلن ۳ ماهه</span>
-                        <span class="sm:hidden">خرید ۳ ماهه</span>
-                    </button>
-                </div>
-                
-                <!-- 6 Month Plan -->
-                <div class="glass-effect rounded-2xl p-4 md:p-6 border-2 border-green-500/50 hover:border-green-500/80 transition-all duration-300 hover-scale relative">
-                    <div class="absolute -top-2 md:-top-3 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-3 py-1 md:px-4 md:py-1 rounded-full text-xs md:text-sm font-semibold">
-                        محبوب‌ترین
-                    </div>
-                    <div class="text-center mb-4 md:mb-6 mt-2 md:mt-0">
-                        <div class="bg-green-600 rounded-full w-12 h-12 md:w-16 md:h-16 flex items-center justify-center mx-auto mb-3 md:mb-4">
-                            <i class="fas fa-gem text-lg md:text-2xl text-white"></i>
-                        </div>
-                        <h3 class="text-lg md:text-xl font-bold mb-2">پلن ۶ ماهه</h3>
-                        <div class="text-xs md:text-sm text-gray-400 mb-3 md:mb-4">بهترین انتخاب</div>
-                        <div class="mb-2">
-                            <span class="text-sm md:text-lg text-gray-500 line-through">۲,۲۰۰,۰۰۰</span>
-                        </div>
-                        <div class="mb-3 md:mb-4">
-                            <span class="text-2xl md:text-3xl font-bold text-green-400">۱,۳۲۰,۰۰۰</span>
-                            <span class="text-sm md:text-lg text-gray-400">تومان</span>
-                        </div>
-                        <div class="bg-red-500 text-white px-2 py-1 md:px-3 md:py-1 rounded-full text-xs md:text-sm inline-block mb-3 md:mb-4">
-                            تخفیف ۴۰٪
-                        </div>
-                    </div>
-                    
-                    <ul class="space-y-3 mb-6 text-sm">
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-green-400 ml-2"></i>
-                            همه ویژگی‌های پلن ۳ ماهه
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-green-400 ml-2"></i>
-                            شخصی‌سازی پیشرفته
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-green-400 ml-2"></i>
-                            حالت‌های گفتگوی متنوع
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-green-400 ml-2"></i>
-                            پشتیبانی اولویت‌دار
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-green-400 ml-2"></i>
-                            آپدیت‌های اختصاصی
-                        </li>
-                    </ul>
-                    
-                    <button onclick="buyPlan('6ماهه', '1320000')" class="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 py-2 md:py-3 rounded-xl text-sm md:text-base font-semibold transition-all duration-300">
-                        <i class="fas fa-shopping-cart ml-2"></i>
-                        <span class="hidden sm:inline">خرید پلن ۶ ماهه</span>
-                        <span class="sm:hidden">خرید ۶ ماهه</span>
-                    </button>
-                </div>
-                
-                <!-- 12 Month Plan -->
-                <div class="glass-effect rounded-2xl p-4 md:p-6 border-2 border-yellow-500/30 hover:border-yellow-500/60 transition-all duration-300 hover-scale">
-                    <div class="text-center mb-4 md:mb-6">
-                        <div class="bg-yellow-600 rounded-full w-12 h-12 md:w-16 md:h-16 flex items-center justify-center mx-auto mb-3 md:mb-4">
-                            <i class="fas fa-crown text-lg md:text-2xl text-white"></i>
-                        </div>
-                        <h3 class="text-lg md:text-xl font-bold mb-2">پلن ۱۲ ماهه</h3>
-                        <div class="text-xs md:text-sm text-gray-400 mb-3 md:mb-4">بیشترین صرفه‌جویی</div>
-                        <div class="mb-2">
-                            <span class="text-sm md:text-lg text-gray-500 line-through">۴,۴۰۰,۰۰۰</span>
-                        </div>
-                        <div class="mb-3 md:mb-4">
-                            <span class="text-2xl md:text-3xl font-bold text-green-400">۲,۲۰۰,۰۰۰</span>
-                            <span class="text-sm md:text-lg text-gray-400">تومان</span>
-                        </div>
-                        <div class="bg-red-500 text-white px-2 py-1 md:px-3 md:py-1 rounded-full text-xs md:text-sm inline-block mb-3 md:mb-4">
-                            تخفیف ۵۰٪
-                        </div>
-                    </div>
-                    
-                    <ul class="space-y-3 mb-6 text-sm">
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-green-400 ml-2"></i>
-                            همه ویژگی‌های پلن‌های قبلی
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-green-400 ml-2"></i>
-                            دسترسی به ویژگی‌های VIP
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-green-400 ml-2"></i>
-                            شخصی‌سازی کامل
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-green-400 ml-2"></i>
-                            پشتیبانی اختصاصی
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-green-400 ml-2"></i>
-                            آپدیت‌های زودهنگام
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-green-400 ml-2"></i>
-                            حالت‌های گفتگوی پریمیوم
-                        </li>
-                    </ul>
-                    
-                    <button onclick="buyPlan('12ماهه', '2200000')" class="w-full bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700 py-2 md:py-3 rounded-xl text-sm md:text-base font-semibold transition-all duration-300">
-                        <i class="fas fa-shopping-cart ml-2"></i>
-                        <span class="hidden sm:inline">خرید پلن ۱۲ ماهه</span>
-                        <span class="sm:hidden">خرید ۱۲ ماهه</span>
-                    </button>
-                </div>
-            </div>
-            
-            <div class="mt-8 text-center">
-                <p class="text-gray-400 text-sm mb-4">
-                    <i class="fas fa-shield-alt ml-1"></i>
-                    تمام پرداخت‌ها امن و محفوظ هستند
-                </p>
-                <p class="text-gray-500 text-xs">
-                    با خرید هر پلن، شما با قوانین و مقررات ما موافقت می‌کنید
-                </p>
-            </div>
-        </div>
-    </div>
 
     <!-- Theme Switcher -->
     <div class="theme-switcher">
@@ -759,7 +688,8 @@
         <div class="theme-btn" id="lightTheme" style="background: #f8fafc;" title="تم روشن">
             <i class="fas fa-sun text-gray-800"></i>
         </div>
-        <div class="theme-btn" id="mobileTheme" style="background: linear-gradient(45deg, #8b5cf6, #06b6d4);" title="تم موبایل">
+        <div class="theme-btn" id="mobileTheme" style="background: linear-gradient(45deg, #8b5cf6, #06b6d4);"
+            title="تم موبایل">
             <i class="fas fa-mobile-alt text-white"></i>
         </div>
     </div>
@@ -781,22 +711,28 @@
     <header class="relative z-10 p-4 md:p-6">
         <div class="flex justify-between items-center max-w-7xl mx-auto">
             <div class="flex items-center space-x-2 md:space-x-4 space-x-reverse">
-                <img src="Assets/img/logo/Logo.png" alt="Elma AI Logo" class="w-8 h-8 md:w-12 md:h-12 rounded-full border-2 border-purple-400 shadow-lg" onerror="this.src=''; this.alt='لوگو Elma AI'; this.style.display='none';">
+                <img src="Assets/img/logo/Logo.png" alt="Elma AI Logo"
+                    class="w-8 h-8 md:w-12 md:h-12 rounded-full border-2 border-purple-400 shadow-lg"
+                    onerror="this.src=''; this.alt='لوگو Elma AI'; this.style.display='none';">
                 <h1 class="text-lg md:text-2xl font-bold text-gradient">Elma AI</h1>
             </div>
             <div class="flex items-center space-x-2 md:space-x-4 space-x-reverse">
-                <button id="voiceBtn" onclick="playElmaVoice()" class="bg-gradient-to-r from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700 px-3 py-2 md:px-4 md:py-3 rounded-full text-sm md:text-base font-semibold transition-all duration-300 hover-scale relative">
+                <button id="voiceBtn" onclick="playElmaVoice()"
+                    class="bg-gradient-to-r from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700 px-3 py-2 md:px-4 md:py-3 rounded-full text-sm md:text-base font-semibold transition-all duration-300 hover-scale relative">
                     <i id="voiceIcon" class="fas fa-volume-up voice-pulse"></i>
-                    <div id="clickHint" class="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-black text-white px-2 py-1 rounded text-xs whitespace-nowrap click-hint">
+                    <div id="clickHint"
+                        class="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-black text-white px-2 py-1 rounded text-xs whitespace-nowrap click-hint">
                         کلیک کن! 👆
                     </div>
                 </button>
-                <button onclick="window.open('index.html', '_self')" class="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 px-3 py-2 md:px-6 md:py-3 rounded-full text-sm md:text-base font-semibold transition-all duration-300 hover-scale pulse-glow">
+                <button onclick="window.open('index.html', '_self')"
+                    class="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 px-3 py-2 md:px-6 md:py-3 rounded-full text-sm md:text-base font-semibold transition-all duration-300 hover-scale pulse-glow">
                     <i class="fas fa-comments ml-1 md:ml-2"></i>
                     <span class="hidden sm:inline">شروع چت</span>
                     <span class="sm:hidden">چت</span>
                 </button>
-                <button onclick="showPricingModal()" class="bg-gradient-to-r from-yellow-500 to-orange-600 hover:from-yellow-600 hover:to-orange-700 px-3 py-2 md:px-6 md:py-3 rounded-full text-sm md:text-base font-semibold transition-all duration-300 hover-scale">
+                <button onclick="showPricingModal()"
+                    class="bg-gradient-to-r from-yellow-500 to-orange-600 hover:from-yellow-600 hover:to-orange-700 px-3 py-2 md:px-6 md:py-3 rounded-full text-sm md:text-base font-semibold transition-all duration-300 hover-scale">
                     <i class="fas fa-crown ml-1 md:ml-2"></i>
                     <span class="hidden md:inline">خرید اشتراک</span>
                     <span class="md:hidden">پرو</span>
@@ -811,8 +747,12 @@
             <!-- Central AI Avatar -->
             <div class="mb-8 md:mb-12 floating-animation">
                 <div class="relative inline-block">
-                    <img src="Assets/img/logo/Logo.png" alt="Elma AI Avatar" class="w-32 h-32 md:w-48 md:h-48 rounded-full mx-auto border-4 border-purple-400 shadow-2xl" onerror="this.src=''; this.alt='آواتار Elma AI'; this.style.display='none';">
-                    <div class="absolute -top-1 -right-1 md:-top-2 md:-right-2 w-4 h-4 md:w-6 md:h-6 bg-green-400 rounded-full border-2 border-gray-900 animate-pulse"></div>
+                    <img src="Assets/img/logo/Logo.png" alt="Elma AI Avatar"
+                        class="w-32 h-32 md:w-48 md:h-48 rounded-full mx-auto border-4 border-purple-400 shadow-2xl"
+                        onerror="this.src=''; this.alt='آواتار Elma AI'; this.style.display='none';">
+                    <div
+                        class="absolute -top-1 -right-1 md:-top-2 md:-right-2 w-4 h-4 md:w-6 md:h-6 bg-green-400 rounded-full border-2 border-gray-900 animate-pulse">
+                    </div>
                 </div>
             </div>
 
@@ -820,18 +760,20 @@
             <h1 class="text-4xl md:text-6xl lg:text-8xl font-bold mb-4 md:mb-6 text-gradient">
                 Elma AI
             </h1>
-            
+
             <p class="text-lg md:text-xl lg:text-2xl text-gray-300 mb-6 md:mb-8 leading-relaxed px-4">
                 <i class="fas fa-heart text-pink-400 ml-2"></i>
                 دوست دختر هوشمند و مهربان شما
             </p>
-            
+
             <p class="text-sm md:text-lg text-gray-400 mb-8 md:mb-12 max-w-2xl mx-auto leading-relaxed px-4">
-                با Elma صحبت کنید، احساساتتان را با او در میان بگذارید و تجربه‌ای منحصر به فرد از گفتگو با هوش مصنوعی داشته باشید. او همیشه برای شنیدن حرف‌هایتان آماده است.
+                با Elma صحبت کنید، احساساتتان را با او در میان بگذارید و تجربه‌ای منحصر به فرد از گفتگو با هوش مصنوعی
+                داشته باشید. او همیشه برای شنیدن حرف‌هایتان آماده است.
             </p>
 
             <!-- Main CTA Button -->
-            <button onclick="window.open('index.html', '_self')" class="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 px-6 py-3 md:px-12 md:py-4 rounded-full text-lg md:text-xl font-bold transition-all duration-300 hover-scale pulse-glow mb-12 md:mb-16">
+            <button onclick="window.open('index.html', '_self')"
+                class="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 px-6 py-3 md:px-12 md:py-4 rounded-full text-lg md:text-xl font-bold transition-all duration-300 hover-scale pulse-glow mb-12 md:mb-16">
                 <i class="fas fa-rocket ml-2"></i>
                 <span class="hidden sm:inline">شروع گفتگو با Elma</span>
                 <span class="sm:hidden">شروع گفتگو</span>
@@ -846,7 +788,7 @@
                     <h3 class="text-lg md:text-xl font-semibold mb-2 md:mb-3">هوش مصنوعی پیشرفته</h3>
                     <p class="text-sm md:text-base text-gray-400">با تکنولوژی روز دنیا و قابلیت درک عمیق احساسات</p>
                 </div>
-                
+
                 <div class="glass-effect rounded-2xl p-6 md:p-8 hover-scale">
                     <div class="text-3xl md:text-4xl mb-3 md:mb-4 text-pink-400">
                         <i class="fas fa-heart"></i>
@@ -854,7 +796,7 @@
                     <h3 class="text-lg md:text-xl font-semibold mb-2 md:mb-3">شخصیت مهربان</h3>
                     <p class="text-sm md:text-base text-gray-400">Elma همیشه با مهربانی و صبر پاسخ‌تان را می‌دهد</p>
                 </div>
-                
+
                 <div class="glass-effect rounded-2xl p-6 md:p-8 hover-scale">
                     <div class="text-3xl md:text-4xl mb-3 md:mb-4 text-blue-400">
                         <i class="fas fa-star"></i>
@@ -875,7 +817,7 @@
                     Elma تنها یک چت‌بات نیست، او دوست صمیمی شماست که همیشه در دسترس است
                 </p>
             </div>
-            
+
             <div class="grid md:grid-cols-2 gap-12 items-center">
                 <div class="space-y-8">
                     <div class="flex items-start space-x-4 space-x-reverse">
@@ -887,7 +829,7 @@
                             <p class="text-gray-400">Elma هر زمان که نیاز داشته باشید کنار شماست</p>
                         </div>
                     </div>
-                    
+
                     <div class="flex items-start space-x-4 space-x-reverse">
                         <div class="bg-pink-600 rounded-full p-3 mt-1">
                             <i class="fas fa-heart text-white"></i>
@@ -897,7 +839,7 @@
                             <p class="text-gray-400">او احساسات شما را درک می‌کند و با همدلی پاسخ می‌دهد</p>
                         </div>
                     </div>
-                    
+
                     <div class="flex items-start space-x-4 space-x-reverse">
                         <div class="bg-blue-600 rounded-full p-3 mt-1">
                             <i class="fas fa-user-cog text-white"></i>
@@ -908,7 +850,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="glass-effect rounded-3xl p-8 text-center">
                     <div class="text-6xl mb-6 text-pink-400">
                         <i class="fas fa-heart"></i>
@@ -917,7 +859,8 @@
                     <p class="text-gray-400 mb-6">
                         همین الان با Elma آشنا شوید و تجربه‌ای فراموش‌نشدنی داشته باشید
                     </p>
-                    <button onclick="window.open('index.html', '_self')" class="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 px-8 py-3 rounded-full font-semibold transition-all duration-300 hover-scale">
+                    <button onclick="window.open('index.html', '_self')"
+                        class="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 px-8 py-3 rounded-full font-semibold transition-all duration-300 hover-scale">
                         <i class="fas fa-play ml-2"></i>
                         شروع کنید
                     </button>
@@ -962,25 +905,28 @@
                 <h3 class="text-2xl font-bold mb-4 text-gradient">تماس با ما</h3>
                 <p class="text-gray-400 mb-6">سوال، پیشنهاد یا نیاز به پشتیبانی دارید؟</p>
             </div>
-            
+
             <div class="grid md:grid-cols-3 gap-6 mb-8">
-                <button onclick="sendEmail('مشکل فنی')" class="glass-effect rounded-xl p-6 hover-scale transition-all duration-300">
+                <button onclick="sendEmail('مشکل فنی')"
+                    class="glass-effect rounded-xl p-6 hover-scale transition-all duration-300">
                     <div class="text-3xl mb-3 text-red-400">
                         <i class="fas fa-bug"></i>
                     </div>
                     <h4 class="font-semibold mb-2">گزارش مشکل</h4>
                     <p class="text-sm text-gray-400">مشکل فنی یا باگ پیدا کردید؟</p>
                 </button>
-                
-                <button onclick="sendEmail('پیشنهاد همکاری')" class="glass-effect rounded-xl p-6 hover-scale transition-all duration-300">
+
+                <button onclick="sendEmail('پیشنهاد همکاری')"
+                    class="glass-effect rounded-xl p-6 hover-scale transition-all duration-300">
                     <div class="text-3xl mb-3 text-green-400">
                         <i class="fas fa-handshake"></i>
                     </div>
                     <h4 class="font-semibold mb-2">همکاری</h4>
                     <p class="text-sm text-gray-400">علاقه‌مند به همکاری هستید؟</p>
                 </button>
-                
-                <button onclick="sendEmail('درخواست پشتیبانی')" class="glass-effect rounded-xl p-6 hover-scale transition-all duration-300">
+
+                <button onclick="sendEmail('درخواست پشتیبانی')"
+                    class="glass-effect rounded-xl p-6 hover-scale transition-all duration-300">
                     <div class="text-3xl mb-3 text-blue-400">
                         <i class="fas fa-headset"></i>
                     </div>
@@ -988,29 +934,32 @@
                     <p class="text-sm text-gray-400">نیاز به راهنمایی دارید؟</p>
                 </button>
             </div>
-            
+
             <div class="text-center pt-8 border-t border-gray-700">
                 <p class="text-gray-500 mb-6">
                     <i class="fas fa-copyright ml-1"></i>
                     2024 Elma AI. تمامی حقوق محفوظ است.
                 </p>
-                
+
                 <!-- Social Media Icons -->
                 <div class="flex justify-center items-center space-x-6 space-x-reverse">
                     <a href="https://t.me/Elma_Ai" target="_blank" rel="noopener noreferrer" class="group">
-                        <div class="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 hover-scale group-hover:shadow-lg group-hover:shadow-blue-500/30">
+                        <div
+                            class="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 hover-scale group-hover:shadow-lg group-hover:shadow-blue-500/30">
                             <i class="fab fa-telegram-plane text-white text-xl"></i>
                         </div>
                     </a>
-                    
+
                     <a href="https://x.com/Elma__Ai" target="_blank" rel="noopener noreferrer" class="group">
-                        <div class="bg-gradient-to-r from-gray-800 to-black hover:from-gray-700 hover:to-gray-900 w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 hover-scale group-hover:shadow-lg group-hover:shadow-gray-500/30">
+                        <div
+                            class="bg-gradient-to-r from-gray-800 to-black hover:from-gray-700 hover:to-gray-900 w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 hover-scale group-hover:shadow-lg group-hover:shadow-gray-500/30">
                             <i class="fab fa-x-twitter text-white text-xl"></i>
                         </div>
                     </a>
-                    
+
                     <a href="https://instagram.com/Elma._.Ai" target="_blank" rel="noopener noreferrer" class="group">
-                        <div class="bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 hover:from-pink-600 hover:via-red-600 hover:to-yellow-600 w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 hover-scale group-hover:shadow-lg group-hover:shadow-pink-500/30">
+                        <div
+                            class="bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 hover:from-pink-600 hover:via-red-600 hover:to-yellow-600 w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 hover-scale group-hover:shadow-lg group-hover:shadow-pink-500/30">
                             <i class="fab fa-instagram text-white text-xl"></i>
                         </div>
                     </a>
@@ -1027,73 +976,73 @@
                 this.track = document.getElementById('scrollbarTrack');
                 this.thumb = document.getElementById('scrollbarThumb');
                 this.position = document.getElementById('scrollPosition');
-                
+
                 this.isDragging = false;
                 this.dragStart = 0;
                 this.scrollStart = 0;
                 this.hideTimeout = null;
-                
+
                 this.init();
             }
-            
+
             init() {
                 this.updateScrollbar();
                 this.bindEvents();
-                
+
                 // Show scrollbar on page load if content is scrollable
                 if (document.body.scrollHeight > window.innerHeight) {
                     this.showScrollbar();
                 }
             }
-            
+
             bindEvents() {
                 // Scroll events
                 window.addEventListener('scroll', () => this.updateScrollbar());
                 window.addEventListener('resize', () => this.updateScrollbar());
-                
+
                 // Mouse events
                 this.scrollbar.addEventListener('mouseenter', () => this.onHover());
                 this.scrollbar.addEventListener('mouseleave', () => this.onLeave());
-                
+
                 // Drag events
                 this.thumb.addEventListener('mousedown', (e) => this.startDrag(e));
                 document.addEventListener('mousemove', (e) => this.onDrag(e));
                 document.addEventListener('mouseup', () => this.endDrag());
-                
+
                 // Track click
                 this.track.addEventListener('click', (e) => this.onTrackClick(e));
-                
+
                 // Touch events
                 this.thumb.addEventListener('touchstart', (e) => this.startDrag(e.touches[0]));
                 document.addEventListener('touchmove', (e) => this.onDrag(e.touches[0]));
                 document.addEventListener('touchend', () => this.endDrag());
-                
+
                 // Keyboard events
                 this.scrollbar.addEventListener('keydown', (e) => this.onKeyDown(e));
-                
+
                 // Wheel event for smooth scrolling
                 document.addEventListener('wheel', (e) => {
                     this.showScrollbar();
                     this.scheduleHide();
                 });
             }
-            
+
             updateScrollbar() {
                 const scrollTop = window.pageYOffset;
                 const scrollHeight = document.body.scrollHeight - window.innerHeight;
                 const scrollPercent = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
-                
+
                 // Update thumb position and size
                 const thumbHeight = Math.max(30, (window.innerHeight / document.body.scrollHeight) * 100);
                 const thumbTop = (scrollPercent / 100) * (100 - thumbHeight);
-                
+
                 this.thumb.style.height = thumbHeight + '%';
                 this.thumb.style.top = thumbTop + '%';
-                
+
                 // Update position indicator
                 this.position.textContent = Math.round(scrollPercent) + '%';
                 this.scrollbar.setAttribute('aria-valuenow', Math.round(scrollPercent));
-                
+
                 // Show/hide scrollbar based on content
                 if (document.body.scrollHeight > window.innerHeight) {
                     this.showScrollbar();
@@ -1102,96 +1051,96 @@
                     this.hideScrollbar();
                 }
             }
-            
+
             showScrollbar() {
                 this.scrollbar.classList.add('visible');
                 this.position.classList.add('visible');
                 clearTimeout(this.hideTimeout);
             }
-            
+
             hideScrollbar() {
                 if (!this.isDragging) {
                     this.scrollbar.classList.remove('visible', 'hover');
                     this.position.classList.remove('visible');
                 }
             }
-            
+
             scheduleHide() {
                 clearTimeout(this.hideTimeout);
                 this.hideTimeout = setTimeout(() => this.hideScrollbar(), 2000);
             }
-            
+
             onHover() {
                 this.scrollbar.classList.add('hover');
                 this.showScrollbar();
                 clearTimeout(this.hideTimeout);
             }
-            
+
             onLeave() {
                 if (!this.isDragging) {
                     this.scrollbar.classList.remove('hover');
                     this.scheduleHide();
                 }
             }
-            
+
             startDrag(e) {
                 this.isDragging = true;
                 this.dragStart = e.clientY;
                 this.scrollStart = window.pageYOffset;
-                
+
                 this.scrollbar.classList.add('dragging');
                 this.thumb.classList.add('dragging');
                 this.position.classList.add('visible');
-                
+
                 document.body.style.userSelect = 'none';
                 e.preventDefault();
             }
-            
+
             onDrag(e) {
                 if (!this.isDragging) return;
-                
+
                 const deltaY = e.clientY - this.dragStart;
                 const scrollHeight = document.body.scrollHeight - window.innerHeight;
                 const trackHeight = this.track.offsetHeight;
                 const thumbHeight = this.thumb.offsetHeight;
-                
+
                 const scrollDelta = (deltaY / (trackHeight - thumbHeight)) * scrollHeight;
                 const newScrollTop = Math.max(0, Math.min(scrollHeight, this.scrollStart + scrollDelta));
-                
+
                 window.scrollTo(0, newScrollTop);
             }
-            
+
             endDrag() {
                 if (!this.isDragging) return;
-                
+
                 this.isDragging = false;
                 this.scrollbar.classList.remove('dragging');
                 this.thumb.classList.remove('dragging');
-                
+
                 document.body.style.userSelect = '';
                 this.scheduleHide();
             }
-            
+
             onTrackClick(e) {
                 if (e.target === this.thumb) return;
-                
+
                 const rect = this.track.getBoundingClientRect();
                 const clickY = e.clientY - rect.top;
                 const trackHeight = rect.height;
                 const scrollHeight = document.body.scrollHeight - window.innerHeight;
-                
+
                 const targetScroll = (clickY / trackHeight) * scrollHeight;
                 window.scrollTo({
                     top: targetScroll,
                     behavior: 'smooth'
                 });
             }
-            
+
             onKeyDown(e) {
                 const scrollAmount = 100;
                 const pageAmount = window.innerHeight * 0.8;
-                
-                switch(e.key) {
+
+                switch (e.key) {
                     case 'ArrowUp':
                         window.scrollBy(0, -scrollAmount);
                         e.preventDefault();
@@ -1217,12 +1166,12 @@
                         e.preventDefault();
                         break;
                 }
-                
+
                 this.showScrollbar();
                 this.scheduleHide();
             }
         }
-        
+
         // Theme Switcher
         class ThemeSwitcher {
             constructor() {
@@ -1230,29 +1179,29 @@
                 this.darkBtn = document.getElementById('darkTheme');
                 this.lightBtn = document.getElementById('lightTheme');
                 this.mobileBtn = document.getElementById('mobileTheme');
-                
+
                 this.init();
             }
-            
+
             init() {
                 this.darkBtn.addEventListener('click', () => this.setTheme('dark'));
                 this.lightBtn.addEventListener('click', () => this.setTheme('light'));
                 this.mobileBtn.addEventListener('click', () => this.setTheme('mobile'));
             }
-            
+
             setTheme(theme) {
                 // Remove all theme classes
                 this.body.classList.remove('dark-theme', 'light-theme', 'mobile-theme');
-                
+
                 // Remove active class from all buttons
                 document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.remove('active'));
-                
+
                 // Add new theme class
                 this.body.classList.add(theme + '-theme');
-                
+
                 // Add active class to clicked button
                 document.getElementById(theme + 'Theme').classList.add('active');
-                
+
                 // Special handling for light theme
                 if (theme === 'light') {
                     this.body.classList.remove('bg-gray-900', 'text-white');
@@ -1263,41 +1212,41 @@
                 }
             }
         }
-        
+
         // Age Verification Functions
         function confirmAge(isAdult) {
             if (!isAdult) {
                 alert('متأسفانه این سرویس برای افراد زیر 18 سال مناسب نیست.');
                 return;
             }
-            
+
             const termsCheckbox = document.getElementById('termsCheckbox');
             if (!termsCheckbox.checked) {
                 alert('لطفاً ابتدا قوانین و مقررات را بپذیرید.');
                 return;
             }
-            
+
             // Hide age verification modal
             const ageModal = document.getElementById('ageVerificationModal');
             ageModal.style.display = 'none';
             document.body.style.overflow = 'auto';
-            
+
             // Set age verification in localStorage
             localStorage.setItem('ageVerified', 'true');
-            
+
             // Show pro features modal after 15 seconds
             setTimeout(() => {
                 showProFeaturesModal();
             }, 15000);
         }
-        
+
         // Terms checkbox handler
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const termsCheckbox = document.getElementById('termsCheckbox');
             const confirmBtn = document.getElementById('confirmAgeBtn');
-            
+
             if (termsCheckbox && confirmBtn) {
-                termsCheckbox.addEventListener('change', function() {
+                termsCheckbox.addEventListener('change', function () {
                     if (this.checked) {
                         confirmBtn.disabled = false;
                         confirmBtn.classList.remove('opacity-50', 'cursor-not-allowed');
@@ -1310,7 +1259,7 @@
                 });
             }
         });
-        
+
         // Pro Features Modal Functions
         function showProFeaturesModal() {
             const modal = document.getElementById('proFeaturesModal');
@@ -1318,14 +1267,14 @@
             modal.classList.add('flex');
             document.body.style.overflow = 'hidden';
         }
-        
+
         function closeProFeaturesModal() {
             const modal = document.getElementById('proFeaturesModal');
             modal.classList.add('hidden');
             modal.classList.remove('flex');
             document.body.style.overflow = 'auto';
         }
-        
+
         // Pricing Modal Functions
         function showPricingModal() {
             const modal = document.getElementById('pricingModal');
@@ -1333,14 +1282,14 @@
             modal.classList.add('flex');
             document.body.style.overflow = 'hidden';
         }
-        
+
         function closePricingModal() {
             const modal = document.getElementById('pricingModal');
             modal.classList.add('hidden');
             modal.classList.remove('flex');
             document.body.style.overflow = 'auto';
         }
-        
+
         function buyPlan(planName, price) {
             const telegramId = 'hexdix';
             const message = `سلام! 👋
@@ -1354,22 +1303,22 @@
 لطفاً راهنمایی‌های پرداخت و فعال‌سازی را ارسال کنید.
 
 با تشکر 🙏`;
-            
+
             const telegramUrl = `https://t.me/${telegramId}?text=${encodeURIComponent(message)}`;
             window.open(telegramUrl, '_blank');
             closePricingModal();
         }
-        
+
         // Close modal when clicking outside
-        document.addEventListener('click', function(e) {
+        document.addEventListener('click', function (e) {
             const modal = document.getElementById('pricingModal');
             if (e.target === modal) {
                 closePricingModal();
             }
         });
-        
+
         // Close modal with Escape key
-        document.addEventListener('keydown', function(e) {
+        document.addEventListener('keydown', function (e) {
             if (e.key === 'Escape') {
                 closePricingModal();
             }
@@ -1385,13 +1334,13 @@
 لطفاً اطلاعات بیشتری در مورد این موضوع ارائه دهید.
 
 با تشکر`;
-            
+
             const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${email}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
             window.open(gmailUrl, '_blank');
         }
 
         // Interactive particles on mouse move
-        document.addEventListener('mousemove', function(e) {
+        document.addEventListener('mousemove', function (e) {
             if (Math.random() > 0.95) {
                 createParticle(e.clientX, e.clientY);
             }
@@ -1404,68 +1353,68 @@
             particle.style.top = y + 'px';
             particle.style.animation = 'particle-float 2s ease-out forwards';
             document.body.appendChild(particle);
-            
+
             setTimeout(() => {
                 particle.remove();
             }, 2000);
         }
-        
+
         // Voice functionality
         let hasPlayedVoice = false;
         let currentAudio = null;
-        
+
         function playElmaVoice() {
             const voiceBtn = document.getElementById('voiceBtn');
             const voiceIcon = document.getElementById('voiceIcon');
             const clickHint = document.getElementById('clickHint');
-            
+
             // Stop any currently playing audio
             if (currentAudio) {
                 currentAudio.pause();
                 currentAudio.currentTime = 0;
             }
-            
+
             // Create new audio instance
             currentAudio = new Audio('Assets/voice/Elma_info.wav');
-            
+
             // Handle audio loading and playing
-            currentAudio.addEventListener('loadstart', function() {
+            currentAudio.addEventListener('loadstart', function () {
                 voiceIcon.classList.remove('voice-pulse');
                 voiceIcon.classList.add('voice-playing');
                 voiceBtn.disabled = true;
                 voiceBtn.style.opacity = '0.7';
             });
-            
-            currentAudio.addEventListener('canplay', function() {
-                currentAudio.play().catch(function(error) {
+
+            currentAudio.addEventListener('canplay', function () {
+                currentAudio.play().catch(function (error) {
                     console.log('خطا در پخش صدا:', error);
                     resetVoiceButton();
                 });
             });
-            
-            currentAudio.addEventListener('ended', function() {
+
+            currentAudio.addEventListener('ended', function () {
                 resetVoiceButton();
                 hasPlayedVoice = true;
-                
+
                 // Remove click hint after first play
                 if (clickHint) {
                     clickHint.style.display = 'none';
                 }
             });
-            
-            currentAudio.addEventListener('error', function() {
+
+            currentAudio.addEventListener('error', function () {
                 console.log('خطا در بارگذاری فایل صدا');
                 resetVoiceButton();
             });
-            
+
             // Load and play
             currentAudio.load();
         }
-        
+
         function resetVoiceButton() {
             const voiceBtn = document.getElementById('voiceBtn');
             const voiceIcon = document.getElementById('voiceIcon');
-            
+
             voiceIcon.classList.remove('voice-playing');
             if (!hasPlayedVoice) {
                 voiceIcon.classList.add('voice-pulse');
@@ -1475,10 +1424,10 @@
         }
 
         // Initialize components
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             new CustomScrollbar();
             new ThemeSwitcher();
-            
+
             // Check if age verification is needed
             const ageVerified = localStorage.getItem('ageVerified');
             if (!ageVerified) {
@@ -1491,9 +1440,9 @@
                 const ageModal = document.getElementById('ageVerificationModal');
                 ageModal.style.display = 'none';
             }
-            
+
             // Hide click hint after 10 seconds if not clicked
-            setTimeout(function() {
+            setTimeout(function () {
                 const clickHint = document.getElementById('clickHint');
                 if (clickHint && !hasPlayedVoice) {
                     clickHint.style.opacity = '0.5';
@@ -1501,5 +1450,7 @@
             }, 10000);
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98753719d53dd251',t:'MTc1OTI1MDk4NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+    <script>(function () { function c() { var b = a.contentDocument || a.contentWindow.document; if (b) { var d = b.createElement('script'); d.innerHTML = "window.__CF$cv$params={r:'98753719d53dd251',t:'MTc1OTI1MDk4NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='';document.getElementsByTagName('head')[0].appendChild(a);"; b.getElementsByTagName('head')[0].appendChild(d) } } if (document.body) { var a = document.createElement('iframe'); a.height = 1; a.width = 1; a.style.position = 'absolute'; a.style.top = 0; a.style.left = 0; a.style.border = 'none'; a.style.visibility = 'hidden'; document.body.appendChild(a); if ('loading' !== document.readyState) c(); else if (window.addEventListener) document.addEventListener('DOMContentLoaded', c); else { var e = document.onreadystatechange || function () { }; document.onreadystatechange = function (b) { e(b); 'loading' !== document.readyState && (document.onreadystatechange = e, c()) } } } })();</script>
+</body>
+
 </html>
