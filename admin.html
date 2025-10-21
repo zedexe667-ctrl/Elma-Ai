@@ -1,137 +1,236 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
+
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>پنل ادمین</title>
-  <link rel="icon" type="image/png" href="Assets/img/logo/Logo.png" />
-
-  <!-- Tailwind (فقط برای استایل سریع) -->
-  <script src="https://cdn.tailwindcss.com"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ورود ادمین Elma 👑</title>
+  <script src="https://kit.fontawesome.com/a2e0e6ad49.js" crossorigin="anonymous"></script>
+  <script type="module" src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"></script>
+  <script type="module" src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js"></script>
+  <script type="module" src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
 </head>
 
-<body class="bg-gradient-to-b from-indigo-500 to-purple-600 min-h-screen flex items-center justify-center p-4">
+<body class="bg-gray-900 text-white min-h-screen flex flex-col items-center justify-center">
 
-  <div class="bg-white w-full max-w-sm rounded-2xl shadow-xl p-6 space-y-6">
-    <!-- 🔑 فرم ورود ادمین -->
-    <div id="loginSection">
-      <h1 class="text-2xl font-bold text-center text-gray-800 mb-4">ورود ادمین</h1>
-      <input id="adminEmail" type="email" placeholder="ایمیل ادمین"
-        class="w-full mb-3 p-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-400">
-      <input id="adminPass" type="password" placeholder="پسورد"
-        class="w-full mb-4 p-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-400">
-      <button id="adminLogin"
-        class="w-full py-3 bg-indigo-500 text-white rounded-xl hover:bg-indigo-600 transition">ورود</button>
-      <p id="loginMsg" class="text-center text-red-500 mt-2 hidden"></p>
-    </div>
+  <!-- 🔐 صفحه ورود ادمین -->
+  <div id="loginSection"
+    class="glass-effect bg-gray-800 bg-opacity-70 p-8 rounded-3xl shadow-2xl w-full max-w-md text-center">
+    <h1 class="text-2xl font-bold mb-6 gradient-text">ورود ادمین Elma 👑</h1>
 
-    <!-- 👑 پنل ادمین -->
-    <div id="adminPanel" class="hidden space-y-4">
-      <h2 class="text-xl font-bold text-gray-700 text-center">مدیریت کاربر</h2>
-      <input id="userEmail" type="email" placeholder="ایمیل کاربر"
-        class="w-full p-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-400">
-      <select id="newType"
-        class="w-full p-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-400">
-        <option value="free">حساب رایگان</option>
-        <option value="premium">حساب پریمیوم</option>
-      </select>
-      <button id="updateUser"
-        class="w-full py-3 bg-purple-500 text-white rounded-xl hover:bg-purple-600 transition">بروزرسانی حساب</button>
-      <p id="updateMsg" class="text-center mt-2 hidden"></p>
-    </div>
+    <input id="adminEmail" type="email" placeholder="ایمیل ادمین"
+      class="w-full p-3 mb-4 rounded-xl border border-gray-600 bg-gray-700 focus:outline-none focus:ring-2 focus:ring-pink-400">
+
+    <input id="adminPassword" type="password" placeholder="رمز عبور"
+      class="w-full p-3 mb-4 rounded-xl border border-gray-600 bg-gray-700 focus:outline-none focus:ring-2 focus:ring-pink-400">
+
+    <button id="loginBtn"
+      class="w-full py-3 bg-gradient-to-r from-pink-500 to-purple-600 rounded-xl hover:scale-105 transition-all font-semibold">
+      ورود
+    </button>
+
+    <p id="loginMsg" class="mt-4 text-sm text-red-400 hidden"></p>
   </div>
 
-  <!-- 🔥 Firebase (ES Modules) -->
-  <script type="module">
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js';
-    import { getAuth, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js';
-    import {
-      getFirestore, doc, updateDoc, collection,
-      query, where, getDocs
-    } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js';
+  <!-- 👑 پنل مدیریت -->
+  <div id="adminPanel"
+    class="hidden glass-effect bg-gray-800 bg-opacity-70 p-8 rounded-3xl shadow-2xl w-full max-w-md text-center">
+    <h1 class="text-2xl font-bold mb-6 gradient-text">🎯 پنل مدیریت Elma</h1>
 
-    // ✅ پیکربندی Firebase
+    <div class="space-y-4 text-right">
+      <label class="block text-sm">ایمیل کاربر:</label>
+      <input id="userEmail" type="email"
+        class="w-full p-3 rounded-xl border border-gray-600 bg-gray-700 focus:outline-none focus:ring-2 focus:ring-pink-400"
+        placeholder="example@email.com">
+
+      <label class="block text-sm mt-4">نوع حساب:</label>
+      <select id="newType"
+        class="w-full p-3 rounded-xl border border-gray-600 bg-gray-700 focus:outline-none focus:ring-2 focus:ring-pink-400">
+        <option value="free">رایگان 💕</option>
+        <option value="premium">پریمیوم 👑</option>
+      </select>
+
+      <label class="block text-sm mt-4">مدت اشتراک:</label>
+      <select id="planMonths"
+        class="w-full p-3 rounded-xl border border-gray-600 bg-gray-700 focus:outline-none focus:ring-2 focus:ring-pink-400">
+        <option value="0">بدون تمدید</option>
+        <option value="3">۳ ماه</option>
+        <option value="6">۶ ماه</option>
+        <option value="12">۱۲ ماه</option>
+      </select>
+
+      <button id="updateUser"
+        class="w-full mt-6 py-3 bg-gradient-to-r from-pink-500 to-purple-600 rounded-xl hover:scale-105 transition-all font-semibold">
+        <i class="fas fa-sync-alt mr-2"></i> به‌روزرسانی حساب
+      </button>
+
+      <p id="updateMsg" class="mt-4 text-sm text-green-400 hidden"></p>
+    </div>
+
+    <button id="logoutBtn" class="mt-8 text-sm text-gray-300 hover:text-red-400 transition-all duration-200">
+      خروج از حساب
+    </button>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, doc, getDocs, query, where, updateDoc, collection } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    // 🔥 تنظیمات Firebase (جایگزین کن)
     const firebaseConfig = {
       apiKey: "AIzaSyD_Ar1zFTBS9DDFlAflPt2IpcQ5y8EI5pE",
       authDomain: "zed-exe-48839.firebaseapp.com",
       projectId: "zed-exe-48839",
-      storageBucket: "zed-exe-48839.appspot.com",   // 👈 اصلاح شد
+      storageBucket: "zed-exe-48839.firebasestorage.app",
       messagingSenderId: "283941493182",
       appId: "1:283941493182:web:7a9deae50c01c9feb8c1ef",
       measurementId: "G-014WZDJBSL"
     };
 
-    const app  = initializeApp(firebaseConfig);
+    const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
-    const db   = getFirestore(app);
+    const db = getFirestore(app);
 
-    // ✅ فقط این ایمیل‌ها اجازه ادمین دارند
-    const adminList = ["elma.ai@gmail.com"];
+    // 📌 فقط ایمیل‌های ادمین
+    const adminEmails = ["elma.ai@gmail.com"];
 
-    const loginSection = document.getElementById('loginSection');
-    const adminPanel   = document.getElementById('adminPanel');
-    const loginMsg     = document.getElementById('loginMsg');
-    const updateMsg    = document.getElementById('updateMsg');
+    const loginSection = document.getElementById("loginSection");
+    const adminPanel = document.getElementById("adminPanel");
+    const loginBtn = document.getElementById("loginBtn");
+    const loginMsg = document.getElementById("loginMsg");
 
-    // ورود ادمین
-    document.getElementById('adminLogin').addEventListener('click', async () => {
-      loginMsg.classList.add('hidden');
-      const email = adminEmail.value.trim();
-      const pass  = adminPass.value.trim();
-      if (!email || !pass) {
-        loginMsg.textContent = "ایمیل و پسورد الزامی است";
-        loginMsg.classList.remove('hidden');
+    const userEmail = document.getElementById("userEmail");
+    const newType = document.getElementById("newType");
+    const planMonths = document.getElementById("planMonths");
+    const updateUser = document.getElementById("updateUser");
+    const updateMsg = document.getElementById("updateMsg");
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    // 🔐 ورود ادمین
+    loginBtn.addEventListener("click", async () => {
+      const email = document.getElementById("adminEmail").value.trim();
+      const password = document.getElementById("adminPassword").value.trim();
+
+      if (!email || !password) {
+        showMsg("ایمیل و رمز عبور را وارد کنید", true);
         return;
       }
+
       try {
-        const cred = await signInWithEmailAndPassword(auth, email, pass);
-        if (adminList.includes(email)) {
-          loginSection.classList.add('hidden');
-          adminPanel.classList.remove('hidden');
+        const res = await signInWithEmailAndPassword(auth, email, password);
+        if (adminEmails.includes(res.user.email)) {
+          loginSection.classList.add("hidden");
+          adminPanel.classList.remove("hidden");
         } else {
-          loginMsg.textContent = "⛔️ این ایمیل ادمین نیست";
-          loginMsg.classList.remove('hidden');
+          showMsg("⛔️ این حساب ادمین نیست!", true);
           await signOut(auth);
         }
       } catch (err) {
-        loginMsg.textContent = "خطا در ورود: " + err.message;
-        loginMsg.classList.remove('hidden');
+        showMsg("❌ خطا در ورود: " + err.message, true);
       }
     });
 
-    // بروزرسانی حساب کاربر
-    document.getElementById('updateUser').addEventListener('click', async () => {
-      updateMsg.classList.add('hidden');
-      const targetEmail = userEmail.value.trim();
+    // 🚪 خروج
+    logoutBtn.addEventListener("click", async () => {
+      await signOut(auth);
+      adminPanel.classList.add("hidden");
+      loginSection.classList.remove("hidden");
+    });
+
+    // 👁️ بررسی وضعیت ورود
+    onAuthStateChanged(auth, (user) => {
+      if (user && adminEmails.includes(user.email)) {
+        loginSection.classList.add("hidden");
+        adminPanel.classList.remove("hidden");
+      } else {
+        adminPanel.classList.add("hidden");
+        loginSection.classList.remove("hidden");
+      }
+    });
+
+    // ⚙️ بروزرسانی حساب کاربر
+    updateUser.addEventListener("click", async () => {
+      updateMsg.classList.add("hidden");
+      const email = userEmail.value.trim();
       const type = newType.value;
-      if (!targetEmail) {
-        updateMsg.textContent = "ایمیل کاربر را وارد کنید";
-        updateMsg.classList.remove('hidden');
+      const months = parseInt(planMonths.value);
+
+      if (!email) {
+        showMsg("ایمیل کاربر را وارد کنید", true);
         return;
       }
+
       try {
-        const q = query(collection(db, "users"), where("email", "==", targetEmail));
+        const q = query(collection(db, "users"), where("email", "==", email));
         const snap = await getDocs(q);
 
         if (snap.empty) {
-          updateMsg.textContent = "❗️کاربری با این ایمیل پیدا نشد";
-          updateMsg.classList.remove('hidden');
+          showMsg("❗️کاربری با این ایمیل پیدا نشد", true);
           return;
         }
 
-        // آپدیت همه‌ی داکیومنت‌های پیدا شده
-        for (const d of snap.docs) {
-          await updateDoc(doc(db, "users", d.id), { accountType: type });
-        }
+        for (const docSnap of snap.docs) {
+          const userRef = doc(db, "users", docSnap.id);
+          const data = docSnap.data();
 
-        updateMsg.textContent = "✅ حساب کاربر به «" + type + "» تغییر کرد";
-        updateMsg.classList.remove('hidden');
+          const now = new Date();
+          let newExpiry = new Date();
+          const currentExpiry = data.premiumExpiry ? new Date(data.premiumExpiry) : null;
+
+          if (type === "premium" && months > 0) {
+            if (currentExpiry && currentExpiry > now) {
+              newExpiry = new Date(currentExpiry);
+              newExpiry.setMonth(newExpiry.getMonth() + months);
+            } else {
+              newExpiry.setMonth(now.getMonth() + months);
+            }
+
+            await updateDoc(userRef, {
+              accountType: "premium",
+              purchasedPlus: true,
+              premiumExpiry: newExpiry.toISOString()
+            });
+
+            showMsg(`✅ حساب ${email} تا ${newExpiry.toLocaleDateString("fa-IR")} تمدید شد`);
+          } else {
+            await updateDoc(userRef, { accountType: type });
+            showMsg(`✅ حساب ${email} به "${type}" تغییر کرد`);
+          }
+        }
       } catch (err) {
-        updateMsg.textContent = "خطا: " + err.message;
-        updateMsg.classList.remove('hidden');
+        showMsg("❌ خطا در بروزرسانی حساب: " + err.message, true);
       }
     });
-  </script>
-</body>
-</html>
 
+    // 📩 پیام
+    function showMsg(msg, isError = false) {
+      loginMsg.textContent = msg;
+      loginMsg.classList.remove("hidden");
+      loginMsg.classList.toggle("text-red-400", isError);
+      loginMsg.classList.toggle("text-green-400", !isError);
+      updateMsg.textContent = msg;
+      updateMsg.classList.remove("hidden");
+      updateMsg.classList.toggle("text-red-400", isError);
+      updateMsg.classList.toggle("text-green-400", !isError);
+    }
+  </script>
+
+  <style>
+    .glass-effect {
+      backdrop-filter: blur(10px);
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .gradient-text {
+      background: linear-gradient(to right, #f472b6, #8b5cf6);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+  </style>
+
+</body>
+
+</html>
