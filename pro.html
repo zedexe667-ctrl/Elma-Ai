@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>پلن‌های اشتراک Elma AI 💎</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet" />
+    <link rel="icon" type="image/png" href="Assets/img/logo/Logo2.png" />
+    <style>
+        body {
+            background: radial-gradient(circle at center, #252525 0%, #292829 100%);
+            font-family: 'Vazirmatn', sans-serif;
+            color: #fff;
+            min-height: 100vh;
+        }
+
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .hover-scale {
+            transition: all 0.3s ease;
+        }
+
+        .hover-scale:hover {
+            transform: scale(1.03);
+        }
+
+        .text-gradient {
+            background: linear-gradient(to right, #8b5cf6, #ec4899);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .feature-icon {
+            width: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body class="flex flex-col items-center justify-center p-6">
+
+    <!-- Header -->
+    <div class="text-center mb-10 mt-6">
+        <h1 class="text-3xl md:text-4xl font-bold text-gradient mb-3">
+            <i class="fas fa-crown ml-2"></i>
+            پلن‌های اشتراک Elma AI
+        </h1>
+        <p class="text-gray-400 text-sm md:text-base">
+            هرچه پلن بالاتر، امکانات بیشتر 💫
+        </p>
+    </div>
+
+    <!-- Plans -->
+    <div class="bg-transparent rounded-3xl p-4 md:p-8 max-w-6xl w-full shadow-2xl">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+            <!-- 3 Month Plan -->
+            <div
+                class="glass-effect rounded-2xl p-6 border-2 border-purple-500/30 hover:border-purple-500/60 hover-scale">
+                <div class="text-center mb-6">
+                    <div class="bg-purple-600 rounded-full w-14 h-14 flex items-center justify-center mx-auto mb-3">
+                        <i class="fas fa-star text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-1">پلن ۳ ماهه</h3>
+                    <p class="text-gray-400 text-sm mb-3">مناسب برای شروع</p>
+                    <p class="text-3xl font-bold text-green-400">۵۵۰,۰۰۰ <span
+                            class="text-gray-400 text-lg">تومان</span></p>
+                </div>
+
+                <ul class="space-y-2 text-sm">
+                    <li><i class="fas fa-check text-green-400 feature-icon ml-2"></i> گفتگوی نامحدود</li>
+                    <li><i class="fas fa-check text-green-400 feature-icon ml-2"></i> حافظه گفتگو</li>
+                    <li><i class="fas fa-check text-green-400 feature-icon ml-2"></i> پشتیبانی پایه</li>
+                    <li><i class="fas fa-times text-red-500 feature-icon ml-2"></i> شخصی‌سازی پیشرفته</li>
+                    <li><i class="fas fa-times text-red-500 feature-icon ml-2"></i> حالت‌های گفتگوی ویژه</li>
+                    <li><i class="fas fa-times text-red-500 feature-icon ml-2"></i> سرعت پاسخ بالا</li>
+                    <li><i class="fas fa-times text-red-500 feature-icon ml-2"></i> مدل GPT-5 اختصاصی</li>
+                    <li><i class="fas fa-times text-red-500 feature-icon ml-2"></i> آپدیت‌های ویژه</li>
+                    <li><i class="fas fa-times text-red-500 feature-icon ml-2"></i> پشتیبانی ۲۴/۷</li>
+                    <li><i class="fas fa-times text-red-500 feature-icon ml-2"></i> ویژگی‌های VIP</li>
+                </ul>
+
+                <button onclick="buyPlan('3ماهه', '550000')"
+                    class="w-full mt-5 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 py-3 rounded-xl font-semibold transition-all">
+                    خرید پلن ۳ ماهه
+                </button>
+            </div>
+
+            <!-- 6 Month Plan -->
+            <div
+                class="glass-effect rounded-2xl p-6 border-2 border-green-500/50 hover:border-green-500/80 hover-scale relative">
+                <div
+                    class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-4 py-1 rounded-full text-xs font-semibold">
+                    محبوب‌ترین
+                </div>
+                <div class="text-center mb-6 mt-3">
+                    <div class="bg-green-600 rounded-full w-14 h-14 flex items-center justify-center mx-auto mb-3">
+                        <i class="fas fa-gem text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-1">پلن ۶ ماهه</h3>
+                    <p class="text-gray-400 text-sm mb-3">بهترین انتخاب</p>
+                    <p class="text-3xl font-bold text-green-400">۱,۳۲۰,۰۰۰ <span
+                            class="text-gray-400 text-lg">تومان</span></p>
+                </div>
+
+                <ul class="space-y-2 text-sm">
+                    <li><i class="fas fa-check text-green-400 feature-icon ml-2"></i> گفتگوی نامحدود</li>
+                    <li><i class="fas fa-check text-green-400 feature-icon ml-2"></i> حافظه گفتگو</li>
+                    <li><i class="fas fa-check text-green-400 feature-icon ml-2"></i> پشتیبانی ۲۴/۷</li>
+                    <li><i class="fas fa-check text-green-400 feature-icon ml-2"></i> سرعت پاسخ بالا</li>
+                    <li><i class="fas fa-check text-green-400 feature-icon ml-2"></i> شخصی‌سازی پیشرفته</li>
+                    <li><i class="fas fa-check text-green-400 feature-icon ml-2"></i> آپدیت‌های ویژه</li>
+                    <li><i class="fas fa-times text-red-500 feature-icon ml-2"></i> مدل GPT-5 اختصاصی</li>
+                    <li><i class="fas fa-times text-red-500 feature-icon ml-2"></i> ویژگی‌های VIP</li>
+                    <li><i class="fas fa-times text-red-500 feature-icon ml-2"></i> گفتگوهای چندنفره</li>
+                    <li><i class="fas fa-times text-red-500 feature-icon ml-2"></i> اولویت پشتیبانی</li>
+                </ul>
+
+                <button onclick="buyPlan('6ماهه', '1320000')"
+                    class="w-full mt-5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 py-3 rounded-xl font-semibold transition-all">
+                    خرید پلن ۶ ماهه
+                </button>
+            </div>
+
+            <!-- 12 Month Plan -->
+            <div
+                class="glass-effect rounded-2xl p-6 border-2 border-yellow-500/40 hover:border-yellow-500/70 hover-scale">
+                <div class="text-center mb-6">
+                    <div class="bg-yellow-600 rounded-full w-14 h-14 flex items-center justify-center mx-auto mb-3">
+                        <i class="fas fa-crown text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-1">پلن ۱۲ ماهه</h3>
+                    <p class="text-gray-400 text-sm mb-3">بیشترین امکانات</p>
+                    <p class="text-3xl font-bold text-green-400">۲,۲۰۰,۰۰۰ <span
+                            class="text-gray-400 text-lg">تومان</span></p>
+                </div>
+
+                <ul class="space-y-2 text-sm">
+                    <li><i class="fas fa-check text-green-400 feature-icon ml-2"></i> گفتگوی نامحدود</li>
+                    <li><i class="fas fa-check text-green-400 feature-icon ml-2"></i> حافظه گفتگو</li>
+                    <li><i class="fas fa-check text-green-400 feature-icon ml-2"></i> پشتیبانی ۲۴/۷</li>
+                    <li><i class="fas fa-check text-green-400 feature-icon ml-2"></i> سرعت پاسخ بالا</li>
+                    <li><i class="fas fa-check text-green-400 feature-icon ml-2"></i> شخصی‌سازی کامل</li>
+                    <li><i class="fas fa-check text-green-400 feature-icon ml-2"></i> آپدیت‌های VIP</li>
+                    <li><i class="fas fa-check text-green-400 feature-icon ml-2"></i> مدل GPT-5 اختصاصی</li>
+                    <li><i class="fas fa-check text-green-400 feature-icon ml-2"></i> حالت‌های گفتگوی ویژه</li>
+                    <li><i class="fas fa-check text-green-400 feature-icon ml-2"></i> گفتگوهای چندنفره</li>
+                    <li><i class="fas fa-check text-green-400 feature-icon ml-2"></i> اولویت کامل پشتیبانی</li>
+                </ul>
+
+                <button onclick="buyPlan('12ماهه', '2200000')"
+                    class="w-full mt-5 bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700 py-3 rounded-xl font-semibold transition-all">
+                    خرید پلن ۱۲ ماهه
+                </button>
+            </div>
+        </div>
+
+        <div class="text-center mt-10">
+            <p class="text-gray-400 text-sm mb-3"><i class="fas fa-shield-alt ml-1"></i> پرداخت امن و رمزگذاری‌شده</p>
+            <button onclick="window.location.href='index.html'"
+                class="px-6 py-3 rounded-2xl glass-effect hover:scale-105 transition-all text-sm text-gray-300 hover:text-white">
+                <i class="fas fa-arrow-right ml-2"></i> بازگشت به چت
+            </button>
+        </div>
+    </div>
+
+    <script>
+        function buyPlan(name, price) {
+            const username = 'hexdix';
+            const deepLink = `tg://resolve?domain=${username}`;  // Open Telegram app
+            const webLink = `https://t.me/${username}`;         // Web fallback
+
+            // Try to open Telegram App
+            window.location.href = deepLink;
+
+            // After 800 ms, if app didn't open → go to web version
+            setTimeout(() => {
+                window.location.href = webLink;
+            }, 800);
+        }
+    </script>
+</body>
+
+</html>
