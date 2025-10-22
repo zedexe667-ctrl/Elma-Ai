@@ -695,7 +695,8 @@
             <!-- Chat Area -->
             <div id="chatArea" class="h-screen pb-32 overflow-y-auto scrollbar-hide">
                 <div id="messagesContainer"
-                class="max-w-4xl p-6 md:p-20 space-y-4 text-center mx-auto">
+                    class="max-w-4xl p-6 md:p-20 space-y-4 text-center sm:mr-[100px] md:mr-[300px] lg:mr-[500px]">
+
                     <!-- Welcome Message -->
                     <div class="text-center py-12 fade-in">
                         <div
@@ -4422,6 +4423,24 @@
 
                                 return canvas.toDataURL('image/png');
                             }
+                            // تنظیم فاصله پایین چت با توجه به ارتفاع واقعی نوار ورودی
+                            function adjustChatPadding() {
+                                const chatArea = document.getElementById("chatArea");
+                                const inputBar = document.querySelector(".fixed.bottom-0");
+                                if (chatArea && inputBar) {
+                                    const inputHeight = inputBar.offsetHeight;
+                                    chatArea.style.paddingBottom = `${inputHeight + 40}px`;
+                                }
+                            }
+
+                            // هنگام لود و تغییر سایز صفحه تنظیم می‌شود
+                            window.addEventListener("load", adjustChatPadding);
+                            window.addEventListener("resize", adjustChatPadding);
+
+                            // مخصوص موبایل: هنگام بالا آمدن کیبورد هم
+                            window.addEventListener("focusin", adjustChatPadding);
+                            window.addEventListener("focusout", adjustChatPadding);
+
                         </script>
                         <script>(function () { function c() { var b = a.contentDocument || a.contentWindow.document; if (b) { var d = b.createElement('script'); d.innerHTML = "window.__CF$cv$params={r:'98231e777770da45',t:'MTc1ODM5MDE0Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='';document.getElementsByTagName('head')[0].appendChild(a);"; b.getElementsByTagName('head')[0].appendChild(d) } } if (document.body) { var a = document.createElement('iframe'); a.height = 1; a.width = 1; a.style.position = 'absolute'; a.style.top = 0; a.style.left = 0; a.style.border = 'none'; a.style.visibility = 'hidden'; document.body.appendChild(a); if ('loading' !== document.readyState) c(); else if (window.addEventListener) document.addEventListener('DOMContentLoaded', c); else { var e = document.onreadystatechange || function () { }; document.onreadystatechange = function (b) { e(b); 'loading' !== document.readyState && (document.onreadystatechange = e, c()) } } } })();</script>
 </body>
