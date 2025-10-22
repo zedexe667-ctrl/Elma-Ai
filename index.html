@@ -695,8 +695,7 @@
             <!-- Chat Area -->
             <div id="chatArea" class="h-screen pb-32 overflow-y-auto scrollbar-hide">
                 <div id="messagesContainer"
-                    class="max-w-4xl p-6 md:p-20 space-y-4 text-center sm:mr-[100px] md:mr-[300px] lg:mr-[500px]">
-
+                class="max-w-4xl p-6 md:p-20 space-y-4 text-center mx-auto">
                     <!-- Welcome Message -->
                     <div class="text-center py-12 fade-in">
                         <div
@@ -2104,15 +2103,7 @@
 
                                     addMessageToChat("user", message);
                                     messageInput.value = "";
-                                    function scrollToBottom() {
-                                        const chatArea = document.getElementById("chatArea");
-                                        setTimeout(() => {
-                                            chatArea.scrollTo({
-                                                top: chatArea.scrollHeight,
-                                                behavior: "smooth"
-                                            });
-                                        }, 100);
-                                    }
+
                                     fetch("movies.json")
                                         .then(res => res.json())
                                         .then(list => {
@@ -2146,7 +2137,6 @@
                                     setTimeout(() => {
                                         hideTypingIndicator();
                                         addMessageToChat("elma", "من چندتا فیلم آوردم 🎬 فقط از 1 تا 10 یه عدد بفرست اون موقع پخش میشه 😍");
-                                        scrollToBottom();
                                         waitingForMovie = true;
                                     }, 900);
                                     return;
