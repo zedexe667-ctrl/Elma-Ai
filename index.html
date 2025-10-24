@@ -7,13 +7,24 @@
     <title>Elma Ai</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600&family=Estedad:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <link href="https://cdn.fontcdn.ir/Font/Persian/Sahel/Sahel.css" rel="stylesheet">
+    <link href="https://cdn.fontcdn.ir/Font/Persian/Shabnam/Shabnam.css" rel="stylesheet">
+    <link href="https://cdn.fontcdn.ir/Font/Persian/Tanha/Tanha.css" rel="stylesheet">
     <link rel="icon" type="image/png" href="Assets/img/logo/Logo2.png" />
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap');
 
-        * {
-            font-family: 'Vazirmatn', sans-serif;
+        :root {
+            --app-font: "Vazirmatn, sans-serif";
         }
+
+        * {
+            font-family: var(--app-font);
+        }
+
 
         .dark {
             --bg-primary: linear-gradient(135deg, #161616 0%, #161616 50%, #161616 100%);
@@ -32,7 +43,7 @@
             --bg-tertiary: rgba(255, 228, 240, 0.8);
             --text-primary: #2d1b69;
             --text-secondary: #8b5a8c;
-            --border-color: rgba(255, 182, 193, 0.5);
+            --border-color: rgba(56, 56, 56, 0.342);
             --accent-color: linear-gradient(135deg, #ff6b9d 0%, #ff8fab 100%);
             --chat-bg: rgba(255, 255, 255, 0.95);
         }
@@ -164,13 +175,13 @@
         }
 
         .user-message {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #667eea7c 0%, #764ba271 100%);
             color: white;
             border-bottom-left-radius: 5px;
         }
 
         .ai-message {
-            background: linear-gradient(135deg, #3052eb 0%, #641fa5 100%);
+            background: linear-gradient(135deg, #3052eb6c 0%, #641fa56e 100%);
             color: #ffffff;
             border-bottom-right-radius: 5px;
         }
@@ -461,6 +472,11 @@
                 flex: 0 0 auto;
             }
         }
+
+        .custom-max-w {
+            max-width: 90rem;
+            /* هر عدد دلخواه px/rem */
+        }
     </style>
 </head>
 
@@ -621,7 +637,7 @@
                     <button id="ProfileBtn"
                         class="flex items-center gap-2 flex-1 hover-lift transition-all duration-300 rounded-2xl p-2">
                         <div class="w-8 h-8 rounded-full overflow-hidden border-2 border-pink-500">
-                            <img id="ProfileImage" src="https://cdn-icons-png.flaticon.com/128/3237/3237429.png"
+                            <img id="ProfileImage" src="Assets/img/logo/Logo2.png"
                                 alt="Profile" class="w-full h-full object-cover">
                         </div>
                         <div class="flex-1 text-right">
@@ -646,7 +662,7 @@
                     </button>
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-full overflow-hidden border-2 border-pink-400">
-                            <img src="Assets/img/Elma/Profile.png" alt="Elma" class="w-full h-full object-cover"
+                            <img src="Assets/img/Elma/Elma103.png" alt="Elma" class="w-full h-full object-cover"
                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                             <div class="w-full h-full theme-accent flex items-center justify-center"
                                 style="display: none;">
@@ -701,16 +717,15 @@
                     <div class="text-center py-12 fade-in">
                         <div
                             class="w-24 h-24 mx-auto mb-6 rounded-full overflow-hidden border-4 border-pink-400 heart-float glow-effect">
-                            <img src="Assets/img/Elma/Profile.png" alt="Elma" class="w-full h-full object-cover"
+                            <img src="Assets/img/Elma/Elma103.png" alt="Elma" class="w-full h-full object-cover"
                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                             <div class="w-full h-full theme-accent flex items-center justify-center"
                                 style="display: none;">
                                 <i class="fas fa-heart text-white text-3xl"></i>
                             </div>
                         </div>
-                        <h2 class="text-3xl font-bold gradient-text mb-3">سلام عشقم! من Elma هستم 💖</h2>
-                        <p class="theme-text-secondary text-lg">دوست دختر مجازی تو هستم</p>
-                        <p class="theme-text-secondary">چطوری نازم؟ دلم برات تنگ شده بود 😘</p>
+                        <h2 class="text-3xl font-bold gradient-text mb-3">سلام عشقم! من الما هستم 💖</h2>
+                        <p class="theme-text-secondary text-2xl">دوست دختر مجازی تو هستم</p>
                     </div>
                 </div>
             </div>
@@ -730,7 +745,7 @@
                     <div class="flex items-center gap-2">
                         <button
                             class="px-4 py-2 rounded-xl bg-gradient-to-r from-yellow-400 to-orange-500 text-white hover:scale-105 transition-all duration-300 text-sm"
-                            onclick="window.location.href='pro.html'">
+                            onclick="loadPage('pro.html')">
                             شروع کنید
                         </button>
                         <button class="p-2 rounded-lg hover:bg-pink-200/20 transition-all duration-300"
@@ -817,27 +832,38 @@
             <!-- Registration Modal -->
             <div id="registrationModal"
                 class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
-                <div class="glass-effect rounded-3xl w-full max-w-md bounce-in">
-                    <div class="p-8">
-                        <div class="text-center mb-6">
-                            <div
-                                class="w-16 h-16 mx-auto mb-4 rounded-full theme-accent flex items-center justify-center heart-float glow-effect">
-                                <i class="fas fa-heart text-white text-2xl"></i>
-                            </div>
-                            <h3 class="text-2xl font-bold gradient-text mb-2">بیا باهم آشنا بشیم! 💕</h3>
-                            <p class="theme-text-secondary">برای چت کردن باید با گوگل وارد بشی</p>
+                <div class="glass-effect rounded-3xl w-full max-w-3xl bounce-in">
+                    <div class="flex flex-col md:flex-row items-center justify-between p-8 gap-6">
+
+                        <!-- 🖼 سمت چپ: تصویر -->
+                        <div class="flex-1 flex justify-center">
+                            <img src="Assets/img/Elma/Elma107.png" alt="Elma"
+                                class="w-64 max-w-full rounded-2xl shadow-lg transition-transform duration-300 hover:scale-105" />
                         </div>
-                        <!-- فقط دکمه گوگل -->
-                        <div class="mt-6 text-center">
-                            <button id="googleSignIn"
-                                class="w-full py-4 bg-red-500 hover:bg-red-600 text-white rounded-2xl hover-lift transition-all duration-300 flex items-center justify-center gap-3 font-medium">
-                                <i class="fab fa-google text-xl"></i>
-                                ورود با گوگل
-                            </button>
+
+                        <!-- 📝 سمت راست: متن و دکمه‌ها -->
+                        <div class="flex-1 text-right md:text-center">
+                            <h3 class="text-2xl font-bold gradient-text mb-4">به دنیای الما خوش آمدید 💫</h3>
+                            <p class="text-gray-200 leading-relaxed mb-6">
+                                برای شروع گفتگو و استفاده از امکانات سایت، لطفاً وارد حساب کاربری خود شوید.
+                                اگر هنوز عضو خانواده <strong>الما</strong> نشده‌اید، می‌توانید به‌راحتی ثبت‌نام کنید.
+                            </p>
+
+                            <div class="flex flex-col md:flex-row gap-3 justify-center">
+                                <a href="#" onclick="loadPage('Registration.html')"
+                                    class="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-400 hover:to-purple-400 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 hover:scale-105">
+                                    ثبت‌نام
+                                </a>
+                                <a href="#" onclick="loadPage('login.html')"
+                                    class="bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-400 hover:to-indigo-400 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 hover:scale-105">
+                                    ورود
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+
             <!-- Premium Modal -->
             <div id="premiumModal"
                 class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
@@ -1009,17 +1035,22 @@
                         <button id="generalTab"
                             class="flex-1 py-4 px-6 text-center theme-accent text-white font-medium transition-all duration-300">
                             <i class="fas fa-sliders-h ml-2"></i>
-                            ژنرال / General
+                            ژنرال
                         </button>
                         <button id="accountTab"
                             class="flex-1 py-4 px-6 text-center theme-text-secondary hover:theme-text-primary font-medium transition-all duration-300">
                             <i class="fas fa-user-cog ml-2"></i>
-                            اکانت / Account
+                            اکانت
                         </button>
                         <button id="memoryTab"
                             class="flex-1 py-4 px-6 text-center theme-text-secondary hover:theme-text-primary font-medium transition-all duration-300">
                             <i class="fas fa-brain ml-2"></i>
-                            حافظه / Memory
+                            حافظه
+                        </button>
+                        <button id="themeTab"
+                            class="flex-1 py-4 px-6 text-center theme-text-secondary hover:theme-text-primary font-medium transition-all duration-300">
+                            <i class="fas fa-paint-brush ml-2"></i>
+                            استایل
                         </button>
                     </div>
                     <div class="p-6 overflow-y-auto max-h-[60vh]">
@@ -1077,6 +1108,25 @@
                         </div>
                         <!-- Account Settings -->
                         <div id="accountSettings" class="space-y-6 hidden">
+                            <!-- User Email -->
+                            <div class="glass-effect rounded-2xl p-4 border border-pink-400/40">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-3">
+                                        <i data-lucide="mail" class="w-5 h-5 text-pink-400"></i>
+                                        <div>
+                                            <div class="theme-text-primary font-medium">ایمیل حساب کاربری</div>
+                                            <div id="userEmailDisplay" class="theme-text-secondary text-sm select-text">
+                                                در حال بارگذاری...</div>
+                                        </div>
+                                    </div>
+                                    <button id="goChangeEmail"
+                                        class="px-3 py-1 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-xl hover-lift transition-all duration-300 text-sm flex items-center gap-1"
+                                        onclick="loadPage('login.html?changeEmail=true')">
+                                        <i data-lucide='edit-3' class="w-4 h-4"></i>
+                                        تغییر ایمیل
+                                    </button>
+                                </div>
+                            </div>
                             <!-- Delete Account -->
                             <div class="glass-effect rounded-2xl p-4 border-2 border-red-500 border-opacity-50">
                                 <div class="flex items-center justify-between">
@@ -1203,7 +1253,11 @@
                                 </div>
                             </div>
                         </div>
-
+                        <div id="themeSettings" class="space-y-6 hidden">
+                            <div id="themeContentLoader" class="text-center py-6 theme-text-secondary">
+                                در حال بارگذاری تنظیمات تم...
+                            </div>
+                        </div>
                         <!-- Delete All Chats Confirmation Modal -->
                         <div id="deleteAllChatsModal"
                             class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
@@ -1310,7 +1364,7 @@
                         <!-- Firebase SDK -->
                         <script type="module">
                             import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js';
-                            import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signOut } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js';
+                            import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signOut, updateEmail, reauthenticateWithCredential, EmailAuthProvider } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js';
                             import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, addDoc, query, orderBy, onSnapshot, deleteDoc, getDocs } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js';
                             import { getStorage, ref, uploadBytes, getDownloadURL, } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-storage.js';
                             const firebaseConfig = {
@@ -1591,9 +1645,42 @@
                                 const radioFree = document.getElementById('radioFree');
                                 const radioPlus = document.getElementById('radioPlus');
                                 const userTypeLabel = document.getElementById('userType');
+                                const upgradeTopBtn = document.getElementById("upgradeTopBtn");
+                                const upgradeBanner = document.querySelector(".upgrade-banner");
                                 let accountType = "free";
                                 let purchasedPlus = false;
                                 let premiumExpiry = null;
+                                // این تابع بررسی می‌کنه که چه بخشی نمایش داده بشه
+                                function updateUpgradeVisibility(accountType, purchasedPlus) {
+                                    const isPremium = accountType === "premium" && purchasedPlus;
+
+                                    if (isPremium) {
+                                        if (upgradeTopBtn) upgradeTopBtn.style.display = "none";
+                                        if (upgradeBanner) upgradeBanner.style.display = "none";
+                                    } else {
+                                        if (upgradeTopBtn) upgradeTopBtn.style.display = "flex";
+                                        if (upgradeBanner) upgradeBanner.style.display = "flex";
+                                    }
+                                }
+
+                                // به تابع اصلی منو اضافه می‌شه
+                                const observer = new MutationObserver(() => {
+                                    // صبر می‌کنیم تا accountType توسط Firebase مقداردهی بشه
+                                    if (typeof accountType !== "undefined") {
+                                        updateUpgradeVisibility(accountType, purchasedPlus);
+                                    }
+                                });
+
+                                // به تغییرات DOM گوش بده (چون منو دیرتر لود میشه)
+                                observer.observe(document.body, { childList: true, subtree: true });
+
+                                // هر چند ثانیه بررسی مجدد در صورت تغییر وضعیت
+                                setInterval(() => {
+                                    if (typeof accountType !== "undefined") {
+                                        updateUpgradeVisibility(accountType, purchasedPlus);
+                                    }
+                                }, 2000);
+
                                 async function activatePremium(months) {
                                     if (!auth.currentUser) return alert("ابتدا وارد حساب خود شوید 💬");
                                     const userRef = doc(db, "users", auth.currentUser.uid);
@@ -1778,7 +1865,6 @@
                                 });
                                 document.getElementById('fileInput').addEventListener('change', handleImageUpload);
                                 // Auth form
-                                document.getElementById('googleSignIn').addEventListener('click', signInWithGoogle);
                                 document.getElementById('logoutBtn').addEventListener('click', handleLogout);
                                 // Premium functionality
                                 document.getElementById('closePremium').addEventListener('click', hidePremiumModal);
@@ -1880,11 +1966,11 @@
                                             // ✅ اگر کاربر پروفایلش را سفارشی کرده (دیگر از گوگل نگیریم)
                                             if (userData.customProfile === true) {
                                                 displayName = userData.username || "کاربر 💜";
-                                                profileImage = userData.photoURL || 'https://cdn-icons-png.flaticon.com/128/3237/3237429.png';
+                                                profileImage = userData.photoURL || 'Assets/img/logo/Logo2.png';
                                             } else {
                                                 // 🟢 اولین بار: از گوگل لود شود
                                                 displayName = currentUser.displayName || currentUser.email || "کاربر 💜";
-                                                profileImage = currentUser.photoURL || 'https://cdn-icons-png.flaticon.com/128/3237/3237429.png';
+                                                profileImage = currentUser.photoURL || 'Assets/img/logo/Logo2.png';
                                             }
                                             document.getElementById('userName').textContent = displayName;
                                             document.getElementById('ProfileImage').src = profileImage;
@@ -2275,48 +2361,68 @@
                                     sendBtn.style.cursor = "pointer";
                                 }, 1000 + Math.random() * 2000);
                             }
-                            function addMessageToChat(sender, message, imageUrl = null) {
+                            async function addMessageToChat(sender, message, imageUrl = null) {
                                 const messageDiv = document.createElement('div');
                                 messageDiv.className = `flex ${sender === 'user' ? 'justify-start' : 'justify-end'} fade-in`;
+
                                 const bubbleDiv = document.createElement('div');
                                 bubbleDiv.className = `message-bubble p-4 ${sender === 'user' ? 'user-message' : 'ai-message'} shadow-lg`;
-                                // ✅ بررسی اگر message آبجکت باشه
 
+                                // ✅ اگر پیام از نوع عکس بود (مثل chat.json)
                                 if (typeof message === 'object' && message.type === 'image') {
                                     const img = document.createElement('img');
-                                    img.src = message.url;
-                                    img.className = 'max-w-xs rounded-2xl mb-3 hover-lift cursor-pointer';
-                                    img.onclick = () => showImageModal(message.url);
-                                    bubbleDiv.appendChild(img);
-                                    // 👇 اگه متن هم داشت، اضافه کن
-                                    if (message.text) {
-                                        const textDiv = document.createElement('div');
-                                        textDiv.textContent = message.text;
-                                        textDiv.className = 'font-medium';
-                                        bubbleDiv.appendChild(textDiv);
+
+                                    try {
+                                        // ✅ فقط لوگو و متن ثابت روی عکس بیاد
+                                        const watermarked = await watermarkImage(message.url, {
+                                            logo: 'Assets/img/logo/Logo2.png',
+                                            opacity: 0.5,
+                                            position: 'bottom-right',
+                                            margin: 25,
+                                            text: 'Elma Ai'
+                                        });
+
+                                        img.src = watermarked;
+                                        img.dataset.watermarked = watermarked;
+
+                                    } catch (err) {
+                                        console.warn('⚠️ واترمارک نشد، تصویر خام گذاشته شد:', err);
+                                        img.src = message.url;
+                                        img.dataset.watermarked = message.url;
                                     }
+
+                                    img.className = 'max-w-xs rounded-2xl mb-3 hover-lift cursor-pointer';
+                                    img.onclick = () => showImageModal(img.dataset.watermarked);
+                                    bubbleDiv.appendChild(img);
                                 } else {
-                                    // حالت عادی (متن + احتمالا imageUrl جدا)
+                                    // 💬 حالت عادی (متن ساده یا imageUrl جداگانه)
                                     if (imageUrl) {
-                                        // 📦 ساخت قاب مخصوص عکس
                                         const wrapper = document.createElement('div');
                                         wrapper.className = 'image-wrapper max-w-xs rounded-2xl mb-3 hover-lift cursor-pointer';
                                         wrapper.onclick = () => showImageModal(imageUrl);
-                                        // ⏳ لودینگ وسط عکس
+
                                         const loader = document.createElement('div');
                                         loader.className = 'image-loader';
                                         wrapper.appendChild(loader);
-                                        // 🖼️ خود عکس
+
                                         const img = document.createElement('img');
-                                        img.src = imageUrl;
-                                        // وقتی کامل لود شد، تاری برداشته بشه و لودینگ حذف شه
+
+                                        try {
+                                            img.src = watermarked;
+                                        } catch (err) {
+                                            console.warn('⚠️ واترمارک عکس جداگانه انجام نشد:', err);
+                                            img.src = imageUrl;
+                                        }
+
                                         img.onload = () => {
                                             wrapper.classList.add('loaded');
                                             loader.remove();
                                         };
+
                                         wrapper.appendChild(img);
                                         bubbleDiv.appendChild(wrapper);
                                     }
+
                                     if (message) {
                                         const textDiv = document.createElement('div');
                                         textDiv.textContent = message;
@@ -2324,9 +2430,11 @@
                                         bubbleDiv.appendChild(textDiv);
                                     }
                                 }
+
                                 messageDiv.appendChild(bubbleDiv);
                                 document.getElementById('messagesContainer').appendChild(messageDiv);
                             }
+
 
                             // Scroll to bottom
                             messagesContainer.scrollTop = messagesContainer.scrollHeight;
@@ -2804,7 +2912,7 @@
                                     if (isPremium) {
                                         // پریمیوم: عکس تصادفی از مجموعه بزرگ
                                         const premiumPhotos = ['Assets/img/Elma/Elma.png'];
-                                        for (let i = 4; i <= 68; i++) {
+                                        for (let i = 4; i <= 98; i++) {
                                             premiumPhotos.push(`Assets/img/Elma/Elma${i}.png`);
                                         }
                                         photoToSend = premiumPhotos[Math.floor(Math.random() * premiumPhotos.length)];
@@ -3003,14 +3111,13 @@
                                 messagesContainer.innerHTML = `
                 <div class="text-center py-12 fade-in">
                     <div class="w-24 h-24 mx-auto mb-6 rounded-full overflow-hidden border-4 border-pink-400 heart-float glow-effect">
-                        <img src="Assets/img/Elma/Profile.png" alt="Elma" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <img src="Assets/img/Elma/Elma103.png" alt="Elma" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                         <div class="w-full h-full theme-accent flex items-center justify-center" style="display: none;">
                             <i class="fas fa-heart text-white text-3xl"></i>
                         </div>
                     </div>
-                    <h2 class="text-3xl font-bold gradient-text mb-3">سلام عشقم! من Elma هستم 💖</h2>
+                    <h2 class="text-3xl font-bold gradient-text mb-3">سلام عشقم! من الما هستم 💖</h2>
                     <p class="theme-text-secondary text-lg">دوست دختر مجازی تو هستم</p>
-                    <p class="theme-text-secondary">چطوری نازم؟ دلم برات تنگ شده بود 😘</p>
                 </div>
             `;
                             }
@@ -3250,22 +3357,17 @@
                                 const galleryGrid = document.getElementById('galleryGrid');
                                 galleryGrid.innerHTML = '';
                                 // تصاویر نمونه (می‌تونی آدرس‌ها را به آرایه‌ای که از سرورت میاد تغییر بدی)
-                                const sampleImages = [
-                                    'Assets/img/Elma Nude/Elma1.png',
-                                    'Assets/img/Elma Nude/Elma2.png',
-                                    'Assets/img/Elma Nude/Elma3.png',
-                                    'Assets/img/Elma Nude/Elma4.png',
-                                    'Assets/img/Elma Nude/Elma5.png',
-                                    'Assets/img/Elma Nude/Elma6.png',
-                                    'Assets/img/Elma Nude/Elma7.png',
-                                    'Assets/img/Elma Nude/Elma8.png',
-                                    'Assets/img/Elma Nude/Elma9.png',
-                                    'Assets/img/Elma Nude/Elma10.png',
-                                    'Assets/img/Elma Nude/Elma11.png',
-                                    'Assets/img/Elma Nude/Elma12.png',
-                                    'Assets/img/Elma Nude/Elma13.png',
-                                    'Assets/img/Elma Nude/Elma.png'
-                                ];
+                                const sampleImages = [];
+
+                                for (let i = 1; i <= 16; i++) {
+                                    sampleImages.push(`Assets/img/Elma Nude/Elma${i}.png`);
+                                }
+
+                                // 👇 در صورت نیاز به فایل خاص آخر (بدون شماره)
+                                sampleImages.push('Assets/img/Elma Nude/Elma.png');
+
+                                console.log(sampleImages);
+
                                 const premium = isUserPremium();
                                 sampleImages.forEach(imageUrl => {
                                     const imgDiv = document.createElement('div');
@@ -3924,22 +4026,39 @@
                                                         addMessageToChat("ai", "برای دیدن عکس‌های خاص باید اکانتت پرمیوم باشه 😘👑");
                                                     });
                                                 } else {
-                                                    delayedElmaResponse(() => {
+                                                    delayedElmaResponse(async () => {
                                                         // انتخاب تصادفی عکس از پوشه Elma Nude
-                                                        const totalImages = 13;
+                                                        const totalImages = 16;
                                                         const randomNum = Math.floor(Math.random() * totalImages) + 1;
                                                         const imageUrl = `Assets/img/Elma Nude/Elma${randomNum === 1 ? "" : randomNum}.png`;
 
-                                                        // نمایش عکس با افکت لودینگ (تار قبل از لود کامل)
-                                                        addMessageToChat("ai", {
-                                                            type: "image",
-                                                            url: imageUrl,
-                                                            text: "بفرما نازم 😘💋",
-                                                        });
+                                                        try {
+                                                            // ✅ افزودن واترمارک روی عکس نود
+                                                            const watermarked = await watermarkImage(imageUrl, {
+                                                                logo: 'Assets/img/logo/Logo2.png', // لوگو واترمارک
+                                                                opacity: 0.5,
+                                                                position: 'bottom-right',
+                                                                margin: 25,
+                                                                text: 'Elma Ai'
+                                                            });
+
+                                                            // ✅ نمایش عکس واترمارک‌دار
+                                                            addMessageToChat("ai", {
+                                                                type: "image",
+                                                                url: watermarked,
+                                                                text: "بفرما نازم 😘💋",
+                                                            });
+                                                        } catch (err) {
+                                                            console.warn('⚠️ واترمارک ناموفق، ارسال تصویر اصلی', err);
+                                                            addMessageToChat("ai", {
+                                                                type: "image",
+                                                                url: imageUrl,
+                                                                text: "بفرما نازم 😘💋",
+                                                            });
+                                                        }
                                                     }, 2500);
                                                 }
                                             }
-
                                             pendingAction = null;
                                         }, typingDelay);
 
@@ -4379,7 +4498,7 @@
                                             image.src = logo;
                                         });
 
-                                        const wmWidth = img.width * 0.04; // 🔹 فقط ۴٪ از عرض تصویر، مثل Gemini
+                                        const wmWidth = img.width * 0.10;
                                         const wmHeight = (logoImg.height / logoImg.width) * wmWidth;
 
                                         // فاصله از لبه‌ها (۲٪ از عرض عکس)
@@ -4423,6 +4542,7 @@
 
                                 return canvas.toDataURL('image/png');
                             }
+
                             // ✅ تنظیم فاصله پایین چت بر اساس ارتفاع واقعی نوار ورودی
                             function adjustChatPadding() {
                                 const chatArea = document.getElementById("chatArea");
@@ -4439,6 +4559,157 @@
                             window.addEventListener("resize", adjustChatPadding);
                             window.addEventListener("focusin", adjustChatPadding);
                             window.addEventListener("focusout", adjustChatPadding);
+
+                            window.loadPage = async function (page) {
+                                try {
+                                    const res = await fetch(page);
+                                    if (!res.ok) throw new Error('صفحه پیدا نشد');
+                                    const html = await res.text();
+                                    const container = document.getElementById('mainContainer') || document.body;
+                                    container.innerHTML = html;
+                                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                                    window.history.pushState({}, '', '#'+page.replace('.html', ''));
+
+                                    // اجرای Lucide دوباره برای آیکون‌ها
+                                    if (window.lucide) lucide.createIcons();
+
+                                    // ✅ اجرای اسکریپت‌های داخل فایل جدید (مثل Firebase)
+                                    const scripts = container.querySelectorAll("script");
+                                    for (const oldScript of scripts) {
+                                        const newScript = document.createElement("script");
+                                        if (oldScript.type) newScript.type = oldScript.type;
+                                        if (oldScript.src) newScript.src = oldScript.src;
+                                        else newScript.textContent = oldScript.textContent;
+                                        document.body.appendChild(newScript);
+                                    }
+
+                                } catch (err) {
+                                    console.error('خطا در loadPage:', err);
+                                    alert('بارگذاری صفحه با مشکل روبه‌رو شد.');
+                                }
+                            };
+
+                            document.addEventListener("DOMContentLoaded", () => {
+                                const tabs = ["generalTab", "accountTab", "memoryTab", "themeTab"];
+                                const sections = ["generalSettings", "accountSettings", "memorySettings", "themeSettings"];
+
+                                tabs.forEach((id, i) => {
+                                    const tab = document.getElementById(id);
+                                    const section = document.getElementById(sections[i]);
+                                    tab.addEventListener("click", async () => {
+                                        tabs.forEach(t => document.getElementById(t).classList.remove("theme-accent", "text-white"));
+                                        tab.classList.add("theme-accent", "text-white");
+                                        sections.forEach(s => document.getElementById(s).classList.add("hidden"));
+                                        section.classList.remove("hidden");
+
+                                        if (id === "themeTab") {
+                                            const loader = document.getElementById("themeContentLoader");
+                                            if (loader && !loader.dataset.loaded) {
+                                                try {
+                                                    const res = await fetch("theme.html?v=" + Date.now());
+                                                    const html = await res.text();
+                                                    loader.innerHTML = html;
+
+                                                    // 🔥 اجرای اسکریپت‌های درون theme.html به‌صورت دستی
+                                                    loader.querySelectorAll("script").forEach(oldScript => {
+                                                        const newScript = document.createElement("script");
+                                                        if (oldScript.src) {
+                                                            newScript.src = oldScript.src;
+                                                        } else {
+                                                            newScript.textContent = oldScript.textContent;
+                                                        }
+                                                        document.body.appendChild(newScript);
+                                                        oldScript.remove();
+                                                    });
+
+                                                    loader.dataset.loaded = "true";
+                                                } catch (err) {
+                                                    loader.innerHTML = "❌ خطا در بارگذاری theme.html";
+                                                    console.error(err);
+                                                }
+                                            }
+                                        }
+                                    });
+                                });
+
+                                // 🌈 لود تم ذخیره‌شده از localStorage هنگام اجرای صفحه
+                                const savedTheme = JSON.parse(localStorage.getItem("elmaTheme") || "{}");
+                                if (savedTheme.background) {
+                                    document.body.style.backgroundImage = `url(${savedTheme.background})`;
+                                    document.body.style.backgroundSize = "cover";
+                                    document.body.style.backgroundAttachment = "fixed";
+                                }
+                                if (savedTheme.fontSize)
+                                    document.documentElement.style.fontSize = savedTheme.fontSize + "px";
+                                if (savedTheme.opacity) {
+                                    document.querySelectorAll(".glass-effect").forEach(el => {
+                                        el.style.backgroundColor = `rgba(255,255,255,${savedTheme.opacity / 100})`;
+                                    });
+                                }
+                            });
+                            document.addEventListener("DOMContentLoaded", () => {
+                                const savedTheme = JSON.parse(localStorage.getItem("elmaTheme") || "{}");
+                                if (savedTheme.background) {
+                                    document.body.style.backgroundImage = `url(${savedTheme.background})`;
+                                    document.body.style.backgroundAttachment = "fixed";
+                                    document.body.style.backgroundRepeat = "no-repeat";
+                                    switch (savedTheme.mode) {
+                                        case "fill":
+                                            document.body.style.backgroundSize = "cover";
+                                            document.body.style.backgroundPosition = "center";
+                                            break;
+                                        case "fit":
+                                            document.body.style.backgroundSize = "contain";
+                                            document.body.style.backgroundPosition = "center";
+                                            break;
+                                        case "stretch":
+                                            document.body.style.backgroundSize = "100% 100%";
+                                            break;
+                                        case "tile":
+                                            document.body.style.backgroundRepeat = "repeat";
+                                            document.body.style.backgroundSize = "auto";
+                                            break;
+                                        case "center":
+                                            document.body.style.backgroundSize = "auto";
+                                            document.body.style.backgroundPosition = "center";
+                                            break;
+                                    }
+                                }
+                            });
+                            document.addEventListener("DOMContentLoaded", () => {
+                                const saved = JSON.parse(localStorage.getItem("elmaTheme") || "{}");
+                                if (!saved.fontSize) return;
+
+                                document.documentElement.style.fontSize = saved.fontSize + "px";
+
+                                // 🎯 تغییر max-width بر اساس مقدار ذخیره‌شده
+                                const val = saved.fontSize;
+                                const header = document.querySelector(".custom-max-w, .max-w-7xl, .max-w-6xl, .max-w-5xl, .max-w-4xl, .max-w-3xl");
+                                if (header) {
+                                    header.classList.remove("custom-max-w", "max-w-7xl", "max-w-6xl", "max-w-5xl", "max-w-4xl", "max-w-3xl");
+                                    if (val <= 12) header.classList.add("custom-max-w");
+                                    else if (val == 13) header.classList.add("max-w-7xl");
+                                    else if (val == 14) header.classList.add("max-w-6xl");
+                                    else if (val == 15) header.classList.add("max-w-5xl");
+                                    else if (val == 16) header.classList.add("max-w-4xl");
+                                    else header.classList.add("max-w-3xl");
+                                }
+                            });
+                            document.addEventListener("DOMContentLoaded", () => {
+                                const auth = getAuth();
+                                const userEmailDisplay = document.getElementById("userEmailDisplay");
+
+                                onAuthStateChanged(auth, (user) => {
+                                    if (user) {
+                                        // کاربر وارد شده → ایمیلش رو نشون بده
+                                        userEmailDisplay.textContent = user.email || "بدون ایمیل ثبت‌شده";
+                                    } else {
+                                        // کاربر وارد نشده
+                                        userEmailDisplay.textContent = "وارد حساب نشده‌اید";
+                                        userEmailDisplay.classList.add("text-red-400");
+                                    }
+                                });
+                            });
                         </script>
                         <script>(function () { function c() { var b = a.contentDocument || a.contentWindow.document; if (b) { var d = b.createElement('script'); d.innerHTML = "window.__CF$cv$params={r:'98231e777770da45',t:'MTc1ODM5MDE0Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='';document.getElementsByTagName('head')[0].appendChild(a);"; b.getElementsByTagName('head')[0].appendChild(d) } } if (document.body) { var a = document.createElement('iframe'); a.height = 1; a.width = 1; a.style.position = 'absolute'; a.style.top = 0; a.style.left = 0; a.style.border = 'none'; a.style.visibility = 'hidden'; document.body.appendChild(a); if ('loading' !== document.readyState) c(); else if (window.addEventListener) document.addEventListener('DOMContentLoaded', c); else { var e = document.onreadystatechange || function () { }; document.onreadystatechange = function (b) { e(b); 'loading' !== document.readyState && (document.onreadystatechange = e, c()) } } } })();</script>
 </body>
