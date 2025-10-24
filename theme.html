@@ -1,0 +1,351 @@
+<script src="https://unpkg.com/lucide@latest"></script>
+<div class="space-y-6 text-right px-4">
+    <div class="space-y-6 text-right px-4">
+        <h3 class="text-2xl font-bold gradient-text mb-4 flex items-center gap-2">
+            <i data-lucide="palette" class="w-6 h-6"></i>
+            تنظیمات استایل شخصی
+        </h3>
+
+        <!-- انتخاب تصویر پس‌زمینه -->
+        <div>
+            <label class="block mb-2 font-medium theme-text-primary flex items-center gap-2">
+                <i data-lucide="image" class="w-5 h-5 text-pink-400"></i>
+                <span>انتخاب تصویر پس‌زمینه</span>
+            </label>
+            <input type="file" id="bgImageInput" accept="image/*" class="block w-full p-2 rounded-lg glass-effect">
+        </div>
+
+        <!-- حالت نمایش تصویر -->
+        <div>
+            <label class="block mb-2 font-medium theme-text-primary flex items-center gap-2">
+                <i data-lucide="layout" class="w-5 h-5 text-pink-400"></i>
+                <span>حالت نمایش تصویر</span>
+            </label>
+            <select id="bgDisplayMode" class="w-full p-2 rounded-lg glass-effect theme-text-primary">
+                <option value="fill">پر کردن (Fill)</option>
+                <option value="fit">تناسب (Fit)</option>
+                <option value="stretch">کشیده (Stretch)</option>
+                <option value="tile">تکراری (Tile)</option>
+                <option value="center">وسط‌چین (Center)</option>
+            </select>
+        </div>
+
+        <!-- بک‌گراندهای آماده -->
+        <div>
+            <label class="block mb-2 font-medium theme-text-primary flex items-center gap-2">
+                <i data-lucide="image-plus" class="w-5 h-5 text-pink-400"></i>
+                <span>انتخاب از بک‌گراندهای آماده</span>
+            </label>
+            <div id="presetBackgrounds" class="grid grid-cols-5 gap-2">
+                <img src="Assets/img/Elma/Elma103.png"
+                    class="w-full h-16 object-cover rounded-lg cursor-pointer hover-lift border-2 border-transparent hover:border-pink-400">
+                <img src="Assets/img/Elma/Elma104.png"
+                    class="w-full h-16 object-cover rounded-lg cursor-pointer hover-lift border-2 border-transparent hover:border-pink-400">
+                <img src="Assets/img/Elma/Elma105.png"
+                    class="w-full h-16 object-cover rounded-lg cursor-pointer hover-lift border-2 border-transparent hover:border-pink-400">
+                <img src="Assets/img/Elma/Elma106.png"
+                    class="w-full h-16 object-cover rounded-lg cursor-pointer hover-lift border-2 border-transparent hover:border-pink-400">
+                <img src="Assets/img/Elma/Elma102.png"
+                    class="w-full h-16 object-cover rounded-lg cursor-pointer hover-lift border-2 border-transparent hover:border-pink-400">
+            </div>
+        </div>
+
+        <!-- دکمه ریست بک‌گراند -->
+        <button id="resetBackground"
+            class="w-full mt-2 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-xl hover-lift transition-all duration-300 font-medium flex items-center justify-center gap-2">
+            <i data-lucide="eraser" class="w-5 h-5"></i>
+            حذف بک‌گراند و بازگردانی پیش‌فرض
+        </button>
+
+        <!-- رنگ متن اصلی -->
+        <div>
+            <label class="block mb-2 font-medium theme-text-primary flex items-center gap-2">
+                <i data-lucide="paintbrush" class="w-5 h-5 text-pink-400"></i>
+                <span>رنگ متن اصلی (Primary)</span>
+            </label>
+            <input type="color" id="primaryColor" value="#ff66b2" class="w-full h-10 rounded-lg cursor-pointer">
+        </div>
+
+        <!-- رنگ متن ثانویه -->
+        <div>
+            <label class="block mb-2 font-medium theme-text-primary flex items-center gap-2">
+                <i data-lucide="droplet" class="w-5 h-5 text-pink-400"></i>
+                <span>رنگ متن ثانویه (Secondary)</span>
+            </label>
+            <input type="color" id="secondaryColor" value="#9c9c9c" class="w-full h-10 rounded-lg cursor-pointer">
+        </div>
+
+        <!-- انتخاب فونت -->
+        <label class="block mb-2 font-medium theme-text-primary flex items-center gap-2">
+            <i data-lucide="type" class="w-5 h-5 text-pink-400"></i>
+            <span>انتخاب فونت</span>
+        </label>
+        <select id="fontFamilySelect" class="w-full p-2 rounded-lg glass-effect theme-text-primary">
+            <option value="Vazirmatn, sans-serif">Vazirmatn</option>
+            <option value="Estedad, sans-serif">Estedad</option>
+            <option value="Sahel, sans-serif">Sahel</option>
+            <option value="Shabnam, sans-serif">Shabnam</option>
+            <option value="Tanha, sans-serif">Tanha</option>
+        </select>
+
+        <!-- اندازه فونت -->
+        <div>
+            <label class="block mb-2 font-medium theme-text-primary flex items-center gap-2">
+                <i data-lucide="text-cursor-input" class="w-5 h-5 text-pink-400"></i>
+                <span>اندازه متن</span>
+            </label>
+            <input type="range" id="fontSizeRange" min="12" max="24" step="1" value="16" class="w-full">
+            <div class="text-xs theme-text-secondary mt-1">
+                اندازه فعلی: <span id="fontSizeValue">16</span>px
+            </div>
+        </div>
+
+        <!-- اندازه حباب چت -->
+        <div>
+            <label class="block mb-2 font-medium theme-text-primary flex items-center gap-2">
+                <i data-lucide="message-circle" class="w-5 h-5 text-pink-400"></i>
+                <span>اندازه حباب‌های چت</span>
+            </label>
+            <input type="range" id="bubbleSizeRange" min="80" max="120" step="5" value="100" class="w-full">
+            <div class="text-xs theme-text-secondary mt-1">
+                اندازه فعلی: <span id="bubbleSizeValue">100</span>%
+            </div>
+        </div>
+
+        <!-- شفافیت شیشه‌ای -->
+        <div>
+            <label class="block mb-2 font-medium theme-text-primary flex items-center gap-2">
+                <i data-lucide="glass-water" class="w-5 h-5 text-pink-400"></i>
+                <span>شفافیت شیشه‌ای</span>
+            </label>
+            <input type="range" id="glassOpacityRange" min="0" max="100" step="5" value="80" class="w-full">
+            <div class="text-xs theme-text-secondary mt-1">
+                شفافیت فعلی: <span id="opacityValue">80</span>%
+            </div>
+        </div>
+
+        <!-- دکمه ذخیره -->
+        <button id="saveTheme"
+            class="w-full py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-2xl hover-lift transition-all duration-300 font-medium flex items-center justify-center gap-2">
+            <i data-lucide="save" class="w-5 h-5"></i>
+            ذخیره تنظیمات تم
+        </button>
+
+        <!-- دکمه ریست -->
+        <button id="resetTheme"
+            class="w-full py-3 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-2xl hover-lift transition-all duration-300 font-medium flex items-center justify-center gap-2">
+            <i data-lucide="refresh-cw" class="w-5 h-5"></i>
+            بازگردانی پیش‌فرض
+        </button>
+    </div>
+
+    <script>
+        (function () {
+            const bgInput = document.getElementById("bgImageInput");
+            const bgMode = document.getElementById("bgDisplayMode");
+            const presetContainer = document.getElementById("presetBackgrounds");
+            const primaryColor = document.getElementById("primaryColor");
+            const secondaryColor = document.getElementById("secondaryColor");
+            const fontSizeRange = document.getElementById("fontSizeRange");
+            const glassRange = document.getElementById("glassOpacityRange");
+            const saveBtn = document.getElementById("saveTheme");
+            const resetBtn = document.getElementById("resetTheme");
+            const fontSizeValue = document.getElementById("fontSizeValue");
+            const opacityValue = document.getElementById("opacityValue");
+            const fontFamilySelect = document.getElementById("fontFamilySelect");
+            const bubbleRange = document.getElementById("bubbleSizeRange");
+            const bubbleValue = document.getElementById("bubbleSizeValue");
+
+            let tempTheme = {};
+
+            // 🎯 تابع اعمال بک‌گراند
+            function applyBackgroundStyle(image, mode) {
+                if (!image) {
+                    document.body.style.backgroundImage = "";
+                    return;
+                }
+                document.body.style.backgroundImage = `url(${image})`;
+                document.body.style.backgroundAttachment = "fixed";
+
+                switch (mode) {
+                    case "fill":
+                        document.body.style.backgroundSize = "cover";
+                        document.body.style.backgroundRepeat = "no-repeat";
+                        document.body.style.backgroundPosition = "center";
+                        break;
+                    case "fit":
+                        document.body.style.backgroundSize = "contain";
+                        document.body.style.backgroundRepeat = "no-repeat";
+                        document.body.style.backgroundPosition = "center";
+                        break;
+                    case "stretch":
+                        document.body.style.backgroundSize = "100% 100%";
+                        document.body.style.backgroundRepeat = "no-repeat";
+                        break;
+                    case "tile":
+                        document.body.style.backgroundSize = "auto";
+                        document.body.style.backgroundRepeat = "repeat";
+                        break;
+                    case "center":
+                        document.body.style.backgroundSize = "auto";
+                        document.body.style.backgroundRepeat = "no-repeat";
+                        document.body.style.backgroundPosition = "center";
+                        break;
+                }
+            }
+
+            function applyTheme(theme) {
+                if (theme.background) applyBackgroundStyle(theme.background, theme.mode || "fill");
+                if (theme.fontSize) document.documentElement.style.fontSize = theme.fontSize + "px";
+                if (theme.primaryColor) document.querySelectorAll(".theme-text-primary").forEach(el => el.style.color = theme.primaryColor);
+                if (theme.secondaryColor) document.querySelectorAll(".theme-text-secondary").forEach(el => el.style.color = theme.secondaryColor);
+                if (theme.opacity) document.querySelectorAll(".glass-effect").forEach(el => el.style.backgroundColor = `rgba(255,255,255,${theme.opacity / 100})`);
+            }
+
+            // 🎯 بارگذاری تنظیمات ذخیره‌شده
+            const saved = JSON.parse(localStorage.getItem("elmaTheme") || "{}");
+            applyTheme(saved);
+
+            // مقداردهی ورودی‌ها از ذخیره
+            if (saved.fontSize) fontSizeRange.value = saved.fontSize, fontSizeValue.textContent = saved.fontSize;
+            if (saved.fontSize) {
+                const val = saved.fontSize;
+                const header = document.querySelector(".custom-max-w, .max-w-7xl, .max-w-6xl, .max-w-5xl, .max-w-4xl, .max-w-3xl");
+                if (header) {
+                    header.classList.remove("custom-max-w", "max-w-7xl", "max-w-6xl", "max-w-5xl", "max-w-4xl", "max-w-3xl");
+                    if (val <= 12) header.classList.add("custom-max-w");
+                    else if (val == 13) header.classList.add("max-w-7xl");
+                    else if (val == 14) header.classList.add("max-w-6xl");
+                    else if (val == 15) header.classList.add("max-w-5xl");
+                    else if (val == 16) header.classList.add("max-w-4xl");
+                    else header.classList.add("max-w-3xl");
+                }
+            }
+            if (saved.opacity) glassRange.value = saved.opacity, opacityValue.textContent = saved.opacity;
+            if (saved.primaryColor) primaryColor.value = saved.primaryColor;
+            if (saved.secondaryColor) secondaryColor.value = saved.secondaryColor;
+            if (saved.mode) bgMode.value = saved.mode;
+
+            // مقدار ذخیره‌شده
+            if (saved.fontFamily) {
+                fontFamilySelect.value = saved.fontFamily;
+                document.documentElement.style.setProperty('--app-font', saved.fontFamily);
+            }
+
+            // تغییر زنده
+            fontFamilySelect.addEventListener('change', e => {
+                const val = e.target.value; // مثلا "Vazirmatn, sans-serif"
+                document.documentElement.style.setProperty('--app-font', val);
+                tempTheme.fontFamily = val;
+            });
+
+            // مقدار ذخیره‌شده
+            if (saved.bubbleSize) {
+                bubbleRange.value = saved.bubbleSize;
+                bubbleValue.textContent = saved.bubbleSize;
+                applyBubbleSize(saved.bubbleSize);
+            }
+
+            function applyBubbleSize(val) {
+                document.querySelectorAll(".message-bubble").forEach(bubble => {
+                    bubble.style.transform = `scale(${val / 100})`;
+                    bubble.style.transformOrigin = "bottom right";
+                });
+            }
+
+            // تغییر زنده
+            bubbleRange.addEventListener("input", e => {
+                const val = e.target.value;
+                bubbleValue.textContent = val;
+                applyBubbleSize(val);
+                tempTheme.bubbleSize = val;
+            })
+            // تغییر زنده‌ها
+            bgMode.addEventListener("change", e => {
+                tempTheme.mode = e.target.value;
+                const img = tempTheme.background || saved.background;
+                applyBackgroundStyle(img, e.target.value);
+            });
+
+            primaryColor.addEventListener("input", e => {
+                tempTheme.primaryColor = e.target.value;
+                document.querySelectorAll(".theme-text-primary").forEach(el => el.style.color = e.target.value);
+            });
+
+            secondaryColor.addEventListener("input", e => {
+                tempTheme.secondaryColor = e.target.value;
+                document.querySelectorAll(".theme-text-secondary").forEach(el => el.style.color = e.target.value);
+            });
+
+            bgInput.addEventListener("change", e => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = ev => {
+                    tempTheme.background = ev.target.result;
+                    applyBackgroundStyle(ev.target.result, bgMode.value);
+                };
+                reader.readAsDataURL(file);
+            });
+
+            presetContainer.querySelectorAll("img").forEach(img => {
+                img.addEventListener("click", () => {
+                    tempTheme.background = img.src;
+                    applyBackgroundStyle(img.src, bgMode.value);
+                });
+            });
+
+            fontSizeRange.addEventListener("input", e => {
+                const val = e.target.value;
+                fontSizeValue.textContent = val;
+                document.documentElement.style.fontSize = val + "px";
+                tempTheme.fontSize = val;
+
+                // 🎯 تغییر اندازه max-width بر اساس اندازه فونت
+                const header = document.querySelector(".custom-max-w, .max-w-7xl, .max-w-6xl, .max-w-5xl, .max-w-4xl, .max-w-3xl");
+                if (header) {
+                    header.classList.remove("custom-max-w", "max-w-7xl", "max-w-6xl", "max-w-5xl", "max-w-4xl", "max-w-3xl");
+                    if (val <= 12) header.classList.add("custom-max-w");
+                    else if (val == 13) header.classList.add("max-w-7xl");
+                    else if (val == 14) header.classList.add("max-w-6xl");
+                    else if (val == 15) header.classList.add("max-w-5xl");
+                    else if (val == 16) header.classList.add("max-w-4xl");
+                    else header.classList.add("max-w-3xl");
+
+                }
+            });
+            glassRange.addEventListener("input", e => {
+                const val = e.target.value;
+                opacityValue.textContent = val;
+                document.querySelectorAll(".glass-effect").forEach(el => {
+                    el.style.backgroundColor = `rgba(255,255,255,${val / 100})`;
+                });
+                tempTheme.opacity = val;
+            });
+            // ذخیره تم
+            saveBtn.addEventListener("click", () => {
+                const data = { ...saved, ...tempTheme, mode: bgMode.value };
+                localStorage.setItem("elmaTheme", JSON.stringify(data));
+                alert("✅ تنظیمات تم ذخیره شد!");
+            });
+            document.getElementById("resetBackground").addEventListener("click", () => {
+                document.body.style.backgroundImage = "";
+                tempTheme.background = "";
+                saved.background = "";
+                localStorage.setItem("elmaTheme", JSON.stringify(saved));
+                alert("🧹 تصویر پس‌زمینه حذف شد!");
+            });
+            // ریست تم
+            resetBtn.addEventListener("click", () => {
+                localStorage.removeItem("elmaTheme");
+                document.body.style.backgroundImage = "";
+                document.documentElement.style.fontSize = "16px";
+                document.querySelectorAll(".glass-effect").forEach(el => el.style.backgroundColor = "");
+                document.querySelectorAll(".theme-text-primary").forEach(el => el.style.color = "");
+                document.querySelectorAll(".theme-text-secondary").forEach(el => el.style.color = "");
+                alert("🔄 تنظیمات تم بازنشانی شد!");
+                location.reload();
+            });
+            lucide.createIcons();
+        })();
+    </script>

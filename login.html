@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ورود به حساب</title>
+
+    <!-- فونت و آیکون‌ها -->
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- استایل پایه -->
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Vazirmatn', sans-serif;
+            background: radial-gradient(circle at center, #2a0037 0%, #0b0017 100%);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 400px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 2rem;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 0 40px rgba(255, 0, 128, 0.3);
+            text-align: center;
+        }
+
+        .login-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            background: linear-gradient(90deg, #ff66b2, #8b5cf6);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .input-group {
+            margin-bottom: 1rem;
+            text-align: right;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.3rem;
+            font-size: 0.9rem;
+            color: #ddd;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 0.7rem;
+            border-radius: 10px;
+            border: none;
+            outline: none;
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            font-size: 1rem;
+        }
+
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            width: 100%;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            color: #fff;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-login {
+            background: linear-gradient(90deg, #ff66b2, #8b5cf6);
+        }
+
+        .btn-login:hover {
+            transform: scale(1.05);
+            background: linear-gradient(90deg, #ff80c5, #a78bfa);
+        }
+
+        .btn-google {
+            background: linear-gradient(90deg, #db4437, #ff6f61);
+        }
+
+        .btn-google:hover {
+            transform: scale(1.05);
+        }
+
+        .register-link {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: #ccc;
+        }
+
+        .register-link a {
+            color: #ff66b2;
+            text-decoration: none;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-container">
+        <div class="login-title">ورود به حساب کاربری</div>
+
+        <div class="input-group">
+            <label for="email">ایمیل</label>
+            <input type="email" id="email" placeholder="example@email.com" />
+        </div>
+        <div class="input-group">
+            <label for="password">رمز عبور</label>
+            <input type="password" id="password" placeholder="********" />
+        </div>
+
+        <button id="loginBtn" class="btn btn-login">
+            <i data-lucide="log-in"></i> ورود
+        </button>
+
+        <button id="googleLoginBtn" class="btn btn-google mt-2">
+            <i data-lucide="chrome"></i> ورود با Google
+        </button>
+
+        <div class="register-link">
+            حسابی ندارید؟
+            <a href="#" onclick="loadPage('Registration.html')">ثبت‌نام کنید</a>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import {
+            initializeApp
+        } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js';
+        import {
+            getAuth,
+            signInWithEmailAndPassword,
+            signInWithPopup,
+            GoogleAuthProvider
+        } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyD_Ar1zFTBS9DDFlAflPt2IpcQ5y8EI5pE",
+            authDomain: "zed-exe-48839.firebaseapp.com",
+            projectId: "zed-exe-48839",
+            storageBucket: "zed-exe-48839.firebasestorage.app",
+            messagingSenderId: "283941493182",
+            appId: "1:283941493182:web:7a9deae50c01c9feb8c1ef",
+            measurementId: "G-014WZDJBSL"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        const loginBtn = document.getElementById("loginBtn");
+        const googleLoginBtn = document.getElementById("googleLoginBtn");
+
+        loginBtn.addEventListener("click", async () => {
+            const email = document.getElementById("email").value.trim();
+            const password = document.getElementById("password").value;
+
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                alert("✅ ورود موفقیت‌آمیز بود!");
+                loadPage("index.html");
+            } catch (error) {
+                alert("❌ خطا در ورود: " + error.message);
+            }
+        });
+
+        googleLoginBtn.addEventListener("click", async () => {
+            const provider = new GoogleAuthProvider();
+            try {
+                await signInWithPopup(auth, provider);
+                alert("✅ ورود با گوگل موفقیت‌آمیز بود!");
+                loadPage("index.html");
+            } catch (error) {
+                alert("❌ خطا در ورود با گوگل: " + error.message);
+            }
+        });
+
+        // اگر با پارامتر ?changeEmail=true اومده
+        if (window.location.search.includes("changeEmail=true")) {
+            document.querySelector(".login-title").textContent = "تغییر ایمیل حساب";
+            loginBtn.textContent = "تغییر ایمیل";
+        }
+
+        lucide.createIcons();
+    </script>
+</body>
+
+</html>

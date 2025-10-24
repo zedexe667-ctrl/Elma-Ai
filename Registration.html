@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ثبت‌نام در Elma</title>
+
+    <!-- فونت و آیکون‌ها -->
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Vazirmatn', sans-serif;
+            background: radial-gradient(circle at center, #24003a 0%, #0a0015 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .register-wrapper {
+            display: flex;
+            flex-direction: row-reverse;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 40px rgba(255, 0, 128, 0.3);
+            overflow: hidden;
+            width: 90%;
+            max-width: 800px;
+        }
+
+        .register-form {
+            flex: 1;
+            padding: 2rem;
+        }
+
+        .register-form h2 {
+            font-size: 1.6rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(90deg, #ff66b2, #8b5cf6);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .input-group {
+            margin-bottom: 1rem;
+            text-align: right;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.3rem;
+            font-size: 0.9rem;
+            color: #ddd;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 0.7rem 2.5rem 0.7rem 0.7rem;
+            border-radius: 10px;
+            border: none;
+            outline: none;
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            font-size: 1rem;
+        }
+
+        .password-box {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .password-box input {
+            width: 100%;
+            padding-right: 0.7rem;
+            padding-left: 2.7rem;
+            border-radius: 10px;
+            border: none;
+            outline: none;
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            font-size: 1rem;
+        }
+
+        .password-box button {
+            position: absolute;
+            left: 0.5rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.3s;
+        }
+
+        .password-box button:hover {
+            color: #fff;
+            transform: scale(1.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            color: #fff;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .btn-register {
+            background: linear-gradient(90deg, #ff66b2, #8b5cf6);
+            margin-top: 0.5rem;
+        }
+
+        .btn-register:hover {
+            transform: scale(1.05);
+            background: linear-gradient(90deg, #ff80c5, #a78bfa);
+        }
+
+        .btn-google {
+            background: linear-gradient(90deg, #db4437, #ff6f61);
+            margin-top: 0.5rem;
+        }
+
+        .btn-google:hover {
+            transform: scale(1.05);
+        }
+
+        .side-image {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .side-image img {
+            width: 100%;
+            max-width: 300px;
+            border-radius: 12px;
+            transition: 0.4s;
+        }
+
+        .login-link {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: #ccc;
+            text-align: center;
+        }
+
+        .login-link a {
+            color: #ff66b2;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .register-wrapper {
+                flex-direction: column;
+            }
+
+            .side-image {
+                order: -1;
+            }
+        }
+        @media (max-width: 768px) {
+            .side-image img {
+                border-radius: 50% !important;
+                width: 150px !important;
+                height: 150px !important;
+                object-fit: cover;               
+                box-shadow: 0 0 20px rgba(248, 87, 248, 0.3);              
+            }
+
+            .side-image {
+                background: none !important;
+                padding: 1.5rem 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="register-wrapper">
+        <div class="side-image">
+            <img id="elmaImage" src="Assets/img/Elma/Elma_R1.png" alt="Elma">
+        </div>
+
+        <div class="register-form">
+            <h2>ثبت‌نام در Elma</h2>
+
+            <div class="input-group">
+                <label for="email">ایمیل</label>
+                <input type="email" id="email" placeholder="example@email.com" />
+            </div>
+
+            <div class="input-group password-container">
+                <label for="password">رمز عبور</label>
+                <div class="password-box">
+                    <input type="text" id="password" placeholder="********" />
+                    <button type="button" id="togglePassword" aria-label="نمایش رمز عبور">
+                        <i data-lucide="eye"></i>
+                    </button>
+                </div>
+            </div>
+
+            <button id="registerBtn" class="btn btn-register">
+                <i data-lucide="user-plus"></i> ثبت‌نام
+            </button>
+
+            <button id="googleRegisterBtn" class="btn btn-google">
+                <i data-lucide="chrome"></i> ثبت‌نام با Google
+            </button>
+
+            <div class="login-link">
+                حساب دارید؟
+                <a href="#" onclick="loadPage('login.html')">وارد شوید</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lucide فعال‌سازی -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            lucide.createIcons();
+        });
+    </script>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js';
+        import { getAuth, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyD_Ar1zFTBS9DDFlAflPt2IpcQ5y8EI5pE",
+            authDomain: "zed-exe-48839.firebaseapp.com",
+            projectId: "zed-exe-48839",
+            storageBucket: "zed-exe-48839.firebasestorage.app",
+            messagingSenderId: "283941493182",
+            appId: "1:283941493182:web:7a9deae50c01c9feb8c1ef",
+            measurementId: "G-014WZDJBSL"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        const passwordInput = document.getElementById("password");
+        const togglePasswordBtn = document.getElementById("togglePassword");
+        const elmaImage = document.getElementById("elmaImage");
+
+        togglePasswordBtn.addEventListener("click", () => {
+            const isHidden = passwordInput.type === "password";
+            passwordInput.type = isHidden ? "text" : "password";
+
+            togglePasswordBtn.innerHTML = isHidden
+                ? `<i data-lucide="eye"></i>`
+                : `<i data-lucide="eye-off"></i>`;
+            lucide.createIcons();
+
+            if (isHidden) {
+                elmaImage.src = "Assets/img/Elma/Elma_R3.png";
+            } else {
+                elmaImage.src = "Assets/img/Elma/Elma_R2.png";
+            }
+        });
+
+        document.getElementById("registerBtn").addEventListener("click", async () => {
+            const email = document.getElementById("email").value.trim();
+            const password = passwordInput.value;
+
+            try {
+                await createUserWithEmailAndPassword(auth, email, password);
+                alert("✅ ثبت‌نام موفقیت‌آمیز بود!");
+                loadPage("index.html");
+            } catch (err) {
+                alert("❌ خطا در ثبت‌نام: " + err.message);
+            }
+        });
+
+        document.getElementById("googleRegisterBtn").addEventListener("click", async () => {
+            const provider = new GoogleAuthProvider();
+            try {
+                await signInWithPopup(auth, provider);
+                alert("✅ ثبت‌نام با گوگل موفقیت‌آمیز بود!");
+                loadPage("index.html");
+            } catch (err) {
+                alert("❌ خطا در ورود با گوگل: " + err.message);
+            }
+        });
+        document.addEventListener("DOMContentLoaded", () => {
+            lucide.createIcons();
+        });
+    </script>
+</body>
+
+</html>
