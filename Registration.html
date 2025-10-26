@@ -183,13 +183,14 @@
                 order: -1;
             }
         }
+
         @media (max-width: 768px) {
             .side-image img {
                 border-radius: 50% !important;
                 width: 150px !important;
                 height: 150px !important;
-                object-fit: cover;               
-                box-shadow: 0 0 20px rgba(248, 87, 248, 0.3);              
+                object-fit: cover;
+                box-shadow: 0 0 20px rgba(248, 87, 248, 0.3);
             }
 
             .side-image {
@@ -289,26 +290,36 @@
             const password = passwordInput.value;
 
             try {
+                // ثبت‌نام با ایمیل و رمز
                 await createUserWithEmailAndPassword(auth, email, password);
                 alert("✅ ثبت‌نام موفقیت‌آمیز بود!");
-                loadPage("index.html");
+                window.location.href = "index.html"; // به جای loadPage برای موبایل مطمئن‌تره
             } catch (err) {
                 alert("❌ خطا در ثبت‌نام: " + err.message);
             }
         });
 
+
         document.getElementById("googleRegisterBtn").addEventListener("click", async () => {
             const provider = new GoogleAuthProvider();
             try {
-                await signInWithPopup(auth, provider);
-                alert("✅ ثبت‌نام با گوگل موفقیت‌آمیز بود!");
-                loadPage("index.html");
+                const result = await signInWithPopup(auth, provider);
+
+                // بررسی کن ببین رمز نداره (فقط Google provider فعاله)
+                const hasPassword = result.user.providerData.some(p => p.providerId === "password");
+
+                if (!hasPassword) {
+                    // رمز نداره → بفرستش به صفحه تعیین رمز
+                    alert("👋 خوش اومدی! برای ورود دستی یه رمز هم انتخاب کن");
+                    window.location.href = "set-password.html";
+                } else {
+                    // رمز داره → مستقیم برو داخل
+                    alert("✅ ورود با گوگل موفقیت‌آمیز بود!");
+                    window.location.href = "index.html";
+                }
             } catch (err) {
                 alert("❌ خطا در ورود با گوگل: " + err.message);
             }
-        });
-        document.addEventListener("DOMContentLoaded", () => {
-            lucide.createIcons();
         });
     </script>
 </body>
