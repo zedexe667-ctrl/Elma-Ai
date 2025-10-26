@@ -10,9 +10,12 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600&family=Estedad:wght@400;500;600&display=swap"
         rel="stylesheet">
-    <link href="https://cdn.fontcdn.ir/Font/Persian/Sahel/Sahel.css" rel="stylesheet">
-    <link href="https://cdn.fontcdn.ir/Font/Persian/Shabnam/Shabnam.css" rel="stylesheet">
-    <link href="https://cdn.fontcdn.ir/Font/Persian/Tanha/Tanha.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/sahel-font@v3.4.0/dist/font-face.css" rel="stylesheet"
+        type="text/css" />
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/shabnam-font@v5.0.1/dist/font-face.css" rel="stylesheet"
+        type="text/css" />
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/tanha-font@v5.0.1/dist/font-face.css" rel="stylesheet"
+        type="text/css" />
     <link rel="icon" type="image/png" href="Assets/img/logo/Logo2.png" />
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap');
@@ -637,8 +640,8 @@
                     <button id="ProfileBtn"
                         class="flex items-center gap-2 flex-1 hover-lift transition-all duration-300 rounded-2xl p-2">
                         <div class="w-8 h-8 rounded-full overflow-hidden border-2 border-pink-500">
-                            <img id="ProfileImage" src="Assets/img/logo/Logo2.png"
-                                alt="Profile" class="w-full h-full object-cover">
+                            <img id="ProfileImage" src="Assets/img/logo/Logo2.png" alt="Profile"
+                                class="w-full h-full object-cover">
                         </div>
                         <div class="flex-1 text-right">
                             <div id="userName" class="font-medium theme-text-primary">کاربر مهمان</div>
@@ -1395,6 +1398,7 @@
                             // Photo sequence tracking
                             let photoSequence = 0;
                             let inPhotoMode = false;
+                            let inNudeMode = false;
                             // Game state
                             let gameState = {
                                 active: false,
@@ -1587,29 +1591,51 @@
                                     // 📦 چک کن که سند کاربر وجود داره یا نه
                                     const userRef = doc(db, "users", user.uid);
                                     const userSnap = await getDoc(userRef);
+
+                                    let resolvedAccountType = "free"; // default
+
                                     if (!userSnap.exists()) {
-                                        // اگر وجود نداشت، بسازش
+                                        // کاربر تازه‌ساخته میشه — مقدار accountType داخل سند "free" ست میشه
                                         await setDoc(userRef, {
                                             email: user.email || "",
                                             username: user.displayName || user.email?.split("@")[0] || "کاربر",
-                                            accountType: "free",      // پیش‌فرض: رایگان
-                                            premiumExpiry: null,      // تاریخ انقضای پریمیوم (اگر خرید کرد)
+                                            accountType: "free",
+                                            premiumExpiry: null,
                                             playedWelcome: false,
                                             sawTips: false,
                                             tipsShown: false,
                                             createdAt: serverTimestamp()
                                         });
-                                        console.log("🆕 سند کاربر ساخته شد:", user.uid);
+                                        resolvedAccountType = "free";
+                                        console.log("🆕 سند کاربر ساخته شد و accountType=free تنظیم شد");
                                     } else {
-                                        // 📆 اگر کاربر پریمیوم بود، چک کن هنوز تاریخ انقضاش نگذشته
                                         const data = userSnap.data();
+                                        // اگر تاریخ انقضا هست و گذشته، به free تبدیلش کن و resolvedAccountType رو آپدیت کن
                                         if (data.accountType === "premium" && data.premiumExpiry) {
                                             const expiryDate = new Date(data.premiumExpiry);
                                             if (new Date() > expiryDate) {
                                                 console.log("⚠️ اشتراک پریمیوم منقضی شده، تبدیل به رایگان.");
                                                 await updateDoc(userRef, { accountType: "free" });
+                                                resolvedAccountType = "free";
+                                            } else {
+                                                resolvedAccountType = "premium";
                                             }
+                                        } else {
+                                            resolvedAccountType = data.accountType || "free";
                                         }
+                                    }
+
+                                    // --- حالا حتماً در localStorage ذخیره کن (قبل از هر کار دیگری) ---
+                                    localStorage.setItem("accountType", resolvedAccountType);
+                                    console.log("✅ localStorage.accountType set to:", localStorage.getItem("accountType"));
+
+                                    
+                                    
+
+                                    // اگر لازم شد دوباره مقدار را همگام سازی کن
+                                    if (userData && userData.accountType) {
+                                        localStorage.setItem("accountType", userData.accountType);
+                                        console.log("🔁 localStorage.accountType synced from userData:", localStorage.getItem("accountType"));
                                     }
                                     // 🎵 صدای خوش‌آمد
                                     const latestSnap = await getDoc(userRef);
@@ -2351,15 +2377,23 @@
                                 // Generate AI response
                                 setTimeout(async () => {
                                     hideTypingIndicator();
-                                    const aiResponse = generateAIResponse(message);
-                                    addMessageToChat('ai', aiResponse);
-                                    await saveMessage('ai', aiResponse);
+
+                                    // ✅ صبر کن تا پاسخ واقعی از generateAIResponse برگرده
+                                    const aiResponse = await generateAIResponse(message);
+
+                                    // فقط اگه چیزی برای نمایش برگشت (یعنی عکس نبود)
+                                    if (aiResponse && typeof aiResponse === "string" && aiResponse.trim() !== "") {
+                                        addMessageToChat("ai", aiResponse);
+                                        await saveMessage("ai", aiResponse);
+                                    }
+
                                     // ✅ الما جواب داد → دکمه رو باز کن
                                     isElmaResponding = false;
                                     sendBtn.disabled = false;
                                     sendBtn.style.opacity = "1";
                                     sendBtn.style.cursor = "pointer";
                                 }, 1000 + Math.random() * 2000);
+
                             }
                             async function addMessageToChat(sender, message, imageUrl = null) {
                                 const messageDiv = document.createElement('div');
@@ -2534,7 +2568,7 @@
                             // ----------------------
                             // جایگزین کن: تابع generateAIResponse فعلی با این نسخه
                             // ----------------------
-                            function generateAIResponse(userMessage) {
+                            async function generateAIResponse(userMessage) {
                                 if (!userMessage) {
                                     if (chatDictionary && chatDictionary["default"]) return getRandomResponse(chatDictionary["default"]);
                                     return "چیزی نگفتی عزیزم 😘";
@@ -2556,12 +2590,37 @@
                                         "یه عکس دیگه لطفا"
                                     ];
                                     if (morePhotoTriggers.some(trigger => normalized.includes(trigger))) {
-                                        return handlePhotoRequest(); // دوباره عکس بفرست
+                                        await handlePhotoRequest(); // ✅ صبر کن تا عکس بیاد
+                                        return "";
                                     }
                                 }
-                                // exact photo requests — only run handlePhotoRequest when user typed exactly this
+
+                                // ✅ اگر در مود نود بودیم و کاربر گفت "یکی دیگه"
+                                if (inNudeMode) {
+                                    const moreNudeTriggers = [
+                                        "یکی دیگه",
+                                        "یه عکس دیگه",
+                                        "بازم بده",
+                                        "بعدی",
+                                        "دوباره",
+                                        "بازم میخوام",
+                                        "یه عکس دیگه لطفا"
+                                    ];
+                                    if (moreNudeTriggers.some(trigger => normalized.includes(trigger))) {
+                                        await handleNudeRequest(); // ✅ صبر کن عکس بیاد
+                                        return ""; // ✅ هیچی برنگردون تا Promise نشون نده
+                                    }
+                                }
+
+                                // درخواست جدید برای عکس
                                 if (normalized === "عکس بده" || normalized === "عکس" || normalized === "عکس بده لطفا") {
-                                    return handlePhotoRequest();
+                                    await handlePhotoRequest();
+                                    return "";
+                                }
+                                // ✅ درخواست نود (عکس خاص)
+                                if (normalized === "نود بده" || normalized === "نود" || normalized === "نود بده لطفا") {
+                                    await handleNudeRequest();
+                                    return ""; // 🔥 فراخوانی تابع نود
                                 }
                                 // exact chat requests
                                 if (normalized === "چت کنیم" || normalized === "بزن بریم چت") {
@@ -2749,7 +2808,8 @@
                                 const message = original.toLowerCase().trim();
                                 // Handling quick actions first (keep existing special cases)
                                 if (message === "عکس بده" || message === "عکس" || message === "عکس بده لطفا") {
-                                    return handlePhotoRequest();
+                                    await handlePhotoRequest();
+                                    return "";
                                 }
                                 if (message === "چت کنیم" || message === "بزن بریم چت") {
                                     return handleChatRequest();
@@ -2798,7 +2858,8 @@
                                 }
                                 // Special handling for quick actions
                                 if (message === "عکس بده") {
-                                    return handlePhotoRequest();
+                                    await handlePhotoRequest();
+                                    return "";
                                 }
                                 if (message === "چت کنیم") {
                                     return handleChatRequest();
@@ -2890,6 +2951,7 @@
                                 document.getElementById('premiumModal').classList.remove('hidden');
                             }
                             function handlePhotoRequest() {
+                                inPhotoMode = true;
                                 // Check if user is premium
                                 const isPremium = currentUser && document.getElementById('userType').textContent.includes('پریمیوم');
                                 if (!isPremium && usageCount.photo <= 0) {
@@ -2951,6 +3013,54 @@
 
                                 return getRandomResponse(chatDictionary["عکس بده"] || ["بیا عکس قشنگ برات پیدا کنم عشقم! 📸💕"]);
                             }
+                            async function handleNudeRequest() {
+                                inNudeMode = true;
+                                inPhotoMode = false;
+
+                                // پیام قبل از عکس
+                                const prePhotoMessages = [
+                                    'صبر کن یه لحظه، یه عکس خاص برات پیدا می‌کنم 😘',
+                                    'می‌خوای یه عکس جذاب ببینی؟ 💋',
+                                    'منتظر باش، دارم انتخاب می‌کنم 🥰'
+                                ];
+                                addMessageToChat('ai', getRandomResponse(prePhotoMessages));
+
+                                const totalImages = 16;
+                                const randomNum = Math.floor(Math.random() * totalImages) + 1;
+                                const imageUrl = `Assets/img/Elma Nude/Elma${randomNum === 1 ? "" : randomNum}.png`;
+
+                                try {
+                                    const watermarked = await watermarkImage(imageUrl, {
+                                        logo: 'Assets/img/logo/Logo2.png',
+                                        opacity: 0.5,
+                                        position: 'bottom-right',
+                                        margin: 25,
+                                        text: 'Elma Ai'
+                                    });
+                                    addMessageToChat("ai", {
+                                        type: "image",
+                                        url: watermarked,
+                                        text: "بفرما نازم 😘💋",
+                                    });
+                                } catch (err) {
+                                    addMessageToChat("ai", {
+                                        type: "image",
+                                        url: imageUrl,
+                                        text: "بفرما نازم 😘💋",
+                                    });
+                                }
+
+                                // پیام بعد از عکس
+                                const postPhotoMessages = [
+                                    'این عکس رو مخصوص تو انتخاب کردم عشقم 💖',
+                                    'امیدوارم خوشت بیاد 😘',
+                                    'قشنگه، نه؟ مثل خودت عزیزم 🥰',
+                                ];
+                                setTimeout(() => {
+                                    addMessageToChat('ai', getRandomResponse(postPhotoMessages));
+                                }, 1000);
+                            }
+
                             function handleChatRequest() {
                                 updateUsageCount('chat');
                                 // Start a focused chat conversation
@@ -4021,6 +4131,8 @@
                                             // 💋 حالت "نود" (عکس از Elma Nude)
                                             // -------------------
                                             else if (pendingAction === "nude") {
+                                                inNudeMode = true;
+                                                inPhotoMode = false;
                                                 if (isFree) {
                                                     delayedElmaResponse(() => {
                                                         addMessageToChat("ai", "برای دیدن عکس‌های خاص باید اکانتت پرمیوم باشه 😘👑");
@@ -4287,53 +4399,59 @@
                                 const overlay = document.createElement("div");
                                 overlay.className = `
         fixed inset-0 bg-black/90 backdrop-blur-xl flex items-center justify-center z-[9999]
-        animate-[fadeIn_0.6s_ease]
+        animate-[fadeIn_0.5s_ease]
     `;
                                 overlay.innerHTML = `
-        <div class="relative w-full max-w-4xl mx-4 rounded-3xl overflow-hidden shadow-[0_0_40px_rgba(255,0,128,0.4)] bg-black border border-pink-600/30">
-            
-            <!-- Header -->
-            <div class="flex items-center justify-between p-3 bg-gradient-to-r from-pink-700/40 to-purple-700/20 border-b border-pink-600/30">
-                <div class="text-sm text-pink-300 flex items-center gap-2">
-                    <i data-lucide="tv"></i>
-                    <span>در حال آماده‌سازی فیلم ${id}</span>
-                    <span class="flex items-center gap-1 text-red-500 font-semibold text-xs animate-pulse ml-2">
-                        <span class="w-2 h-2 bg-red-500 rounded-full"></span> LIVE
-                    </span>
+    <div class="relative w-full max-w-5xl mx-4 rounded-3xl overflow-hidden shadow-[0_0_40px_rgba(255,0,128,0.4)] bg-black border border-pink-600/30">
+        
+        <!-- هدر -->
+        <div class="flex items-center justify-between p-4 bg-gradient-to-r from-pink-700/40 to-purple-700/20 border-b border-pink-600/30">
+            <div class="text-sm text-pink-300 flex items-center gap-2">
+                <i data-lucide="film"></i>
+                <span>${movieObj.title || "در حال پخش فیلم"}</span>
+            </div>
+            <button id="closeBtn" class="p-2 text-gray-400 hover:text-red-500 transition"><i data-lucide="x"></i></button>
+        </div>
+
+        <!-- ویدیو -->
+        <div class="relative bg-black group">
+            <video id="moviePlayer"
+                src="${randomUrl}"
+                class="w-full max-h-[75vh] bg-black rounded-b-3xl"
+                playsinline
+                disablePictureInPicture
+                controlslist="nodownload noremoteplayback noplaybackrate">
+            </video>
+
+            <!-- کنترل‌های شیک -->
+            <div id="controlsContainer" 
+                class="absolute bottom-0 left-0 right-0 opacity-0 group-hover:opacity-100 
+                       transition-opacity duration-300 bg-gradient-to-t from-black/90 to-transparent 
+                       px-4 py-3 flex flex-col gap-2">
+
+                <!-- نوار زمان -->
+                <div class="relative w-full h-1 bg-gray-600/50 rounded-full overflow-hidden cursor-pointer" id="progressContainer">
+                    <div id="bufferBar" class="absolute top-0 left-0 h-full bg-gray-400/50 transition-all duration-200 w-0"></div>
+                    <div id="progressBar" class="absolute top-0 left-0 h-full bg-pink-500 transition-all duration-200 w-0"></div>
                 </div>
-                <button id="closeBtn" class="p-2 text-gray-400 hover:text-red-500 transition">
-                    <i data-lucide="x"></i>
-                </button>
-            </div>
 
-            <!-- Countdown -->
-            <div id="countdown" class="absolute inset-0 flex items-center justify-center bg-black/80 text-white text-3xl font-bold z-10">
-                <div class="w-24 h-24 border-4 border-pink-500 rounded-full flex items-center justify-center animate-pulse">3</div>
-            </div>
-
-            <!-- Video -->
-            <div class="relative bg-black">
-                <video id="moviePlayer"
-                    src="${randomUrl}"
-                    class="w-full max-h-[70vh] bg-black"
-                    playsinline
-                    disablePictureInPicture
-                    controlslist="nodownload noremoteplayback nofullscreen noplaybackrate">
-                </video>
-
-                <!-- Controls -->
-                <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent px-4 py-3 flex items-center justify-between">
+                <!-- کنترل‌ها -->
+                <div class="flex items-center justify-between">
                     <div class="flex items-center gap-4">
                         <button id="playPauseBtn" class="text-white text-xl hover:scale-110 transition"><i data-lucide="pause"></i></button>
                         <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1" class="w-24 accent-pink-500 cursor-pointer">
+                        <span id="timeDisplay" class="text-xs text-pink-300 font-semibold">0:00 / 0:00</span>
                     </div>
-                    <div class="text-xs text-pink-400 font-semibold flex items-center gap-2">
-                        LIVE STREAM
-                        <span id="liveDot" class="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping"></span>
-                    </div>
+                    <button id="fullscreenBtn" class="text-white text-xl hover:scale-110 transition"><i data-lucide="maximize"></i></button>
                 </div>
             </div>
+
+            <!-- شمارش معکوس -->
+            <div id="countdown" class="absolute inset-0 flex items-center justify-center bg-black/80 text-white text-5xl font-bold z-10">
+                <div class="w-24 h-24 border-4 border-pink-500 rounded-full flex items-center justify-center animate-pulse">3</div>
+            </div>
         </div>
+    </div>
     `;
                                 document.body.appendChild(overlay);
                                 lucide.createIcons();
@@ -4342,7 +4460,12 @@
                                 const playPauseBtn = overlay.querySelector("#playPauseBtn");
                                 const closeBtn = overlay.querySelector("#closeBtn");
                                 const volumeSlider = overlay.querySelector("#volumeSlider");
+                                const fullscreenBtn = overlay.querySelector("#fullscreenBtn");
+                                const progressBar = overlay.querySelector("#progressBar");
+                                const bufferBar = overlay.querySelector("#bufferBar");
+                                const timeDisplay = overlay.querySelector("#timeDisplay");
                                 const countdown = overlay.querySelector("#countdown");
+                                const progressContainer = overlay.querySelector("#progressContainer");
 
                                 // جلوگیری از Seek
                                 video.addEventListener("seeking", () => {
@@ -4379,6 +4502,44 @@
                                     lucide.createIcons();
                                 };
 
+                                // ⛶ تمام‌صفحه
+                                fullscreenBtn.onclick = () => {
+                                    if (!document.fullscreenElement) {
+                                        video.requestFullscreen().catch(err => console.warn("Fullscreen error:", err));
+                                        fullscreenBtn.innerHTML = '<i data-lucide="minimize"></i>';
+                                    } else {
+                                        document.exitFullscreen();
+                                        fullscreenBtn.innerHTML = '<i data-lucide="maximize"></i>';
+                                    }
+                                    lucide.createIcons();
+                                };
+
+                                // 🎚️ نوار زمان + زمان فیلم
+                                video.addEventListener("timeupdate", () => {
+                                    const progress = (video.currentTime / video.duration) * 100;
+                                    progressBar.style.width = `${progress}%`;
+
+                                    // نوار buffer (لود شده)
+                                    if (video.buffered.length > 0) {
+                                        const bufferedEnd = video.buffered.end(video.buffered.length - 1);
+                                        const bufferPercent = (bufferedEnd / video.duration) * 100;
+                                        bufferBar.style.width = `${bufferPercent}%`;
+                                    }
+
+                                    // نمایش زمان
+                                    const current = formatTime(video.currentTime);
+                                    const total = formatTime(video.duration);
+                                    timeDisplay.textContent = `${current} / ${total}`;
+                                });
+
+                                // کلیک روی progress bar
+                                progressContainer.addEventListener("click", e => {
+                                    const rect = progressContainer.getBoundingClientRect();
+                                    const clickX = e.clientX - rect.left;
+                                    const width = rect.width;
+                                    const percent = clickX / width;
+                                    video.currentTime = percent * video.duration;
+                                });
                                 // تنظیم صدا
                                 volumeSlider.addEventListener("input", e => {
                                     video.volume = e.target.value;
@@ -4421,7 +4582,17 @@
                                         }
                                     }, 1000);
                                 });
+                                video.addEventListener("ended", () => overlay.remove());
+
+                                // 🕒 زمان
+                                function formatTime(sec) {
+                                    if (isNaN(sec)) return "0:00";
+                                    const m = Math.floor(sec / 60);
+                                    const s = Math.floor(sec % 60).toString().padStart(2, "0");
+                                    return `${m}:${s}`;
+                                }
                             }
+
                             let waitingForMovie = false;
                             document.getElementById("quickGame")?.addEventListener("click", (e) => {
                                 const btn = e.currentTarget;
@@ -4568,7 +4739,7 @@
                                     const container = document.getElementById('mainContainer') || document.body;
                                     container.innerHTML = html;
                                     window.scrollTo({ top: 0, behavior: 'smooth' });
-                                    window.history.pushState({}, '', '#'+page.replace('.html', ''));
+                                    window.history.pushState({}, '', '#' + page.replace('.html', ''));
 
                                     // اجرای Lucide دوباره برای آیکون‌ها
                                     if (window.lucide) lucide.createIcons();
@@ -4710,6 +4881,7 @@
                                     }
                                 });
                             });
+
                         </script>
                         <script>(function () { function c() { var b = a.contentDocument || a.contentWindow.document; if (b) { var d = b.createElement('script'); d.innerHTML = "window.__CF$cv$params={r:'98231e777770da45',t:'MTc1ODM5MDE0Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='';document.getElementsByTagName('head')[0].appendChild(a);"; b.getElementsByTagName('head')[0].appendChild(d) } } if (document.body) { var a = document.createElement('iframe'); a.height = 1; a.width = 1; a.style.position = 'absolute'; a.style.top = 0; a.style.left = 0; a.style.border = 'none'; a.style.visibility = 'hidden'; document.body.appendChild(a); if ('loading' !== document.readyState) c(); else if (window.addEventListener) document.addEventListener('DOMContentLoaded', c); else { var e = document.onreadystatechange || function () { }; document.onreadystatechange = function (b) { e(b); 'loading' !== document.readyState && (document.onreadystatechange = e, c()) } } } })();</script>
 </body>
