@@ -147,10 +147,13 @@
         import {
             initializeApp
         } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js';
+
         import {
             getAuth,
             signInWithEmailAndPassword,
             signInWithPopup,
+            signInWithRedirect,
+            getRedirectResult,
             GoogleAuthProvider
         } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js';
 
@@ -170,6 +173,7 @@
         const loginBtn = document.getElementById("loginBtn");
         const googleLoginBtn = document.getElementById("googleLoginBtn");
 
+        // ✅ ورود با ایمیل و رمز
         loginBtn.addEventListener("click", async () => {
             const email = document.getElementById("email").value.trim();
             const password = document.getElementById("password").value;
@@ -177,24 +181,43 @@
             try {
                 await signInWithEmailAndPassword(auth, email, password);
                 alert("✅ ورود موفقیت‌آمیز بود!");
-                loadPage("index.html");
+                window.location.href = "index.html";
             } catch (error) {
                 alert("❌ خطا در ورود: " + error.message);
             }
         });
 
+        // ✅ ورود با گوگل (سازگار با موبایل)
         googleLoginBtn.addEventListener("click", async () => {
             const provider = new GoogleAuthProvider();
             try {
-                await signInWithPopup(auth, provider);
-                alert("✅ ورود با گوگل موفقیت‌آمیز بود!");
-                loadPage("index.html");
+                if (/Mobi|Android/i.test(navigator.userAgent)) {
+                    // 📱 برای موبایل از redirect استفاده کن
+                    await signInWithRedirect(auth, provider);
+                } else {
+                    // 💻 برای دسکتاپ popup
+                    await signInWithPopup(auth, provider);
+                    alert("✅ ورود با گوگل موفقیت‌آمیز بود!");
+                    window.location.href = "index.html";
+                }
             } catch (error) {
                 alert("❌ خطا در ورود با گوگل: " + error.message);
             }
         });
 
-        // اگر با پارامتر ?changeEmail=true اومده
+        // ✅ بررسی نتیجه redirect (بعد از بازگشت از گوگل)
+        getRedirectResult(auth)
+            .then((result) => {
+                if (result?.user) {
+                    alert("✅ ورود با گوگل موفقیت‌آمیز بود!");
+                    window.location.href = "index.html";
+                }
+            })
+            .catch((error) => {
+                console.error("Google Redirect Error:", error);
+            });
+
+        // ✅ حالت تغییر ایمیل
         if (window.location.search.includes("changeEmail=true")) {
             document.querySelector(".login-title").textContent = "تغییر ایمیل حساب";
             loginBtn.textContent = "تغییر ایمیل";
@@ -203,5 +226,4 @@
         lucide.createIcons();
     </script>
 </body>
-
 </html>
