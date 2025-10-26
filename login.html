@@ -4,41 +4,47 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ورود به حساب</title>
+    <title>ثبت‌نام در Elma</title>
 
     <!-- فونت و آیکون‌ها -->
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
 
-    <!-- استایل پایه -->
     <style>
         body {
             margin: 0;
             padding: 0;
             font-family: 'Vazirmatn', sans-serif;
-            background: radial-gradient(circle at center, #2a0037 0%, #0b0017 100%);
+            background: radial-gradient(circle at center, #24003a 0%, #0a0015 100%);
             color: #fff;
+            min-height: 100vh;
             display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .register-wrapper {
+            display: flex;
+            flex-direction: row-reverse;
             align-items: center;
             justify-content: center;
-            min-height: 100vh;
-        }
-
-        .login-container {
-            width: 100%;
-            max-width: 400px;
             background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 20px;
-            padding: 2rem;
             backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
             box-shadow: 0 0 40px rgba(255, 0, 128, 0.3);
-            text-align: center;
+            overflow: hidden;
+            width: 90%;
+            max-width: 800px;
         }
 
-        .login-title {
-            font-size: 1.5rem;
-            font-weight: bold;
+        .register-form {
+            flex: 1;
+            padding: 2rem;
+        }
+
+        .register-form h2 {
+            font-size: 1.6rem;
             margin-bottom: 1rem;
             background: linear-gradient(90deg, #ff66b2, #8b5cf6);
             background-clip: text;
@@ -60,7 +66,7 @@
 
         .input-group input {
             width: 100%;
-            padding: 0.7rem;
+            padding: 0.7rem 2.5rem 0.7rem 0.7rem;
             border-radius: 10px;
             border: none;
             outline: none;
@@ -69,11 +75,43 @@
             font-size: 1rem;
         }
 
-        .btn {
+        .password-box {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .password-box input {
+            width: 100%;
+            padding-right: 0.7rem;
+            padding-left: 2.7rem;
+            border-radius: 10px;
+            border: none;
+            outline: none;
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            font-size: 1rem;
+        }
+
+        .password-box button {
+            position: absolute;
+            left: 0.5rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #ccc;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.5rem;
+            transition: 0.3s;
+        }
+
+        .password-box button:hover {
+            color: #fff;
+            transform: scale(1.1);
+        }
+
+        .btn {
             width: 100%;
             padding: 0.8rem;
             border: none;
@@ -82,80 +120,137 @@
             color: #fff;
             cursor: pointer;
             transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-size: 1rem;
         }
 
-        .btn-login {
+        .btn-register {
             background: linear-gradient(90deg, #ff66b2, #8b5cf6);
+            margin-top: 0.5rem;
         }
 
-        .btn-login:hover {
+        .btn-register:hover {
             transform: scale(1.05);
             background: linear-gradient(90deg, #ff80c5, #a78bfa);
         }
 
         .btn-google {
             background: linear-gradient(90deg, #db4437, #ff6f61);
+            margin-top: 0.5rem;
         }
 
         .btn-google:hover {
             transform: scale(1.05);
         }
 
-        .register-link {
+        .side-image {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .side-image img {
+            width: 100%;
+            max-width: 300px;
+            border-radius: 12px;
+            transition: 0.4s;
+        }
+
+        .login-link {
             margin-top: 1rem;
             font-size: 0.9rem;
             color: #ccc;
+            text-align: center;
         }
 
-        .register-link a {
+        .login-link a {
             color: #ff66b2;
             text-decoration: none;
             font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .register-wrapper {
+                flex-direction: column;
+            }
+
+            .side-image {
+                order: -1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .side-image img {
+                border-radius: 50% !important;
+                width: 150px !important;
+                height: 150px !important;
+                object-fit: cover;
+                box-shadow: 0 0 20px rgba(248, 87, 248, 0.3);
+            }
+
+            .side-image {
+                background: none !important;
+                padding: 1.5rem 0;
+            }
         }
     </style>
 </head>
 
 <body>
-    <div class="login-container">
-        <div class="login-title">ورود به حساب کاربری</div>
-
-        <div class="input-group">
-            <label for="email">ایمیل</label>
-            <input type="email" id="email" placeholder="example@email.com" />
-        </div>
-        <div class="input-group">
-            <label for="password">رمز عبور</label>
-            <input type="password" id="password" placeholder="********" />
+    <div class="register-wrapper">
+        <div class="side-image">
+            <img id="elmaImage" src="Assets/img/Elma/Elma_R1.png" alt="Elma">
         </div>
 
-        <button id="loginBtn" class="btn btn-login">
-            <i data-lucide="log-in"></i> ورود
-        </button>
+        <div class="register-form">
+            <h2>ثبت‌نام در Elma</h2>
 
-        <button id="googleLoginBtn" class="btn btn-google mt-2">
-            <i data-lucide="chrome"></i> ورود با Google
-        </button>
+            <div class="input-group">
+                <label for="email">ایمیل</label>
+                <input type="email" id="email" placeholder="example@email.com" />
+            </div>
 
-        <div class="register-link">
-            حسابی ندارید؟
-            <a href="#" onclick="loadPage('Registration.html')">ثبت‌نام کنید</a>
+            <div class="input-group password-container">
+                <label for="password">رمز عبور</label>
+                <div class="password-box">
+                    <input type="text" id="password" placeholder="********" />
+                    <button type="button" id="togglePassword" aria-label="نمایش رمز عبور">
+                        <i data-lucide="eye"></i>
+                    </button>
+                </div>
+            </div>
+
+            <button id="registerBtn" class="btn btn-register">
+                <i data-lucide="user-plus"></i> ثبت‌نام
+            </button>
+
+            <button id="googleRegisterBtn" class="btn btn-google">
+                <i data-lucide="chrome"></i> ثبت‌نام با Google
+            </button>
+
+            <div class="login-link">
+                حساب دارید؟
+                <a href="#" onclick="loadPage('login.html')">وارد شوید</a>
+            </div>
         </div>
     </div>
 
+    <!-- Lucide فعال‌سازی -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            lucide.createIcons();
+        });
+    </script>
+
     <!-- Firebase SDK -->
     <script type="module">
-        import {
-            initializeApp
-        } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js';
-
-        import {
-            getAuth,
-            signInWithEmailAndPassword,
-            signInWithPopup,
-            signInWithRedirect,
-            getRedirectResult,
-            GoogleAuthProvider
-        } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js';
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js';
+        import { getAuth, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js';
 
         const firebaseConfig = {
             apiKey: "AIzaSyD_Ar1zFTBS9DDFlAflPt2IpcQ5y8EI5pE",
@@ -170,60 +265,63 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        const loginBtn = document.getElementById("loginBtn");
-        const googleLoginBtn = document.getElementById("googleLoginBtn");
+        const passwordInput = document.getElementById("password");
+        const togglePasswordBtn = document.getElementById("togglePassword");
+        const elmaImage = document.getElementById("elmaImage");
 
-        // ✅ ورود با ایمیل و رمز
-        loginBtn.addEventListener("click", async () => {
-            const email = document.getElementById("email").value.trim();
-            const password = document.getElementById("password").value;
+        togglePasswordBtn.addEventListener("click", () => {
+            const isHidden = passwordInput.type === "password";
+            passwordInput.type = isHidden ? "text" : "password";
 
-            try {
-                await signInWithEmailAndPassword(auth, email, password);
-                alert("✅ ورود موفقیت‌آمیز بود!");
-                window.location.href = "index.html";
-            } catch (error) {
-                alert("❌ خطا در ورود: " + error.message);
+            togglePasswordBtn.innerHTML = isHidden
+                ? `<i data-lucide="eye"></i>`
+                : `<i data-lucide="eye-off"></i>`;
+            lucide.createIcons();
+
+            if (isHidden) {
+                elmaImage.src = "Assets/img/Elma/Elma_R3.png";
+            } else {
+                elmaImage.src = "Assets/img/Elma/Elma_R2.png";
             }
         });
 
-        // ✅ ورود با گوگل (سازگار با موبایل)
-        googleLoginBtn.addEventListener("click", async () => {
+        document.getElementById("registerBtn").addEventListener("click", async () => {
+            const email = document.getElementById("email").value.trim();
+            const password = passwordInput.value;
+
+            try {
+                // ثبت‌نام با ایمیل و رمز
+                await createUserWithEmailAndPassword(auth, email, password);
+                alert("✅ ثبت‌نام موفقیت‌آمیز بود!");
+                window.location.href = "index.html"; // به جای loadPage برای موبایل مطمئن‌تره
+            } catch (err) {
+                alert("❌ خطا در ثبت‌نام: " + err.message);
+            }
+        });
+
+
+        document.getElementById("googleRegisterBtn").addEventListener("click", async () => {
             const provider = new GoogleAuthProvider();
             try {
-                if (/Mobi|Android/i.test(navigator.userAgent)) {
-                    // 📱 برای موبایل از redirect استفاده کن
-                    await signInWithRedirect(auth, provider);
+                const result = await signInWithPopup(auth, provider);
+
+                // بررسی کن ببین رمز نداره (فقط Google provider فعاله)
+                const hasPassword = result.user.providerData.some(p => p.providerId === "password");
+
+                if (!hasPassword) {
+                    // رمز نداره → بفرستش به صفحه تعیین رمز
+                    alert("👋 خوش اومدی! برای ورود دستی یه رمز هم انتخاب کن");
+                    window.location.href = "set-password.html";
                 } else {
-                    // 💻 برای دسکتاپ popup
-                    await signInWithPopup(auth, provider);
+                    // رمز داره → مستقیم برو داخل
                     alert("✅ ورود با گوگل موفقیت‌آمیز بود!");
                     window.location.href = "index.html";
                 }
-            } catch (error) {
-                alert("❌ خطا در ورود با گوگل: " + error.message);
+            } catch (err) {
+                alert("❌ خطا در ورود با گوگل: " + err.message);
             }
         });
-
-        // ✅ بررسی نتیجه redirect (بعد از بازگشت از گوگل)
-        getRedirectResult(auth)
-            .then((result) => {
-                if (result?.user) {
-                    alert("✅ ورود با گوگل موفقیت‌آمیز بود!");
-                    window.location.href = "index.html";
-                }
-            })
-            .catch((error) => {
-                console.error("Google Redirect Error:", error);
-            });
-
-        // ✅ حالت تغییر ایمیل
-        if (window.location.search.includes("changeEmail=true")) {
-            document.querySelector(".login-title").textContent = "تغییر ایمیل حساب";
-            loginBtn.textContent = "تغییر ایمیل";
-        }
-
-        lucide.createIcons();
     </script>
 </body>
+
 </html>
