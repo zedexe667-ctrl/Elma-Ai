@@ -191,19 +191,14 @@
         googleLoginBtn.addEventListener("click", async () => {
             const provider = new GoogleAuthProvider();
             try {
-                if (/Mobi|Android/i.test(navigator.userAgent)) {
-                    // 📱 برای موبایل از redirect استفاده کن
-                    await signInWithRedirect(auth, provider);
-                } else {
-                    // 💻 برای دسکتاپ popup
-                    await signInWithPopup(auth, provider);
-                    alert("✅ ورود با گوگل موفقیت‌آمیز بود!");
-                    window.location.href = "index.html";
-                }
+                await signInWithPopup(auth, provider);
+                alert("✅ ورود با گوگل موفقیت‌آمیز بود!");
+                window.location.href = "index.html";
             } catch (error) {
                 alert("❌ خطا در ورود با گوگل: " + error.message);
             }
         });
+
 
         // ✅ بررسی نتیجه redirect (بعد از بازگشت از گوگل)
         getRedirectResult(auth)
@@ -226,4 +221,5 @@
         lucide.createIcons();
     </script>
 </body>
+
 </html>
