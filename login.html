@@ -144,24 +144,20 @@
 
     <!-- Firebase SDK -->
     <script type="module">
-        import {
-            initializeApp
-        } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js';
-
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
         import {
             getAuth,
             signInWithEmailAndPassword,
             signInWithPopup,
-            signInWithRedirect,
             getRedirectResult,
             GoogleAuthProvider
-        } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js';
+        } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyD_Ar1zFTBS9DDFlAflPt2IpcQ5y8EI5pE",
             authDomain: "zed-exe-48839.firebaseapp.com",
             projectId: "zed-exe-48839",
-            storageBucket: "zed-exe-48839.firebasestorage.app",
+            storageBucket: "zed-exe-48839.appspot.com", // ✅ اصلاح شد
             messagingSenderId: "283941493182",
             appId: "1:283941493182:web:7a9deae50c01c9feb8c1ef",
             measurementId: "G-014WZDJBSL"
@@ -183,11 +179,12 @@
                 alert("✅ ورود موفقیت‌آمیز بود!");
                 window.location.href = "index.html";
             } catch (error) {
-                alert("❌ خطا در ورود: " + error.message);
+                console.error("Login Error:", error.code, error.message);
+                alert("❌ خطا در ورود: " + error.code + "\n" + error.message);
             }
         });
 
-        // ✅ ورود با گوگل (سازگار با موبایل)
+        // ✅ ورود با گوگل
         googleLoginBtn.addEventListener("click", async () => {
             const provider = new GoogleAuthProvider();
             try {
@@ -195,12 +192,12 @@
                 alert("✅ ورود با گوگل موفقیت‌آمیز بود!");
                 window.location.href = "index.html";
             } catch (error) {
-                alert("❌ خطا در ورود با گوگل: " + error.message);
+                console.error("Google Popup Error:", error.code, error.message);
+                alert("❌ خطا در ورود با گوگل: " + error.code + "\n" + error.message);
             }
         });
 
-
-        // ✅ بررسی نتیجه redirect (بعد از بازگشت از گوگل)
+        // ✅ بررسی نتیجه redirect (درصورت نیاز)
         getRedirectResult(auth)
             .then((result) => {
                 if (result?.user) {
@@ -208,9 +205,9 @@
                     window.location.href = "index.html";
                 }
             })
-            .catch((error) => {
-                console.error("Google Redirect Error:", error);
-            });
+            .catch((error) => console.error("Redirect Error:", error));
+
+        
 
         // ✅ حالت تغییر ایمیل
         if (window.location.search.includes("changeEmail=true")) {
