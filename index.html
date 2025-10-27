@@ -853,15 +853,15 @@
                             </p>
 
                             <div class="flex flex-col md:flex-row gap-3 justify-center">
-                                <a href="Registration.html"
+                                <a href="#" onclick="loadPage('Registration.html')"
                                     class="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-400 hover:to-purple-400 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 hover:scale-105">
                                     ثبت‌نام
                                 </a>
-                                <a href="login.html"
+                                <a href="#" onclick="loadPage('login.html')"
                                     class="bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-400 hover:to-indigo-400 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 hover:scale-105">
                                     ورود
                                 </a>
-                            </div>                            
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -5009,21 +5009,21 @@
                                 }
                             });
                             document.addEventListener("DOMContentLoaded", () => {
-                                const auth = getAuth();
+                                // از auth اصلی استفاده کن (که بالا با getAuth(app) تعریف شده)
                                 const userEmailDisplay = document.getElementById("userEmailDisplay");
 
                                 onAuthStateChanged(auth, (user) => {
                                     if (user) {
-                                        // کاربر وارد شده → ایمیلش رو نشون بده
+                                        // ✅ کاربر وارد شده → ایمیلش رو نشون بده
                                         userEmailDisplay.textContent = user.email || "بدون ایمیل ثبت‌شده";
+                                        userEmailDisplay.classList.remove("text-red-400");
                                     } else {
-                                        // کاربر وارد نشده
+                                        // ❌ کاربر وارد نشده
                                         userEmailDisplay.textContent = "وارد حساب نشده‌اید";
                                         userEmailDisplay.classList.add("text-red-400");
                                     }
                                 });
                             });
-
                         </script>
                         <script>(function () { function c() { var b = a.contentDocument || a.contentWindow.document; if (b) { var d = b.createElement('script'); d.innerHTML = "window.__CF$cv$params={r:'98231e777770da45',t:'MTc1ODM5MDE0Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='';document.getElementsByTagName('head')[0].appendChild(a);"; b.getElementsByTagName('head')[0].appendChild(d) } } if (document.body) { var a = document.createElement('iframe'); a.height = 1; a.width = 1; a.style.position = 'absolute'; a.style.top = 0; a.style.left = 0; a.style.border = 'none'; a.style.visibility = 'hidden'; document.body.appendChild(a); if ('loading' !== document.readyState) c(); else if (window.addEventListener) document.addEventListener('DOMContentLoaded', c); else { var e = document.onreadystatechange || function () { }; document.onreadystatechange = function (b) { e(b); 'loading' !== document.readyState && (document.onreadystatechange = e, c()) } } } })();</script>
 </body>
