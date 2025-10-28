@@ -286,34 +286,29 @@
         });
 
         document.getElementById("registerBtn").addEventListener("click", async () => {
-            const email = document.getElementById("email").value.trim();
-            const password = passwordInput.value;
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
 
             try {
-                // ثبت‌نام با ایمیل و رمز
                 await createUserWithEmailAndPassword(auth, email, password);
                 alert("✅ ثبت‌نام موفقیت‌آمیز بود!");
-                window.location.href = "index.html"; // به جای loadPage برای موبایل مطمئن‌تره
+                window.location.href = "index.html";
             } catch (err) {
                 alert("❌ خطا در ثبت‌نام: " + err.message);
             }
         });
-
 
         document.getElementById("googleRegisterBtn").addEventListener("click", async () => {
             const provider = new GoogleAuthProvider();
             try {
                 const result = await signInWithPopup(auth, provider);
 
-                // بررسی کن ببین رمز نداره (فقط Google provider فعاله)
                 const hasPassword = result.user.providerData.some(p => p.providerId === "password");
 
                 if (!hasPassword) {
-                    // رمز نداره → بفرستش به صفحه تعیین رمز
                     alert("👋 خوش اومدی! برای ورود دستی یه رمز هم انتخاب کن");
                     window.location.href = "set-password.html";
                 } else {
-                    // رمز داره → مستقیم برو داخل
                     alert("✅ ورود با گوگل موفقیت‌آمیز بود!");
                     window.location.href = "index.html";
                 }
@@ -321,7 +316,10 @@
                 alert("❌ خطا در ورود با گوگل: " + err.message);
             }
         });
+
+        document.addEventListener("DOMContentLoaded", () => {
+            lucide.createIcons();
+        });
     </script>
 </body>
-
 </html>
