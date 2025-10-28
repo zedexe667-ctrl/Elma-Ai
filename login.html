@@ -135,7 +135,7 @@
 
         <div class="register-link">
             حسابی ندارید؟
-            <a href="register.html">ثبت‌نام کنید</a>
+            <a href="Registration.html">ثبت‌نام کنید</a>
         </div>
     </div>
 
@@ -168,6 +168,7 @@
 
         // 🎯 ورود با ایمیل
         document.getElementById("loginBtn").addEventListener("click", async () => {
+            event.preventDefault();
             const email = document.getElementById("email").value.trim();
             const password = document.getElementById("password").value;
 
