@@ -6,10 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ورود به حساب</title>
 
-    <!-- فونت و آیکون -->
+    <!-- فونت و آیکون‌ها -->
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
 
+    <!-- استایل پایه -->
     <style>
         body {
             margin: 0;
@@ -42,10 +43,8 @@
             background: linear-gradient(90deg, #ff66b2, #8b5cf6);
             background-clip: text;
             -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
             color: transparent;
         }
-
 
         .input-group {
             margin-bottom: 1rem;
@@ -91,10 +90,15 @@
 
         .btn-login:hover {
             transform: scale(1.05);
+            background: linear-gradient(90deg, #ff80c5, #a78bfa);
         }
 
         .btn-google {
             background: linear-gradient(90deg, #db4437, #ff6f61);
+        }
+
+        .btn-google:hover {
+            transform: scale(1.05);
         }
 
         .register-link {
@@ -119,7 +123,6 @@
             <label for="email">ایمیل</label>
             <input type="email" id="email" placeholder="example@email.com" />
         </div>
-
         <div class="input-group">
             <label for="password">رمز عبور</label>
             <input type="password" id="password" placeholder="********" />
@@ -135,13 +138,16 @@
 
         <div class="register-link">
             حسابی ندارید؟
-            <a href="Registration.html">ثبت‌نام کنید</a>
+            <a href="#" onclick="loadPage('Registration.html')">ثبت‌نام کنید</a>
         </div>
     </div>
 
-    <!-- Firebase Auth -->
+    <!-- Firebase SDK -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+        import {
+            initializeApp
+        } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js';
+
         import {
             getAuth,
             signInWithEmailAndPassword,
@@ -149,9 +155,8 @@
             signInWithRedirect,
             getRedirectResult,
             GoogleAuthProvider
-        } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+        } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js';
 
-        // ✅ تنظیمات درست Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyD_Ar1zFTBS9DDFlAflPt2IpcQ5y8EI5pE",
             authDomain: "zed-exe-48839.firebaseapp.com",
@@ -164,31 +169,33 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        const provider = new GoogleAuthProvider();
 
-        // 🎯 ورود با ایمیل
-        document.getElementById("loginBtn").addEventListener("click", async () => {
-            event.preventDefault();
+        const loginBtn = document.getElementById("loginBtn");
+        const googleLoginBtn = document.getElementById("googleLoginBtn");
+
+        // ✅ ورود با ایمیل و رمز
+        loginBtn.addEventListener("click", async () => {
             const email = document.getElementById("email").value.trim();
             const password = document.getElementById("password").value;
-
-            if (!email || !password) return alert("لطفاً همه فیلدها را پر کنید.");
 
             try {
                 await signInWithEmailAndPassword(auth, email, password);
                 alert("✅ ورود موفقیت‌آمیز بود!");
                 window.location.href = "index.html";
             } catch (error) {
-                alert("❌ خطا: " + error.message);
+                alert("❌ خطا در ورود: " + error.message);
             }
         });
 
-        // 🎯 ورود با گوگل
-        document.getElementById("googleLoginBtn").addEventListener("click", async () => {
+        // ✅ ورود با گوگل (سازگار با موبایل)
+        googleLoginBtn.addEventListener("click", async () => {
+            const provider = new GoogleAuthProvider();
             try {
                 if (/Mobi|Android/i.test(navigator.userAgent)) {
+                    // 📱 برای موبایل از redirect استفاده کن
                     await signInWithRedirect(auth, provider);
                 } else {
+                    // 💻 برای دسکتاپ popup
                     await signInWithPopup(auth, provider);
                     alert("✅ ورود با گوگل موفقیت‌آمیز بود!");
                     window.location.href = "index.html";
@@ -198,7 +205,7 @@
             }
         });
 
-        // 🎯 بررسی نتیجه redirect
+        // ✅ بررسی نتیجه redirect (بعد از بازگشت از گوگل)
         getRedirectResult(auth)
             .then((result) => {
                 if (result?.user) {
@@ -206,9 +213,16 @@
                     window.location.href = "index.html";
                 }
             })
-            .catch((err) => console.error("Google Redirect Error:", err));
+            .catch((error) => {
+                console.error("Google Redirect Error:", error);
+            });
 
-        // 🎨 آیکون‌ها
+        // ✅ حالت تغییر ایمیل
+        if (window.location.search.includes("changeEmail=true")) {
+            document.querySelector(".login-title").textContent = "تغییر ایمیل حساب";
+            loginBtn.textContent = "تغییر ایمیل";
+        }
+
         lucide.createIcons();
     </script>
 </body>
