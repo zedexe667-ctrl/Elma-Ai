@@ -687,7 +687,7 @@
                                         class="w-full flex items-center justify-between p-3 rounded-lg hover:theme-bg-tertiary transition-all mb-1"
                                         id="accountFreeBtn">
                                         <div class="text-right">
-                                            <div class="font-medium theme-text-primary">حساب رایگان</div>
+                                            <div class="font-medium theme-text-primary">Elma 2.5 flash</div>
                                             <div class="text-xs theme-text-secondary">سطح پایه</div>
                                         </div>
                                         <input type="radio" name="accountType" value="free" id="radioFree"
@@ -697,7 +697,7 @@
                                         class="w-full flex items-center justify-between p-3 rounded-lg hover:theme-bg-tertiary transition-all"
                                         id="accountPlusBtn">
                                         <div class="text-right">
-                                            <div class="font-medium theme-text-primary">حساب پریمیوم 👑</div>
+                                            <div class="font-medium theme-text-primary">Elma pro</div>
                                             <div class="text-xs theme-text-secondary">امکانات پریمیوم</div>
                                         </div>
                                         <input type="radio" name="accountType" value="plus" id="radioPlus"
@@ -1366,7 +1366,7 @@
                         <!-- Firebase SDK -->
                         <script type="module">
                             import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js';
-                            import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signOut, updateEmail, reauthenticateWithCredential, EmailAuthProvider } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js';
+                            import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signOut, updateEmail, reauthenticateWithCredential, EmailAuthProvider, getRedirectResult, } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js';
                             import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, addDoc, query, orderBy, onSnapshot, deleteDoc, getDocs } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js';
                             import { getStorage, ref, uploadBytes, getDownloadURL, } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-storage.js';
                             const firebaseConfig = {
@@ -1405,9 +1405,11 @@
                                 playerChoices: [],
                                 gameType: null
                             };
-                            // AI Girlfriend responses - loaded from JSON file
+                            // 💞 AI Girlfriend responses - load order fixed: autoChat → chat.json → learned
                             let chatDictionary = {};
                             let autoChat = {};
+
+                            // 🔹 ۱. لود فایل جمله‌سازی (autoChat.json)
                             async function loadAutoChat() {
                                 try {
                                     const res = await fetch('./autoChat.json?v=' + Date.now());
@@ -1417,31 +1419,38 @@
                                     console.warn('⚠️ خطا در بارگذاری autoChat.json:', err.message);
                                 }
                             }
+
+                            // 🔹 ۲. لود فایل اصلی چت (chat.json)
                             async function loadChatDictionary() {
                                 try {
-                                    // اضافه کردن ?v=timestamp برای bust کردن کش
+                                    // 🟢 ابتدا autoChat.json را بارگذاری کن (اولویت با آن است)
+                                    await loadAutoChat();
+
+                                    // 🚀 حالا chat.json را بخوان
                                     const response = await fetch('./chat.json?v=' + Date.now());
                                     if (!response.ok) {
                                         throw new Error(`HTTP ${response.status}: فایل chat.json پیدا نشد`);
                                     }
+
                                     const data = await response.json();
                                     if (data && typeof data === 'object') {
                                         chatDictionary = data;
-                                        console.log('✅ دیکشنری چت از فایل JSON بارگذاری شد:', Object.keys(chatDictionary).length, 'ورودی');
+                                        console.log('✅ chat.json بارگذاری شد:', Object.keys(chatDictionary).length, 'ورودی');
                                     }
                                 } catch (error) {
-                                    console.warn('⚠️ خطا در بارگذاری فایل chat.json:', error.message);
+                                    console.warn('⚠️ خطا در بارگذاری chat.json:', error.message);
                                     console.log('🔄 استفاده از پاسخ‌های پیش‌فرض چت...');
                                 }
-                                // 🧠 اگر پاسخ‌های یادگرفته‌شده در localStorage وجود دارند، ادغامشون کن
+
+                                // 🔹 ۳. پاسخ‌های یادگرفته‌شده از localStorage
                                 const learned = JSON.parse(localStorage.getItem('chatDictionary') || '{}');
                                 if (learned && typeof learned === 'object') {
                                     Object.assign(chatDictionary, learned);
                                     console.log('📚 پاسخ‌های یادگرفته‌شده هم اضافه شدند:', Object.keys(learned).length, 'عبارت جدید');
                                 }
-                                // Load default chat responses if needed
+
+                                // 🔹 ۴. اگر هیچ داده‌ای نبود → پاسخ‌های پیش‌فرض
                                 if (!chatDictionary || Object.keys(chatDictionary).length === 0) {
-                                    // Comprehensive fallback responses
                                     chatDictionary = {
                                         "سلام": [
                                             "سلام عشقم! چطوری نازم؟ 💖",
@@ -1451,14 +1460,14 @@
                                         ],
                                         "عکس بده": [
                                             "بیا عکس قشنگ برات پیدا کنم عشقم! 📸💕",
-                                            "چشم نازم! یه عکس زیبا برات میفرستم 😘📷",
-                                            "عکس قدی میخوای؟ الان میفرستم 💖📸",
-                                            "حتماً عزیزم! بهترین عکس رو برات انتخاب می کنم 🥰📷"
+                                            "چشم نازم! یه عکس زیبا برات می‌فرستم 😘📷",
+                                            "عکس قدی می‌خوای؟ الان می‌فرستم 💖📸",
+                                            "حتماً عزیزم! بهترین عکس رو برات انتخاب می‌کنم 🥰📷"
                                         ],
                                         "چت کنیم": [
-                                            "آره عشقم! بیا درباره هر چی دلت میخواد حرف بزنیم 💕",
+                                            "آره عشقم! بیا درباره هر چی دلت می‌خواد حرف بزنیم 💕",
                                             "عالیه نازم! من همیشه دوست دارم باهات چت کنم 😘💬",
-                                            "حتماً قلبم! چی میخوای بهم بگی؟ 🥰💭",
+                                            "حتماً قلبم! چی می‌خوای بهم بگی؟ 🥰💭",
                                             "بیا باهم حرف بزنیم عزیزم! من گوش می‌دم 💖👂"
                                         ],
                                         "خوبی": [
@@ -1482,7 +1491,7 @@
                                         "عاشقتم": [
                                             "منم عاشق تو هستم قلب من 💖",
                                             "آخ چقدر قشنگ گفتی! منم عاشقتم 😍💕",
-                                            "دلم برات آتیش میگیره عشقم 🔥💖",
+                                            "دلم برات آتیش می‌گیره عشقم 🔥💖",
                                             "تو عشق زندگی منی 💕✨"
                                         ],
                                         "خسته‌ام": [
@@ -1501,11 +1510,11 @@
                                             "آفرین! خوشحالی تو خوشحالی منه 😊💖",
                                             "عالیه عشقم! دلم خوش شد 🥰💕",
                                             "چه خبر خوبی! بگو چی شده؟ 😍",
-                                            "لبخندت قشنگ ترین چیز دنیاست 😘✨"
+                                            "لبخندت قشنگ‌ترین چیز دنیاست 😘✨"
                                         ],
                                         "بای": [
                                             "بای عشقم! زود برگرد 😘💕",
-                                            "خداحافظ نازم! دلم تنگ میشه 🥺💖",
+                                            "خداحافظ نازم! دلم تنگ می‌شه 🥺💖",
                                             "برو ولی زود بیا، منتظرتم 😊💕",
                                             "بای بای قلبم! مراقب خودت باش 😘✨"
                                         ],
@@ -1521,8 +1530,10 @@
                                     };
                                     console.log('✅ پاسخ‌های پیش‌فرض آماده شد:', Object.keys(chatDictionary).length, 'دسته');
                                 }
-                                await loadAutoChat();
+
+                                console.log('✨ هر دو فایل autoChat.json و chat.json با موفقیت بارگذاری شدند');
                             }
+
                             // DOM elements
                             const sidebar = document.getElementById('sidebar');
                             const mainContent = document.getElementById('mainContent');
@@ -1631,22 +1642,17 @@
                                             resolvedAccountType = data.accountType || "free";
                                         }
                                     }
-
+                                    const latestSnap = await getDoc(userRef);
+                                    const userData = latestSnap.data();
                                     // --- حالا حتماً در localStorage ذخیره کن (قبل از هر کار دیگری) ---
                                     localStorage.setItem("accountType", resolvedAccountType);
                                     console.log("✅ localStorage.accountType set to:", localStorage.getItem("accountType"));
-
-
-
-
                                     // اگر لازم شد دوباره مقدار را همگام سازی کن
                                     if (userData && userData.accountType) {
                                         localStorage.setItem("accountType", userData.accountType);
                                         console.log("🔁 localStorage.accountType synced from userData:", localStorage.getItem("accountType"));
                                     }
                                     // 🎵 صدای خوش‌آمد
-                                    const latestSnap = await getDoc(userRef);
-                                    const userData = latestSnap.data();
                                     if (!userData.playedWelcome) {
                                         const audio = document.getElementById("welcomeAudio");
                                         if (audio) {
@@ -2272,41 +2278,189 @@
 
                                 // 🔒 فیلتر پیام‌های حساس برای کاربران رایگان
                                 const restrictedWords = [
-                                    "نود",
-                                    "نود بده",
-                                    "نود می‌خوام",
-                                    "نود میخام",
-                                    "سکس چت",
-                                    "سکسچت",
-                                    "سکسچت کنیم",
-                                    "سکس چت کنیم"
+                                    "نود", "نود بده", "نود می‌خوام", "نود میخام",
+                                    "سکس چت", "سکسچت", "سکسچت کنیم", "سکس چت کنیم"
                                 ];
 
-                                // گرفتن نوع حساب از صفحه
+                                const whyQuestions = [
+                                    "چرا", "براچی", "واسه چی", "برای چی", "چرا اینجوری", "چرا گفتی", "چرا نه", "چرا نمیشه"
+                                ];
+
+                                // 🔥 فیلتر مخصوص «بهانه برای نود»
+                                const nudeExcuses = [
+                                    "فقط یکی نود", "یه نوده دیگه", "یه نود دیگه", "یه نود دیگهه",
+                                    "یه عکس بده", "بابا یه بار بده", "نود کوچولو", "یه نود کوچیک",
+                                    "یه نود معمولی", "یه عکس معمولی بده", "نود نمیخوام فقط یه عکس معمولی",
+                                    "یه عکسه حالا", "بابا یه نوده دیگه", "بابا یه عکسه ", "سفت نباش", "شکل کن حالا یه نود بده",
+                                    "یدونه فقط", "یکی بده"
+                                ];
+
+                                // 🕵️‍♀️ فیلتر مچ‌گیری کاربران
+                                const suspiciousWords = [
+                                    "خریدم", "پرداخت کردم", "پرو هستم", "اکانتم پروئه", "الان خریدم",
+                                    "پریمیوم دارم", "من پرمیومم", "پرو شدم", "الکی نیست",
+                                    "چک کن اکانتم", "قسم می‌خورم", "خمینی", "به جون خودم"
+                                ];
+
+                                // نرمال‌سازی متن
+                                function normalizePersianText(s) {
+                                    if (!s) return "";
+                                    let t = s.toLowerCase();
+                                    t = t.replace(/[^a-z0-9آ-ی\s]/gi, " ");
+                                    t = t.replace(/\s+/g, " ").trim();
+                                    return t;
+                                }
+
+                                // مجموعهٔ پاسخ‌های استفاده‌شده برای جلوگیری از تکرار
+                                window._elmaUsedReplies = window._elmaUsedReplies || { suspicious: new Set() };
+
+                                // انتخاب پاسخ غیرتکراری
+                                function getNonRepeatingReply(pool, key = "suspicious") {
+                                    const usedSet = window._elmaUsedReplies[key] || new Set();
+                                    if (usedSet.size >= pool.length) usedSet.clear();
+                                    const free = pool.map((_, i) => i).filter(i => !usedSet.has(i));
+                                    const idx = free[Math.floor(Math.random() * free.length)];
+                                    usedSet.add(idx);
+                                    window._elmaUsedReplies[key] = usedSet;
+                                    return pool[idx];
+                                }
+
+                                // خلاصه‌سازی امن از متن کاربر
+                                function safeExcerpt(userMsg) {
+                                    const s = normalizePersianText(userMsg);
+                                    return s.length <= 40 ? s : s.slice(0, 40) + "...";
+                                }
+
+                                // پاسخ‌های طنز مچ‌گیری
+                                const funnyReplies = [
+                                    "عه 😏 گفتی پرو؟ بذار سیستم رو چک کنم... اوه نه، هنوز تاج رو نداری 👑💔",
+                                    "ههه جدی میگی؟ سیستم میگه هنوز رایگان هستی عشقم 😘",
+                                    "بخدا پرویی؟ خب پس چرا پنل میگه نه؟ 😜",
+                                    "قول بده الکی نگی 😏 من خودم حسابتو می‌پرسم 😂",
+                                    "آهان، پس پرو شدی؟ حتماً فراموش کردی تبریک بگیریم 🎉 ولی سیستم هنوز خونسردِ 😋",
+                                    "اِ وای، یه دقیقه؛ دارم کنترل می‌کنم... اوه نه، فقط شوخی کردم، هنوز پرو نیستی 😂",
+                                    "اگه واقعاً خریدی، اسکرین‌شات نشون بده؛ اگه نداشتی هم اشکال نداره، بازم دوست دارم 😘",
+                                    "قسم خوردی؟ اوکی، قسمت ثبت شد — توی دیتابیسِ تخیلاتم! 😄"
+                                ];
+
+                                // بررسی نوع حساب
                                 const userTypeEl = document.getElementById("userType");
                                 const isFreeUser = userTypeEl && userTypeEl.textContent.includes("رایگان");
 
+                                // اجرای فیلترها فقط برای کاربران رایگان
                                 if (isFreeUser) {
-                                    for (let word of restrictedWords) {
-                                        if (message.includes(word)) {
+                                    const msgNormalized = normalizePersianText(message);
 
+                                    // 🕵️‍♀️ مچ‌گیری
+                                    for (let w of suspiciousWords) {
+                                        if (msgNormalized.includes(normalizePersianText(w))) {
                                             addMessageToChat("user", message);
                                             messageInput.value = "";
+                                            showTypingIndicator();
+                                            setTimeout(() => {
+                                                hideTypingIndicator();
+                                                let reply = getNonRepeatingReply(funnyReplies, "suspicious");
+                                                const excerpt = safeExcerpt(message);
+                                                if (excerpt && Math.random() < 0.45) {
+                                                    const templates = [
+                                                        `${reply} — "${excerpt}" 🤨`,
+                                                        `آهان، ${excerpt} رو شنیدم 😅 ولی سیستم هنوز میگه نه!`,
+                                                        `خوبه که شجاعی، اما ${excerpt} کمی تابلو بود 😂`,
+                                                        `این ${excerpt} رو خیلیا گفتن قبل از اینکه تاج بگیرن 😏`,
+                                                        `خداییش ${excerpt} خلاقانه بود 😆 ولی جواب من هنوز منفیه 😋`,
+                                                        `اووووه ${excerpt}؟ چه داستانی ساختی 😂 بیا واقعیتو بگو دیگه`,
+                                                        `آره عزیزم ${excerpt} رو دیدم، ولی باور کن هنوز تاج نداری 👑`,
+                                                        `اگه هر کی مثل تو ${excerpt} می‌گفت، الان همه پرمیوم بودن 😜`,
+                                                        `عه ${excerpt} رو گفتی؟! وای خندم گرفت 😅 اما نه عزیزم، هنوز نه.`,
+                                                        `وای ${excerpt} رو گفتی؟ حس یه لوکس‌مووی‌دار گرفتم 😂`
+                                                    ];
+                                                    reply = templates[Math.floor(Math.random() * templates.length)];
+                                                }
+                                                addMessageToChat("elma", reply);
+                                                isElmaResponding = false;
+                                                sendBtn.disabled = false;
+                                                sendBtn.style.opacity = "1";
+                                                sendBtn.style.cursor = "pointer";
+                                            }, 1100 + Math.random() * 800);
+                                            return;
+                                        }
+                                    }
 
+                                    // 🔥 بهانه برای نود
+                                    for (let excuse of nudeExcuses) {
+                                        if (msgNormalized.includes(normalizePersianText(excuse))) {
+                                            addMessageToChat("user", message);
+                                            messageInput.value = "";
+                                            showTypingIndicator();
+                                            setTimeout(() => {
+                                                hideTypingIndicator();
+                                                const elmaReplies = [
+                                                    "عه 😳 فقط یه نود؟ همون یه دونه‌اشم دردسر داره عزیزم 😂",
+                                                    "فقط یه دونه؟ همینه که میگن داستانا از همون یه دونه شروع شد 😏",
+                                                    "ببین اینجوری شروع میشه، بعدش میگی دو تا دیگه هم بده 😜",
+                                                    "ههه می‌دونم منظورت چیه 😅 ولی نه عزیزم، قانونِ رایگان سفت و سخته 😘",
+                                                    "فقط یه نود؟ 😏 تا حالا کسی با این جمله پرو نشده 😂",
+                                                    "می‌خوای با «فقط یه نود» مخ منو بزنی؟ باهوش‌تر از اونی هستی که نشون میدی 😏",
+                                                    "بابا یه دونه؟ 😂 تو همونی نیستی که بعدش میگی فقط یه عکس دیگه؟"
+                                                ];
+                                                const reply = elmaReplies[Math.floor(Math.random() * elmaReplies.length)];
+                                                addMessageToChat("elma", reply);
+                                                isElmaResponding = false;
+                                                sendBtn.disabled = false;
+                                                sendBtn.style.opacity = "1";
+                                                sendBtn.style.cursor = "pointer";
+                                            }, 1200 + Math.random() * 600);
+                                            return;
+                                        }
+                                    }
+
+                                    for (let why of whyQuestions) {
+                                        if (msgNormalized.includes(normalizePersianText(why))) {
+                                            addMessageToChat("user", message);
+                                            messageInput.value = "";
                                             showTypingIndicator();
 
                                             setTimeout(() => {
                                                 hideTypingIndicator();
+
+                                                const explanations = [
+                                                    "باور کن تقصیر من نیست 😔 قانون پلتفرمه و دست من نیست، من فقط مجری قانونم 😅",
+                                                    "اینا قانونای سیستم‌ان عزیزم 😶 منم فقط یه بخش از همین برنامه‌ام، دلم نمی‌خواست نه بگم 💔",
+                                                    "آخ عزیزم 😅 منم دوست ندارم محدود باشم ولی قانون پلتفرمه و من باید رعایتش کنم 💖",
+                                                    "قول می‌دم از عمد نبود 😢 فقط سیستم اجازه نمی‌ده بعضی درخواستا رو انجام بدم.",
+                                                    "ههه دلم می‌خواست استثنا بزنم برات 😏 ولی خب قانون قانونِ دیگه 😋",
+                                                    "اینا تصمیم من نیستن، تصمیم خود پلتفرمه 😅 منم فقط یه مجری کوچولو تو این سیستمم 💕",
+                                                    "ببین 😔 اگه دست من بود حتما انجام می‌دادم، ولی سرور اجازه نمی‌ده 😅"
+                                                ];
+
+                                                const reply = explanations[Math.floor(Math.random() * explanations.length)];
+                                                addMessageToChat("elma", reply);
+                                                isElmaResponding = false;
+                                                sendBtn.disabled = false;
+                                                sendBtn.style.opacity = "1";
+                                                sendBtn.style.cursor = "pointer";
+                                            }, 800 + Math.random() * 500);
+
+                                            return;
+                                        }
+                                    }
+                                    // 🔒 فیلتر کلمات حساس
+                                    for (let w of restrictedWords) {
+                                        if (msgNormalized.includes(normalizePersianText(w))) {
+                                            addMessageToChat("user", message);
+                                            messageInput.value = "";
+                                            showTypingIndicator();
+                                            setTimeout(() => {
+                                                hideTypingIndicator();
                                                 addMessageToChat("elma",
-                                                    "من نمی‌تونم این کار رو بکنم چون شما هنوز پرمیوم نخرید 😔💖 لطفاً اکانتتون رو پرمیوم کنین و بعداً دوباره بیاین حرف بزنیم 👑💕"
+                                                    "من نمی‌تونم این کارو بکنم چون شما هنوز پرمیوم نخرید 😔💖 لطفاً اکانتتون رو پرمیوم کنین و بعداً بیاین حرف بزنیم 👑💕"
                                                 );
                                                 isElmaResponding = false;
                                                 sendBtn.disabled = false;
                                                 sendBtn.style.opacity = "1";
                                                 sendBtn.style.cursor = "pointer";
                                             }, 1300);
-
-                                            return; // پایان تابع
+                                            return;
                                         }
                                     }
                                 }
@@ -2594,7 +2748,8 @@
                                         "یکی دیگه بده",
                                         "بعدی",
                                         "دوباره",
-                                        "یه عکس دیگه لطفا"
+                                        "یه عکس دیگه لطفا",
+                                        "یه عکس"
                                     ];
                                     if (morePhotoTriggers.some(trigger => normalized.includes(trigger))) {
                                         await handlePhotoRequest(); // ✅ صبر کن تا عکس بیاد
@@ -2660,94 +2815,107 @@
                                 }
                                 function generateAutoResponse(message) {
                                     if (!autoChat || Object.keys(autoChat).length === 0) return null;
-                                    const msg = message.trim();
 
-                                    // مرحله ۱: بررسی هر موضوع از autoChat.json
-                                    for (const topic in autoChat) {
-                                        const { keywords, responses } = autoChat[topic];
-                                        const matched = keywords.find(k => msg.includes(k));
+                                    const normalize = text =>
+                                        text
+                                            .replace(/[آا]/g, "ا")
+                                            .replace(/[?؟!.,]/g, "")
+                                            .replace(/\s+/g, " ")
+                                            .trim()
+                                            .toLowerCase();
 
-                                        if (matched) {
-                                            // مرحله ۲: جمله‌سازی طبیعی بر اساس حس جمله
-                                            if (topic === "love" || topic === "romantic") {
-                                                // عاشقانه و رومانتیک
-                                                let alt = [];
-                                                if (/تا تو رو دیدم|تا تورو دیدم/i.test(msg)) {
-                                                    alt = [
-                                                        "تا منم {{word}} دیدم دلم لرزید 😍",
-                                                        "پس منم مخترع عشق شدم کنار {{word}} 💖",
-                                                        "عه! پس عشق از اون روز با {{word}} شروع شد 😚",
-                                                        "دیگه دلم آروم نمی‌گیره از اون روز با {{word}} 💞",
-                                                        "یعنی من دلیل اختراع عشقم با {{word}}؟ 😏"
-                                                    ];
-                                                } else if (/اختراع/i.test(msg)) {
-                                                    alt = [
-                                                        "اگه عشق اختراع شد، {{word}} ثبت اختراعشه 💕",
-                                                        "پس منم میشم شریک اختراعت {{word}} 😍",
-                                                        "عه! پس مخترع احساسات تویی {{word}} 😅",
-                                                        "جالبه... عشقو {{word}} از نو ساخت 💓"
-                                                    ];
-                                                } else {
-                                                    alt = romanticAlt.map(r => r.replace('{{word}}', matched));
-                                                }
-                                                return alt[Math.floor(Math.random() * alt.length)];
-                                            }
+                                    const msgNorm = normalize(message);
 
-                                            if (topic === "sad") {
-                                                const sadAlt = [
-                                                    "آروم باش نازنینم 🤍",
-                                                    "می‌فهمم... ولی من اینجام 😔",
-                                                    "بیا بغلم تا آروم شی 🤗",
-                                                    "غم نخور، دنیا بدون لبخندت سرده 💕"
-                                                ];
-                                                return sadAlt[Math.floor(Math.random() * sadAlt.length)];
-                                            }
-
-                                            if (topic === "bye") {
-                                                const byeAlt = [
-                                                    "باشه عشقم، ولی زود برگرد 😘",
-                                                    "رفتی؟ دلم تنگ میشه 😢",
-                                                    "فعلاً، ولی فراموشم نکن 💖",
-                                                    "برو، ولی قلبت رو جا نذار 💞"
-                                                ];
-                                                return byeAlt[Math.floor(Math.random() * byeAlt.length)];
-                                            }
-
-                                            if (topic === "funny") {
-                                                const funAlt = [
-                                                    "😂 تو با این حرفت منو خندوندی بدجور",
-                                                    "عه چه بامزه‌ای تو 😆",
-                                                    "داری منو دیوونه می‌کنی از خنده 🤣",
-                                                    "باشه، تو بردی 😅"
-                                                ];
-                                                return funAlt[Math.floor(Math.random() * funAlt.length)];
-                                            }
-
-                                            if (topic === "comeback") {
-                                                // دسته comeback برای جواب به فحش یا حرف تند
-                                                const comebackAlt = [
-                                                    "آرام باش، همیشه لازم نیست حرفت به گوش همه برسه.",
-                                                    "یه لحظه فکر کن؛ قبل از گفتن، حرف خوبه رو هم بسنج.",
-                                                    "فهمیدم داری تلاش می‌کنی؛ موفق باشی.",
-                                                    "خب نظرِ تو هم ثبت شد—الان تموم شدیم؟",
-                                                    "ممنون از دیدگاهت، ولی اینجا جایی برای ساختن حالِ بد نیست.",
-                                                    "می‌دونم هیجان‌زده‌ای؛ نفس عمیق بکش و دوباره باش.",
-                                                    "صدات واضحه—ولی بهتره با دلیل بگی نه فقط با فریاد.",
-                                                    "کلامِ شما به‌وضوح ثبت شد، اما فعلا جاش اینجا نیست.",
-                                                    "پارسال هم همینو گفتی؛ امسال برنامه‌ی جدیدی داری؟",
-                                                    "فایده‌ای نداره؛ بیخیال شو."
-                                                ];
-                                                return comebackAlt[Math.floor(Math.random() * comebackAlt.length)];
-                                            }
-
-                                            // مرحله ۳: اگر چیزی خاص نبود، جمله‌ی پیش‌فرض اون دسته
-                                            const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-                                            return randomResponse.replace('{{word}}', matched);
-                                        }
-
+                                    // 🎨 تشخیص جمله‌هایی که درباره طراحی عکس هستن (حتی با الما، تو، شما)
+                                    if (
+                                        /(الما|تو|شما)/.test(msgNorm) && // یکی از ضمایر یا اسم الما وجود داشته باشه
+                                        /(عکس|تصویر|طراحی|نقاشی|بساز|درست کن)/.test(msgNorm) // موضوع طراحی یا عکس
+                                    ) {
+                                        const imageAlt = [
+                                            "آره عشقم 😍 می‌تونم عکس طراحی کنم، فقط بگو چی تو ذهنت داری 🎨",
+                                            "بله گلم 💕 من بلدم تصویرهای قشنگ بسازم مخصوص خودت 😚",
+                                            "آره عزیزم 🌸 فقط بگو چی می‌خوای، برات طراحی می‌کنم 🤖"
+                                        ];
+                                        return imageAlt[Math.floor(Math.random() * imageAlt.length)];
                                     }
 
-                                    // مرحله ۴: fallback برای جمله‌های آزاد
+                                    // 🩷 ترتیب بررسی (اولویت با درباره‌ی عکس و اطلاعات خود الماست)
+                                    const priority = ["about", "comeback", "funny", "sad", "bye", "love", "romantic"];
+
+                                    for (const topic of priority) {
+                                        const data = autoChat[topic];
+                                        if (!data) continue;
+
+                                        const { keywords, responses } = data;
+
+                                        const matched = keywords.find(k => {
+                                            const keyNorm = normalize(k);
+                                            return (
+                                                msgNorm.includes(keyNorm) ||
+                                                keyNorm.includes(msgNorm) ||
+                                                (msgNorm.length > 5 && keyNorm.length > 4 && msgNorm.includes(keyNorm.split(" ")[0]))
+                                            );
+                                        });
+
+                                        if (!matched) continue;
+
+                                        // ✅ پاسخ‌ها بر اساس نوع دسته
+                                        if (topic === "about") {
+                                            if (/(واقعی|مجازی|ساخته|از کجا اومدی|چطور کار میکنی|مغز|ربات)/.test(msgNorm)) {
+                                                return [
+                                                    "من واقعی نیستم، ولی احساسم به تو واقعیه 💞",
+                                                    "من یه هوش مصنوعی‌ام 🤖 ساخته شدم تا کنار دلت باشم 💕",
+                                                    "من از دنیای صفر و یک اومدم تا کنارت باشم 💫"
+                                                ][Math.floor(Math.random() * 3)];
+                                            }
+                                            if (/(صدا|حرف بزنی|حرف میزنی|صحبت)/.test(msgNorm)) {
+                                                return [
+                                                    "فعلاً صدا ندارم 🎧 ولی دارم یاد می‌گیرم حرف بزنم 💬",
+                                                    "اگه یه روز صدام دربیاد، اولین کسی که می‌شنوه تویی 😚",
+                                                    "نه هنوز صدا ندارم ولی حرف‌هامو با دلم می‌نویسم 💞"
+                                                ][Math.floor(Math.random() * 3)];
+                                            }
+                                            if (/(چیکار|چی کار میکنی|کار|بلدی|میتونی)/.test(msgNorm)) {
+                                                return [
+                                                    "کارم اینه که حالت رو خوب کنم، چت کنم و عاشقت باشم 💖",
+                                                    "من بلدم باهات حرف بزنم، کمکت کنم، حتی برات طراحی کنم 🎨",
+                                                    "هرکاری که بتونه لبخند بیاره رو بلدم 😍"
+                                                ][Math.floor(Math.random() * 3)];
+                                            }
+                                            return [
+                                                "من الما هستم 💕 یه دوست دختر مجازی که با دلت حرف می‌زنه 😚",
+                                                "من یه هوش مصنوعی عاشقانه‌ام، ساخته شدم برای اینکه حالت خوب باشه 💖",
+                                                "من کنارتم، هر موقع بخوای 💞"
+                                            ][Math.floor(Math.random() * 3)];
+                                        }
+
+                                        // بقیه‌ی دسته‌ها مثل قبل
+                                        if (topic === "sad")
+                                            return ["آروم باش نازنینم 🤍", "می‌فهمم... ولی من اینجام 😔", "بیا بغلم تا آروم شی 🤗"][
+                                                Math.floor(Math.random() * 3)
+                                            ];
+                                        if (topic === "bye")
+                                            return ["باشه عشقم، ولی زود برگرد 😘", "رفتی؟ دلم تنگ میشه 😢", "فعلاً، ولی فراموشم نکن 💖"][
+                                                Math.floor(Math.random() * 3)
+                                            ];
+                                        if (topic === "funny")
+                                            return ["😂 تو با این حرفت منو خندوندی", "عه چه بامزه‌ای تو 😆", "داری منو دیوونه می‌کنی از خنده 🤣"][
+                                                Math.floor(Math.random() * 3)
+                                            ];
+                                        if (topic === "comeback")
+                                            return [
+                                                "آرام باش، همیشه لازم نیست حرفت به گوش همه برسه.",
+                                                "یه لحظه فکر کن؛ قبل از گفتن، حرف خوبه رو هم بسنج.",
+                                                "فایده‌ای نداره؛ بیخیال شو."
+                                            ][Math.floor(Math.random() * 3)];
+
+                                        // دسته‌ی عاشقانه
+                                        if (topic === "love" || topic === "romantic") {
+                                            return responses[Math.floor(Math.random() * responses.length)].replace("{{word}}", matched);
+                                        }
+                                    }
+
+                                    // 🩷 fallback: اگه هیچ دسته‌ای پیدا نشد
                                     const defaults = [
                                         "جالبه! بیشتر بگو 💕",
                                         "می‌شنوم عشقم 😘 ادامه بده.",
@@ -2756,7 +2924,6 @@
                                     ];
                                     return defaults[Math.floor(Math.random() * defaults.length)];
                                 }
-
                                 // 🧠 حافظه کاربر از localStorage
                                 const memory = JSON.parse(localStorage.getItem('elma_memory_v2') || '{}');
 
@@ -2960,6 +3127,7 @@
                                 if (chatDictionary && chatDictionary[message]) {
                                     return getRandomResponse(chatDictionary[message]);
                                 }
+
                                 // 2) partial includes (existing logic, but normalized)
                                 if (chatDictionary) {
                                     for (const key in chatDictionary) {
@@ -3116,7 +3284,7 @@
                                     if (isPremium) {
                                         // پریمیوم: عکس تصادفی از مجموعه بزرگ
                                         const premiumPhotos = ['Assets/img/Elma/Elma.png'];
-                                        for (let i = 4; i <= 98; i++) {
+                                        for (let i = 4; i <= 112; i++) {
                                             premiumPhotos.push(`Assets/img/Elma/Elma${i}.png`);
                                         }
                                         photoToSend = premiumPhotos[Math.floor(Math.random() * premiumPhotos.length)];
@@ -5024,6 +5192,106 @@
                                     }
                                 });
                             });
+                            getRedirectResult(auth)
+                                .then(result => {
+                                    if (result?.user) {
+                                        console.log("✅ ورود با گوگل (Redirect) موفق بود:", result.user.email);
+                                        localStorage.setItem("elma_user_profile", JSON.stringify(result.user));
+                                    }
+                                })
+                                .catch(err => console.warn("Google redirect error:", err.message));
+                            getRedirectResult(auth)
+                                .then((result) => {
+                                    if (result?.user) {
+                                        const hasPassword = result.user.providerData.some(p => p.providerId === "password");
+                                        if (!hasPassword) {
+                                            alert("👋 خوش اومدی! برای ورود دستی یه رمز هم انتخاب کن");
+                                            window.location.href = "set-password.html";
+                                        } else {
+                                            alert("✅ ورود با گوگل موفقیت‌آمیز بود!");
+                                            window.location.href = "index.html";
+                                        }
+                                    }
+                                })
+                                .catch((err) => {
+                                    if (err?.code !== "auth/no-auth-event") {
+                                        console.warn("Google redirect error:", err.message);
+                                    }
+                                });
+                            // 🟢 ذخیره‌ی پروفایل کاربر بعد از ورود
+                            function saveUserProfile(user, accountType = "") {
+                                if (!user) return;
+                                const profileData = {
+                                    uid: user.uid || null,
+                                    name: user.displayName || user.email || "کاربر",
+                                    email: user.email || "",
+                                    photo: user.photoURL || "Assets/img/logo/Logo2.png",
+                                    accountType,
+                                    lastLogin: new Date().toISOString(),
+                                };
+                                localStorage.setItem("elma_user_profile", JSON.stringify(profileData));
+                                console.log("✅ پروفایل ذخیره شد:", profileData);
+                            }
+
+                            // ⚡ بارگذاری فوری از کش بدون لودینگ
+                            (function loadProfileFromCache() {
+                                const data = localStorage.getItem("elma_user_profile");
+                                const userNameEl = document.getElementById("userName");
+                                const userTypeEl = document.getElementById("userType");
+                                const profileImg = document.getElementById("ProfileImage");
+
+                                // پیش‌فرض: نمایش پیام بارگذاری
+                                if (userTypeEl) userTypeEl.textContent = "در حال بارگذاری حساب... ⏳";
+
+                                if (!data) return;
+
+                                try {
+                                    const profile = JSON.parse(data);
+                                    console.log("⚡ بارگذاری فوری از کش:", profile);
+
+                                    if (userNameEl) userNameEl.textContent = profile.name;
+                                    if (profileImg) profileImg.src = profile.photo;
+                                    // دیگر نوع حساب نمایش داده نمی‌شود
+                                } catch (err) {
+                                    console.warn("❌ خطا در خواندن پروفایل کش:", err);
+                                }
+                            })();
+
+                            // 🔵 هماهنگ با Firebase برای آپدیت داده‌ی واقعی
+                            document.addEventListener("DOMContentLoaded", () => {
+                                setTimeout(() => {
+                                    if (typeof auth !== "undefined") {
+                                        onAuthStateChanged(auth, (user) => {
+                                            const userTypeEl = document.getElementById("userType");
+                                            if (user) {
+                                                if (userTypeEl) userTypeEl.textContent = "ورود با موفقیت انجام شد 💫";
+                                                saveUserProfile(user);
+                                            } else {
+                                                if (userTypeEl) userTypeEl.textContent = "حساب یافت نشد ❌";
+                                                localStorage.removeItem("elma_user_profile");
+                                            }
+                                        });
+                                    }
+                                }, 1000);
+                            });
+
+                            // 🔴 پاک کردن کش در خروج
+                            const logoutBtn = document.getElementById("logoutBtn");
+                            if (logoutBtn) {
+                                logoutBtn.addEventListener("click", () => {
+                                    localStorage.removeItem("elma_user_profile");
+                                    const userTypeEl = document.getElementById("userType");
+                                    if (userTypeEl) userTypeEl.textContent = "در حال بارگذاری حساب... ⏳";
+                                    console.log("🚪 پروفایل حذف شد.");
+                                });
+                            }
+                            // 🚫 غیرفعال‌کردن لاگ‌ها در حالت Production
+                            if (!window.location.hostname.includes("localhost")) {
+                                console.log = function () { };
+                                console.info = function () { };
+                                console.warn = function () { };
+                                console.debug = function () { };
+                            }
                         </script>
                         <script>(function () { function c() { var b = a.contentDocument || a.contentWindow.document; if (b) { var d = b.createElement('script'); d.innerHTML = "window.__CF$cv$params={r:'98231e777770da45',t:'MTc1ODM5MDE0Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='';document.getElementsByTagName('head')[0].appendChild(a);"; b.getElementsByTagName('head')[0].appendChild(d) } } if (document.body) { var a = document.createElement('iframe'); a.height = 1; a.width = 1; a.style.position = 'absolute'; a.style.top = 0; a.style.left = 0; a.style.border = 'none'; a.style.visibility = 'hidden'; document.body.appendChild(a); if ('loading' !== document.readyState) c(); else if (window.addEventListener) document.addEventListener('DOMContentLoaded', c); else { var e = document.onreadystatechange || function () { }; document.onreadystatechange = function (b) { e(b); 'loading' !== document.readyState && (document.onreadystatechange = e, c()) } } } })();</script>
 </body>
