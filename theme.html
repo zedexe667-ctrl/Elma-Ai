@@ -5,7 +5,6 @@
             <i data-lucide="palette" class="w-6 h-6"></i>
             تنظیمات استایل شخصی
         </h3>
-
         <!-- انتخاب تصویر پس‌زمینه -->
         <div>
             <label class="block mb-2 font-medium theme-text-primary flex items-center gap-2">
@@ -14,7 +13,6 @@
             </label>
             <input type="file" id="bgImageInput" accept="image/*" class="block w-full p-2 rounded-lg glass-effect">
         </div>
-
         <!-- حالت نمایش تصویر -->
         <div>
             <label class="block mb-2 font-medium theme-text-primary flex items-center gap-2">
@@ -29,7 +27,6 @@
                 <option value="center">وسط‌چین (Center)</option>
             </select>
         </div>
-
         <!-- بک‌گراندهای آماده -->
         <div>
             <label class="block mb-2 font-medium theme-text-primary flex items-center gap-2">
@@ -49,14 +46,12 @@
                     class="w-full h-16 object-cover rounded-lg cursor-pointer hover-lift border-2 border-transparent hover:border-pink-400">
             </div>
         </div>
-
         <!-- دکمه ریست بک‌گراند -->
         <button id="resetBackground"
             class="w-full mt-2 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-xl hover-lift transition-all duration-300 font-medium flex items-center justify-center gap-2">
             <i data-lucide="eraser" class="w-5 h-5"></i>
             حذف بک‌گراند و بازگردانی پیش‌فرض
         </button>
-
         <!-- رنگ متن اصلی -->
         <div>
             <label class="block mb-2 font-medium theme-text-primary flex items-center gap-2">
@@ -65,7 +60,6 @@
             </label>
             <input type="color" id="primaryColor" value="#ff66b2" class="w-full h-10 rounded-lg cursor-pointer">
         </div>
-
         <!-- رنگ متن ثانویه -->
         <div>
             <label class="block mb-2 font-medium theme-text-primary flex items-center gap-2">
@@ -74,7 +68,6 @@
             </label>
             <input type="color" id="secondaryColor" value="#9c9c9c" class="w-full h-10 rounded-lg cursor-pointer">
         </div>
-
         <!-- انتخاب فونت -->
         <label class="block mb-2 font-medium theme-text-primary flex items-center gap-2">
             <i data-lucide="type" class="w-5 h-5 text-pink-400"></i>
@@ -87,7 +80,6 @@
             <option value="Shabnam, sans-serif">Shabnam</option>
             <option value="Tanha, sans-serif">Tanha</option>
         </select>
-
         <!-- اندازه فونت -->
         <div>
             <label class="block mb-2 font-medium theme-text-primary flex items-center gap-2">
@@ -99,7 +91,6 @@
                 اندازه فعلی: <span id="fontSizeValue">16</span>px
             </div>
         </div>
-
         <!-- اندازه حباب چت -->
         <div>
             <label class="block mb-2 font-medium theme-text-primary flex items-center gap-2">
@@ -111,7 +102,6 @@
                 اندازه فعلی: <span id="bubbleSizeValue">100</span>%
             </div>
         </div>
-
         <!-- شفافیت شیشه‌ای -->
         <div>
             <label class="block mb-2 font-medium theme-text-primary flex items-center gap-2">
@@ -140,7 +130,6 @@
                 <i data-lucide="save" class="w-5 h-5"></i>
                 ذخیره تنظیمات تم
             </button>
-
             <!-- دکمه ریست -->
             <button id="resetTheme"
                 class="w-full py-3 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-2xl hover-lift transition-all duration-300 font-medium flex items-center justify-center gap-2">
@@ -148,7 +137,6 @@
                 بازگردانی پیش‌فرض
             </button>
         </div>
-
         <script>
             (function () {
                 const bgInput = document.getElementById("bgImageInput");
@@ -165,9 +153,7 @@
                 const fontFamilySelect = document.getElementById("fontFamilySelect");
                 const bubbleRange = document.getElementById("bubbleSizeRange");
                 const bubbleValue = document.getElementById("bubbleSizeValue");
-
                 let tempTheme = {};
-
                 // 🎯 تابع اعمال بک‌گراند
                 function applyBackgroundStyle(image, mode) {
                     if (!image) {
@@ -176,7 +162,6 @@
                     }
                     document.body.style.backgroundImage = `url(${image})`;
                     document.body.style.backgroundAttachment = "fixed";
-
                     switch (mode) {
                         case "fill":
                             document.body.style.backgroundSize = "cover";
@@ -203,7 +188,6 @@
                             break;
                     }
                 }
-
                 function applyTheme(theme) {
                     if (theme.background) applyBackgroundStyle(theme.background, theme.mode || "fill");
                     if (theme.fontSize) document.documentElement.style.fontSize = theme.fontSize + "px";
@@ -211,11 +195,9 @@
                     if (theme.secondaryColor) document.querySelectorAll(".theme-text-secondary").forEach(el => el.style.color = theme.secondaryColor);
                     if (theme.opacity) document.querySelectorAll(".glass-effect").forEach(el => el.style.backgroundColor = `rgba(255,255,255,${theme.opacity / 100})`);
                 }
-
                 // 🎯 بارگذاری تنظیمات ذخیره‌شده
                 const saved = JSON.parse(localStorage.getItem("elmaTheme") || "{}");
                 applyTheme(saved);
-
                 // مقداردهی ورودی‌ها از ذخیره
                 if (saved.fontSize) fontSizeRange.value = saved.fontSize, fontSizeValue.textContent = saved.fontSize;
                 if (saved.fontSize) {
@@ -235,34 +217,29 @@
                 if (saved.primaryColor) primaryColor.value = saved.primaryColor;
                 if (saved.secondaryColor) secondaryColor.value = saved.secondaryColor;
                 if (saved.mode) bgMode.value = saved.mode;
-
                 // مقدار ذخیره‌شده
                 if (saved.fontFamily) {
                     fontFamilySelect.value = saved.fontFamily;
                     document.documentElement.style.setProperty('--app-font', saved.fontFamily);
                 }
-
                 // تغییر زنده
                 fontFamilySelect.addEventListener('change', e => {
                     const val = e.target.value; // مثلا "Vazirmatn, sans-serif"
                     document.documentElement.style.setProperty('--app-font', val);
                     tempTheme.fontFamily = val;
                 });
-
                 // مقدار ذخیره‌شده
                 if (saved.bubbleSize) {
                     bubbleRange.value = saved.bubbleSize;
                     bubbleValue.textContent = saved.bubbleSize;
                     applyBubbleSize(saved.bubbleSize);
                 }
-
                 function applyBubbleSize(val) {
                     document.querySelectorAll(".message-bubble").forEach(bubble => {
                         bubble.style.transform = `scale(${val / 100})`;
                         bubble.style.transformOrigin = "bottom right";
                     });
                 }
-
                 // تغییر زنده
                 bubbleRange.addEventListener("input", e => {
                     const val = e.target.value;
@@ -276,17 +253,14 @@
                     const img = tempTheme.background || saved.background;
                     applyBackgroundStyle(img, e.target.value);
                 });
-
                 primaryColor.addEventListener("input", e => {
                     tempTheme.primaryColor = e.target.value;
                     document.querySelectorAll(".theme-text-primary").forEach(el => el.style.color = e.target.value);
                 });
-
                 secondaryColor.addEventListener("input", e => {
                     tempTheme.secondaryColor = e.target.value;
                     document.querySelectorAll(".theme-text-secondary").forEach(el => el.style.color = e.target.value);
                 });
-
                 bgInput.addEventListener("change", e => {
                     const file = e.target.files[0];
                     if (!file) return;
@@ -297,20 +271,17 @@
                     };
                     reader.readAsDataURL(file);
                 });
-
                 presetContainer.querySelectorAll("img").forEach(img => {
                     img.addEventListener("click", () => {
                         tempTheme.background = img.src;
                         applyBackgroundStyle(img.src, bgMode.value);
                     });
                 });
-
                 fontSizeRange.addEventListener("input", e => {
                     const val = e.target.value;
                     fontSizeValue.textContent = val;
                     document.documentElement.style.fontSize = val + "px";
                     tempTheme.fontSize = val;
-
                     // 🎯 تغییر اندازه max-width بر اساس اندازه فونت
                     const header = document.querySelector(".custom-max-w, .max-w-7xl, .max-w-6xl, .max-w-5xl, .max-w-4xl, .max-w-3xl");
                     if (header) {
@@ -321,7 +292,6 @@
                         else if (val == 15) header.classList.add("max-w-5xl");
                         else if (val == 16) header.classList.add("max-w-4xl");
                         else header.classList.add("max-w-3xl");
-
                     }
                 });
                 glassRange.addEventListener("input", e => {
@@ -338,7 +308,6 @@
                 const xchatToggle = document.getElementById("xchatToggle");
                 const xchatTooltip = document.getElementById("xchatTooltip");
                 const xchatMessage = document.getElementById("xchatMessage");
-
                 // 🔧 تابع نمایش پیام
                 const showMessage = (text, colorClass) => {
                     xchatMessage.textContent = text;
@@ -348,7 +317,6 @@
                         xchatMessage.style.opacity = "0";
                     }, 3000);
                 };
-
                 // 🔹 برای کاربران رایگان
                 if (userType !== "premium") {
                     xchatOption.classList.add("opacity-60");
@@ -356,7 +324,6 @@
                     xchatToggle.checked = false;
                     xchatOption.classList.add("cursor-not-allowed");
                     xchatToggle.classList.add("cursor-not-allowed");
-
                     // 📌 هر کلیکی (چه روی متن چه روی تیک) پیام نشون بده
                     const handleFreeClick = (e) => {
                         e.preventDefault();
@@ -364,18 +331,14 @@
                         xchatToggle.checked = false;
                         showMessage("این قابلیت مخصوص کاربران پریمیوم هست 👑", "text-red-500");
                     };
-
                     xchatOption.addEventListener("click", handleFreeClick);
                     xchatToggle.addEventListener("click", handleFreeClick);
-                    return;
                 }
-
                 // 🔓 برای کاربران پریمیوم
                 xchatOption.classList.remove("opacity-60", "cursor-not-allowed");
                 xchatToggle.disabled = false;
                 xchatToggle.classList.remove("cursor-not-allowed");
                 xchatToggle.classList.add("cursor-pointer");
-
                 // ✅ وقتی تیک می‌زنن یا برمی‌دارن
                 xchatToggle.addEventListener("change", (e) => {
                     if (e.target.checked) {
