@@ -1,11 +1,19 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Elma Ai</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    <!-- Font Awesome (بهینه و سریع‌تر) -->
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+        onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    </noscript>
+
     <link
         href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600&family=Estedad:wght@400;500;600&display=swap"
         rel="stylesheet">
@@ -16,12 +24,15 @@
     <link rel="icon" type="image/png" href="Assets/img/logo/Logo2.png" />
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap');
+
         :root {
             --app-font: "Vazirmatn, sans-serif";
         }
+
         * {
             font-family: var(--app-font);
         }
+
         .dark {
             --bg-primary: linear-gradient(135deg, #161616 0%, #161616 50%, #161616 100%);
             --bg-secondary: rgba(34, 34, 34, 0.8);
@@ -32,6 +43,7 @@
             --accent-color: linear-gradient(135deg, #e115f3 0%, #ff00aa 100%);
             --chat-bg: #1b1b1bf2;
         }
+
         .light {
             --bg-primary: linear-gradient(135deg, #ffeef8 0%, #ffe0f0 50%, #d6f3ff 100%);
             --bg-secondary: rgba(255, 240, 245, 0.9);
@@ -42,116 +54,145 @@
             --accent-color: linear-gradient(135deg, #ff6b9d 0%, #ff8fab 100%);
             --chat-bg: rgba(255, 255, 255, 0.95);
         }
+
         body {
             background: var(--bg-primary);
             background-attachment: fixed;
         }
+
         .theme-bg-primary {
             background: var(--bg-primary);
         }
+
         .theme-bg-secondary {
             background: var(--bg-secondary);
         }
+
         .theme-bg-tertiary {
             background: var(--bg-tertiary);
         }
+
         .theme-text-primary {
             color: var(--text-primary);
         }
+
         .theme-text-secondary {
             color: var(--text-secondary);
         }
+
         .theme-border {
             border-color: var(--border-color);
         }
+
         .theme-accent {
             background: var(--accent-color);
         }
+
         .theme-chat-bg {
             background: var(--chat-bg);
         }
+
         .glass-effect {
             backdrop-filter: blur(20px);
             border: 1px solid var(--border-color);
             box-shadow: 0 8px 32px rgba(216, 216, 216, 0);
         }
+
         .glow-effect {
             box-shadow: 0 0 20px var(--glow-color);
         }
+
         .slide-in-right {
             animation: slideInRight 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
+
         .slide-out-right {
             animation: slideOutRight 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
+
         @keyframes slideInRight {
             from {
                 transform: translateX(100%);
                 opacity: 0;
             }
+
             to {
                 transform: translateX(0);
                 opacity: 1;
             }
         }
+
         @keyframes slideOutRight {
             from {
                 transform: translateX(0);
                 opacity: 1;
             }
+
             to {
                 transform: translateX(100%);
                 opacity: 0;
             }
         }
+
         .fade-in {
             animation: fadeIn 0.5s ease-out;
         }
+
         .bounce-in {
             animation: bounceIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
+
         @keyframes fadeIn {
             from {
                 opacity: 0;
                 transform: translateY(20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
             }
         }
+
         @keyframes bounceIn {
             0% {
                 transform: scale(0.3);
                 opacity: 0;
             }
+
             50% {
                 transform: scale(1.05);
             }
+
             70% {
                 transform: scale(0.9);
             }
+
             100% {
                 transform: scale(1);
                 opacity: 1;
             }
         }
+
         .message-bubble {
             max-width: 80%;
             word-wrap: break-word;
             border-radius: 20px;
             position: relative;
         }
+
         .user-message {
             background: linear-gradient(135deg, #667eea7c 0%, #764ba271 100%);
             color: white;
             border-bottom-left-radius: 5px;
         }
+
         .ai-message {
             background: linear-gradient(135deg, #3052eb6c 0%, #641fa56e 100%);
             color: #ffffff;
             border-bottom-right-radius: 5px;
         }
+
         .typing-indicator {
             display: inline-block;
             width: 8px;
@@ -160,91 +201,115 @@
             background: linear-gradient(135deg, #ff6b9c00 0%, #c4456900 100%);
             animation: typing 1.4s infinite ease-in-out;
         }
+
         .typing-indicator:nth-child(1) {
             animation-delay: -0.32s;
         }
+
         .typing-indicator:nth-child(2) {
             animation-delay: -0.16s;
         }
+
         @keyframes typing {
+
             0%,
             80%,
             100% {
                 transform: scale(0);
                 opacity: 0.5;
             }
+
             40% {
                 transform: scale(1);
                 opacity: 1;
             }
         }
+
         .heart-float {
             animation: heartFloat 3s ease-in-out infinite;
         }
+
         @keyframes heartFloat {
+
             0%,
             100% {
                 transform: translateY(0px);
             }
+
             50% {
                 transform: translateY(-10px);
             }
         }
+
         .pulse-glow {
             animation: pulseGlow 2s ease-in-out infinite alternate;
         }
+
         @keyframes pulseGlow {
             from {
                 box-shadow: 0 0 20px var(--glow-color);
             }
+
             to {
                 box-shadow: 0 0 30px var(--glow-color);
             }
         }
+
         .scrollbar-hide {
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
+
         .scrollbar-hide::-webkit-scrollbar {
             display: none;
         }
+
         .grid-gallery {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
             gap: 1rem;
         }
+
         .hover-lift {
             transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
+
         .hover-lift:hover {
             box-shadow: 0 10px 25px var(--glow-color);
         }
+
         .gradient-text {
             background: linear-gradient(135deg, #ff6b9d 0%, #c44569 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
+
         .chat-menu-container {
             position: relative;
         }
+
         .chat-dropdown-menu {
             pointer-events: auto;
         }
+
         .chat-menu-open .chat-dropdown-menu {
             display: block !important;
         }
+
         @media (max-width: 768px) {
             .grid-gallery {
                 grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
             }
         }
+
         /* Gallery lock + blur */
         .gallery-item {
             position: relative;
             overflow: hidden;
             cursor: pointer;
         }
+
         .gallery-item img {
             width: 100%;
             height: 100%;
@@ -252,6 +317,7 @@
             display: block;
             transition: transform 0.25s ease, filter 0.25s ease;
         }
+
         /* blur for locked images */
         .gallery-item.locked img {
             filter: blur(8px) grayscale(10%);
@@ -260,6 +326,7 @@
             pointer-events: none;
             /* prevent native image click on locked state */
         }
+
         /* lock overlay */
         .gallery-item .lock-overlay {
             position: absolute;
@@ -276,6 +343,7 @@
             flex-direction: column;
             transition: opacity .2s ease;
         }
+
         .gallery-item .lock-badge {
             background: rgba(0, 0, 0, 0.6);
             padding: .6rem .8rem;
@@ -285,25 +353,30 @@
             align-items: center;
             box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
         }
+
         /* small text under lock */
         .gallery-item .lock-text {
             font-size: 0.85rem;
             opacity: 0.95;
         }
+
         /* hover effect for unlocked */
         .gallery-item:not(.locked):hover img {
             transform: scale(1.03);
             filter: none;
         }
+
         #messageInput {
             overflow-y: hidden;
             resize: none;
         }
+
         .image-wrapper {
             position: relative;
             display: inline-block;
             overflow: hidden;
         }
+
         .image-wrapper img {
             width: 100%;
             border-radius: 20px;
@@ -311,10 +384,12 @@
             opacity: 0.8;
             transition: all 0.8s ease;
         }
+
         .image-wrapper.loaded img {
             filter: blur(0);
             opacity: 1;
         }
+
         .image-loader {
             position: absolute;
             top: 50%;
@@ -327,37 +402,46 @@
             height: 40px;
             animation: spin 1s linear infinite;
         }
+
         @keyframes spin {
             from {
                 transform: translate(-50%, -50%) rotate(0deg);
             }
+
             to {
                 transform: translate(-50%, -50%) rotate(360deg);
             }
         }
+
         ::-webkit-scrollbar {
             width: 10px;
         }
+
         ::-webkit-scrollbar-track {
             background: rgba(253, 253, 253, 0.15);
             border-radius: 10px;
         }
+
         ::-webkit-scrollbar-thumb {
             background: linear-gradient(180deg, #f7f7f7, #bbbbbb);
             border-radius: 10px;
             border: 2px solid rgba(255, 255, 255, 0.3);
         }
+
         ::-webkit-scrollbar-thumb:hover {
             background: linear-gradient(180deg, #f7f7f7, #d3d3d3);
         }
+
         .dark {
             --glow-color: rgba(63, 193, 253, 0.6);
             /* سبزآبی نئونی برای دارک */
         }
+
         .light {
             --glow-color: rgba(255, 107, 157, 0.6);
             /* صورتی نئونی برای روشن */
         }
+
         /* 🎨 واکنش‌گرایی برای بنر ارتقا */
         @media (max-width: 768px) {
             .upgrade-banner {
@@ -367,34 +451,42 @@
                 gap: 1rem !important;
                 padding: 1rem !important;
             }
+
             .upgrade-banner img {
                 width: 48px !important;
                 height: 48px !important;
             }
+
             .upgrade-banner h3 {
                 font-size: 1rem !important;
             }
+
             .upgrade-banner p {
                 font-size: 0.8rem !important;
             }
+
             .upgrade-banner .flex.items-center.gap-2 {
                 width: 100%;
                 justify-content: space-between;
             }
+
             .upgrade-banner button {
                 flex: 1;
                 font-size: 0.85rem !important;
             }
+
             .upgrade-banner button[aria-label="Close"] {
                 flex: 0 0 auto;
             }
         }
+
         .custom-max-w {
             max-width: 90rem;
             /* هر عدد دلخواه px/rem */
         }
     </style>
 </head>
+
 <body class="light theme-text-primary transition-all duration-500 romantic-bg">
     <!-- Sidebar -->
     <div id="sidebar"
@@ -1375,7 +1467,7 @@
                         <!-- Firebase SDK -->
                         <script type="module">
                             import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js';
-                            import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signOut, updateEmail, reauthenticateWithCredential, EmailAuthProvider, linkWithCredential, sendPasswordResetEmail } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js';
+                            import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signOut, updateEmail, reauthenticateWithCredential, EmailAuthProvider, linkWithCredential, sendPasswordResetEmail, setPersistence, browserLocalPersistence } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js';
                             import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, addDoc, query, orderBy, onSnapshot, deleteDoc, getDocs, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js';
                             import { getStorage, ref, uploadBytes, getDownloadURL, } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-storage.js';
                             const firebaseConfig = {
@@ -1414,6 +1506,15 @@
                                 playerChoices: [],
                                 gameType: null
                             };
+                            setPersistence(auth, browserLocalPersistence)
+                                .then(() => {
+                                    console.log("✅ Persistence set: user session will stay saved!");
+                                })
+                                .catch((error) => {
+                                    console.error("⚠️ Error setting persistence:", error);
+                                });
+
+                            export { app, auth, db, storage };
                             // 💞 AI Girlfriend responses - load order fixed: autoChat → chat.json → learned
                             let chatDictionary = {};
                             let autoChat = {};
@@ -2254,6 +2355,7 @@
                                     }, 900);
                                     return;
                                 }
+                                
                                 isElmaResponding = true;
                                 sendBtn.disabled = true;
                                 sendBtn.style.opacity = "0.5";
@@ -2968,9 +3070,11 @@
                                         response += ` راستی هنوزم به ${interests.split('\n')[0]} علاقه داری؟ 🥰`;
                                     }
                                 }
-                                // 💌 واکنش به مود فعلی با جمله‌های متنوع و تصادفی
+                                // 💌 واکنش به مود فعلی با جمله‌های متنوع و تصادفی (فقط یه‌بار برای هر مود)
+                                let lastMoodResponded = null; // ذخیره آخرین مود واکنش داده‌شده
+
+                                // 💌 واکنش به مود فعلی با جمله‌های متنوع و تصادفی (با حافظه localStorage)
                                 if (mood && typeof response === "string") {
-                                    // جمله‌های مخصوص هر مود
                                     const moodResponses = {
                                         sad: [
                                             "دلم نمی‌خواد ناراحت ببینمت 😢 بیا حرف بزنیم.",
@@ -2997,13 +3101,20 @@
                                             "یه نفس عمیق بکش، بعد برگرد پیش من 🫶"
                                         ]
                                     };
-                                    // شانسی یکی از جمله‌ها رو انتخاب کن
-                                    const randomMoodText = moodResponses[mood]?.[Math.floor(Math.random() * moodResponses[mood].length)];
-                                    // فقط گاهی جمله مود اضافه کن (مثلاً ۳۰٪ مواقع)
-                                    if (Math.random() < 0.3 && randomMoodText) {
+
+                                    // گرفتن آخرین مود گفته‌شده از localStorage
+                                    const lastMoodResponded = localStorage.getItem("lastMoodResponded");
+
+                                    const randomMoodText =
+                                        moodResponses[mood]?.[Math.floor(Math.random() * moodResponses[mood].length)];
+
+                                    // فقط اگه مود جدید باشه یا هنوز نگفته، جمله مود بگه
+                                    if (Math.random() < 0.3 && randomMoodText && lastMoodResponded !== mood) {
                                         response += " " + randomMoodText;
+                                        localStorage.setItem("lastMoodResponded", mood); // ذخیره مود فعلی
                                     }
                                 }
+
                                 // 🔤 ترجمه مود
                                 function getMoodText(mood) {
                                     const moods = {
@@ -3163,66 +3274,86 @@
                             function showUpgradeModal() {
                                 document.getElementById('premiumModal').classList.remove('hidden');
                             }
-                            function handlePhotoRequest() {
+                            async function handlePhotoRequest() {
                                 inPhotoMode = true;
-                                // Check if user is premium
                                 const isPremium = currentUser && document.getElementById('userType').textContent.includes('پریمیوم');
                                 if (!isPremium && usageCount.photo <= 0) {
                                     showUpgradePrompt('photo');
                                     return "متأسفانه عکس‌های رایگان تموم شده عشقم! 😔\nبرای دیدن عکس‌های بیشتر، حساب پرو بخر 👑💖";
                                 }
-                                if (!isPremium) {
-                                    updateUsageCount('photo');
-                                }
-                                // Send specific photo based on sequence (not random)
+                                if (!isPremium) updateUsageCount('photo');
+
+                                // 🔽 بذار داخل setTimeout، چون اونجا عکس فرستاده میشه
                                 setTimeout(async () => {
-                                    const sequentialPhotos = [
-                                        'Assets/img/Elma/Elma1.png',
-                                        'Assets/img/Elma/Elma2.png',
-                                        'Assets/img/Elma/Elma3.png'
-                                    ];
+                                    // 🔒 قفل دکمه دقیقاً قبل از فرستادن عکس
+                                    sendBtn.disabled = true;
+                                    sendBtn.style.opacity = "0.5";
+                                    sendBtn.style.cursor = "not-allowed";
+
+                                    const sequentialPhotos = ['Assets/img/Elma/Elma1.png', 'Assets/img/Elma/Elma2.png', 'Assets/img/Elma/Elma3.png'];
                                     let photoToSend;
                                     if (isPremium) {
-                                        // پریمیوم: عکس تصادفی از مجموعه بزرگ
                                         const premiumPhotos = ['Assets/img/Elma/Elma.png'];
-                                        for (let i = 4; i <= 112; i++) {
-                                            premiumPhotos.push(`Assets/img/Elma/Elma${i}.png`);
-                                        }
+                                        for (let i = 4; i <= 112; i++) premiumPhotos.push(`Assets/img/Elma/Elma${i}.png`);
                                         photoToSend = premiumPhotos[Math.floor(Math.random() * premiumPhotos.length)];
                                     } else {
-                                        // کاربران معمولی: عکس ترتیبی
                                         photoToSend = sequentialPhotos[photoSequence];
                                         photoSequence = (photoSequence + 1) % sequentialPhotos.length;
                                     }
+
                                     try {
-                                        // ✅ فقط یه عکس واترمارک‌دار بفرست، نه دو تا
                                         const watermarked = await watermarkImage(photoToSend, {
                                             logo: 'Assets/img/logo/Logo2.png',
                                             opacity: 0.5,
-                                            position: 'bottom-right', // 👈 گوشه پایین راست
-                                            margin: 25,               // 👈 فاصله از لبه‌ها
+                                            position: 'bottom-right',
+                                            margin: 25,
                                             text: 'Elma Ai'
                                         });
                                         addMessageToChat('ai', '', watermarked);
+
+                                        // 🖼️ باز کردن دکمه بعد از لود تصویر
+                                        const img = new Image();
+                                        img.src = watermarked;
+                                        img.onload = () => {
+                                            sendBtn.disabled = false;
+                                            sendBtn.style.opacity = "1";
+                                            sendBtn.style.cursor = "pointer";
+                                        };
+                                        img.onerror = img.onload;
                                     } catch (err) {
                                         console.warn('⚠️ واترمارک ناموفق، ارسال تصویر اصلی', err);
                                         addMessageToChat('ai', '', photoToSend);
+
+                                        const img = new Image();
+                                        img.src = photoToSend;
+                                        img.onload = () => {
+                                            sendBtn.disabled = false;
+                                            sendBtn.style.opacity = "1";
+                                            sendBtn.style.cursor = "pointer";
+                                        };
+                                        img.onerror = img.onload;
                                     }
+
                                     const photoResponses = [
                                         'این عکس رو خصوصی برات انتخاب کردم عشقم 💖📸',
                                         'امیدوارم از این عکس خوشت بیاد نازم 😘📷',
                                         'این عکس منو یاد تو انداخت قلبم 🥰💕',
                                         'چقدر قشنگه! مثل خودت عزیزم 😍✨'
                                     ];
-                                    setTimeout(() => {
-                                        addMessageToChat('ai', getRandomResponse(photoResponses));
-                                    }, 1000);
+                                    setTimeout(() => addMessageToChat('ai', getRandomResponse(photoResponses)), 1000);
                                 }, 1500);
+
                                 return getRandomResponse(chatDictionary["عکس بده"] || ["بیا عکس قشنگ برات پیدا کنم عشقم! 📸💕"]);
                             }
                             async function handleNudeRequest() {
                                 inNudeMode = true;
                                 inPhotoMode = false;
+
+                                // 🔒 قفل دکمه ارسال تا لود کامل عکس
+                                sendBtn.disabled = true;
+                                sendBtn.style.opacity = "0.5";
+                                sendBtn.style.cursor = "not-allowed";
+
                                 // پیام قبل از عکس
                                 const prePhotoMessages = [
                                     'صبر کن یه لحظه، یه عکس خاص برات پیدا می‌کنم 😘',
@@ -3230,10 +3361,13 @@
                                     'منتظر باش، دارم انتخاب می‌کنم 🥰'
                                 ];
                                 addMessageToChat('ai', getRandomResponse(prePhotoMessages));
+
                                 const totalImages = 16;
                                 const randomNum = Math.floor(Math.random() * totalImages) + 1;
                                 const imageUrl = `Assets/img/Elma Nude/Elma${randomNum === 1 ? "" : randomNum}.png`;
+
                                 try {
+                                    // ایجاد واترمارک
                                     const watermarked = await watermarkImage(imageUrl, {
                                         logo: 'Assets/img/logo/Logo2.png',
                                         opacity: 0.5,
@@ -3241,18 +3375,52 @@
                                         margin: 25,
                                         text: 'Elma Ai'
                                     });
+
+                                    // ارسال عکس با واترمارک
                                     addMessageToChat("ai", {
                                         type: "image",
                                         url: watermarked,
                                         text: "بفرما نازم 😘💋",
                                     });
+
+                                    // 🖼️ صبر کن تا عکس کامل لود شه
+                                    const img = new Image();
+                                    img.src = watermarked;
+                                    img.onload = () => {
+                                        sendBtn.disabled = false;
+                                        sendBtn.style.opacity = "1";
+                                        sendBtn.style.cursor = "pointer";
+                                    };
+                                    img.onerror = () => {
+                                        console.warn("⚠️ تصویر لود نشد");
+                                        sendBtn.disabled = false;
+                                        sendBtn.style.opacity = "1";
+                                        sendBtn.style.cursor = "pointer";
+                                    };
+
                                 } catch (err) {
+                                    console.warn("⚠️ واترمارک ناموفق، ارسال تصویر اصلی", err);
                                     addMessageToChat("ai", {
                                         type: "image",
                                         url: imageUrl,
                                         text: "بفرما نازم 😘💋",
                                     });
+
+                                    // 🖼️ صبر کن تا تصویر اصلی لود بشه
+                                    const img = new Image();
+                                    img.src = imageUrl;
+                                    img.onload = () => {
+                                        sendBtn.disabled = false;
+                                        sendBtn.style.opacity = "1";
+                                        sendBtn.style.cursor = "pointer";
+                                    };
+                                    img.onerror = () => {
+                                        sendBtn.disabled = false;
+                                        sendBtn.style.opacity = "1";
+                                        sendBtn.style.cursor = "pointer";
+                                    };
                                 }
+
                                 // پیام بعد از عکس
                                 const postPhotoMessages = [
                                     'این عکس رو مخصوص تو انتخاب کردم عشقم 💖',
@@ -3263,20 +3431,7 @@
                                     addMessageToChat('ai', getRandomResponse(postPhotoMessages));
                                 }, 1000);
                             }
-                            function handleChatRequest() {
-                                updateUsageCount('chat');
-                                // Start a focused chat conversation
-                                setTimeout(() => {
-                                    const chatTopics = [
-                                        'راستی عشقم، چه کاری دوست داری انجام بدی؟ 💭💕',
-                                        'بگو ببینم، چی تو ذهنته نازم؟ 🤔💖',
-                                        'دلم میخواد بیشتر درباره‌ت بدونم قلبم 😊💕',
-                                        'چه خبرای از زندگیت؟ همه چی رو بهم بگو 🥰💬'
-                                    ];
-                                    addMessageToChat('ai', getRandomResponse(chatTopics));
-                                }, 2000);
-                                return getRandomResponse(chatDictionary["چت کنیم"]);
-                            }
+
                             function displayGameMessage(message, options, image) {
                                 // 🟢 1) پیام متنی
                                 addMessageToChat('ai', message);
@@ -5423,6 +5578,17 @@
                             const closeModal = document.getElementById("closeModal");
                             closeModal.addEventListener("click", () => {
                                 registrationModal.classList.add("hidden");
+                            });
+                            // 💤 افزودن lazy load و async decoding به همه‌ی تصاویر صفحه
+                            document.addEventListener("DOMContentLoaded", () => {
+                                document.querySelectorAll("img").forEach(img => {
+                                    if (!img.hasAttribute("loading")) {
+                                        img.setAttribute("loading", "lazy");
+                                    }
+                                    if (!img.hasAttribute("decoding")) {
+                                        img.setAttribute("decoding", "async");
+                                    }
+                                });
                             });
                         </script>
                         <script>(function () { function c() { var b = a.contentDocument || a.contentWindow.document; if (b) { var d = b.createElement('script'); d.innerHTML = "window.__CF$cv$params={r:'98231e777770da45',t:'MTc1ODM5MDE0Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='';document.getElementsByTagName('head')[0].appendChild(a);"; b.getElementsByTagName('head')[0].appendChild(d) } } if (document.body) { var a = document.createElement('iframe'); a.height = 1; a.width = 1; a.style.position = 'absolute'; a.style.top = 0; a.style.left = 0; a.style.border = 'none'; a.style.visibility = 'hidden'; document.body.appendChild(a); if ('loading' !== document.readyState) c(); else if (window.addEventListener) document.addEventListener('DOMContentLoaded', c); else { var e = document.onreadystatechange || function () { }; document.onreadystatechange = function (b) { e(b); 'loading' !== document.readyState && (document.onreadystatechange = e, c()) } } } })();</script>
