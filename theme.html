@@ -84,11 +84,22 @@
         <div>
             <label class="block mb-2 font-medium theme-text-primary flex items-center gap-2">
                 <i data-lucide="text-cursor-input" class="w-5 h-5 text-pink-400"></i>
-                <span>اندازه متن</span>
+                <span>اندازه کادرها</span>
             </label>
             <input type="range" id="fontSizeRange" min="12" max="24" step="1" value="16" class="w-full">
             <div class="text-xs theme-text-secondary mt-1">
                 اندازه فعلی: <span id="fontSizeValue">16</span>px
+            </div>
+        </div>
+        <!-- اندازه تمام متن‌ها در صفحه -->
+        <div>
+            <label class="block mb-2 font-medium theme-text-primary flex items-center gap-2">
+                <i data-lucide="type" class="w-5 h-5 text-pink-400"></i>
+                <span>اندازه تمام متن‌ها</span>
+            </label>
+            <input type="range" id="globalFontSizeRange" min="10" max="26" step="1" value="16" class="w-full">
+            <div class="text-xs theme-text-secondary mt-1">
+                اندازه فعلی: <span id="globalFontSizeValue">16</span>px
             </div>
         </div>
         <!-- اندازه حباب چت -->
@@ -153,6 +164,9 @@
                 const fontFamilySelect = document.getElementById("fontFamilySelect");
                 const bubbleRange = document.getElementById("bubbleSizeRange");
                 const bubbleValue = document.getElementById("bubbleSizeValue");
+                const globalFontSizeRange = document.getElementById("globalFontSizeRange");
+                const globalFontSizeValue = document.getElementById("globalFontSizeValue");
+
                 let tempTheme = {};
                 // 🎯 تابع اعمال بک‌گراند
                 function applyBackgroundStyle(image, mode) {
@@ -197,6 +211,13 @@
                 }
                 // 🎯 بارگذاری تنظیمات ذخیره‌شده
                 const saved = JSON.parse(localStorage.getItem("elmaTheme") || "{}");
+                if (saved.globalFontSize) {
+                    globalFontSizeRange.value = saved.globalFontSize;
+                    globalFontSizeValue.textContent = saved.globalFontSize;
+                    document.querySelectorAll("body, body *:not(script):not(style)").forEach(el => {
+                        el.style.fontSize = saved.globalFontSize + "px";
+                    });
+                }
                 applyTheme(saved);
                 // مقداردهی ورودی‌ها از ذخیره
                 if (saved.fontSize) fontSizeRange.value = saved.fontSize, fontSizeValue.textContent = saved.fontSize;
@@ -266,8 +287,14 @@
                     if (!file) return;
                     const reader = new FileReader();
                     reader.onload = ev => {
-                        tempTheme.background = ev.target.result;
-                        applyBackgroundStyle(ev.target.result, bgMode.value);
+                        const imageData = ev.target.result;
+                        tempTheme.background = imageData;
+                        applyBackgroundStyle(imageData, bgMode.value);
+                        // 🔹 ذخیره در localStorage برای نگه داشتن عکس بعد از رفرش
+                        const currentTheme = JSON.parse(localStorage.getItem("elmaTheme") || "{}");
+                        currentTheme.background = imageData;
+                        currentTheme.mode = bgMode.value;
+                        localStorage.setItem("elmaTheme", JSON.stringify(currentTheme));
                     };
                     reader.readAsDataURL(file);
                 });
@@ -301,6 +328,20 @@
                         el.style.backgroundColor = `rgba(255,255,255,${val / 100})`;
                     });
                     tempTheme.opacity = val;
+                });
+                // 🎯 تغییر اندازه تمام متن‌های صفحه
+                globalFontSizeRange.addEventListener("input", e => {
+                    const val = e.target.value;
+                    globalFontSizeValue.textContent = val;
+
+                    // تغییر روی کل عناصر متنی
+                    document.querySelectorAll("body, body *:not(script):not(style)").forEach(el => {
+                        if (el.childNodes.length > 0) {
+                            el.style.fontSize = val + "px";
+                        }
+                    });
+
+                    tempTheme.globalFontSize = val;
                 });
                 // 🎁 گزینه XChat برای کاربران پریمیوم
                 const userType = localStorage.getItem("accountType") || "free";
@@ -351,16 +392,16 @@
                 });
                 // ذخیره تم
                 saveBtn.addEventListener("click", () => {
-                    const data = { ...saved, ...tempTheme, mode: bgMode.value };
+                    const data = { ...saved, ...tempTheme, mode: bgMode.value, globalFontSize: globalFontSizeRange.value };
                     localStorage.setItem("elmaTheme", JSON.stringify(data));
-                    alert("✅ تنظیمات تم ذخیره شد!");
+                    showSimpleToast("✅ تنظیمات تم ذخیره شد!");
                 });
                 document.getElementById("resetBackground").addEventListener("click", () => {
                     document.body.style.backgroundImage = "";
                     tempTheme.background = "";
                     saved.background = "";
                     localStorage.setItem("elmaTheme", JSON.stringify(saved));
-                    alert("🧹 تصویر پس‌زمینه حذف شد!");
+                    showSimpleToast("🧹 تصویر پس‌زمینه حذف شد!");
                 });
                 // ریست تم
                 resetBtn.addEventListener("click", () => {
@@ -370,9 +411,17 @@
                     document.querySelectorAll(".glass-effect").forEach(el => el.style.backgroundColor = "");
                     document.querySelectorAll(".theme-text-primary").forEach(el => el.style.color = "");
                     document.querySelectorAll(".theme-text-secondary").forEach(el => el.style.color = "");
-                    alert("🔄 تنظیمات تم بازنشانی شد!");
+                    showSimpleToast("🔄 تنظیمات تم بازنشانی شد!");
                     location.reload();
                 });
+                function showSimpleToast(msg) {
+                    const toast = document.createElement("div");
+                    toast.textContent = msg;
+                    toast.className =
+                        "fixed bottom-6 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-2xl bg-gradient-to-r from-pink-500 to-fuchsia-600 text-white text-sm shadow-lg animate-bounce-in z-[2000]";
+                    document.body.appendChild(toast);
+                    setTimeout(() => toast.remove(), 3000);
+                }
                 lucide.createIcons();
             })();
         </script>
