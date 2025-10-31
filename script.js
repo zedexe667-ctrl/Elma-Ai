@@ -2,8 +2,7 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js';
 import {
     getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signOut, updateEmail, reauthenticateWithCredential, EmailAuthProvider, linkWithCredential, sendPasswordResetEmail, signInWithRedirect,   // ← اینو اضافه کن
-    getRedirectResult, setPersistence, browserLocalPersistence, updatePassword
-} from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js';
+    getRedirectResult, setPersistence, browserLocalPersistence, updatePassword,} from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js';
 import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, addDoc, query, orderBy, onSnapshot, deleteDoc, getDocs, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js';
 import { getStorage, ref, uploadBytes, getDownloadURL, } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-storage.js';
 const firebaseConfig = {
@@ -496,14 +495,17 @@ onAuthStateChanged(auth, async (user) => {
     });
     // 🧩 وقتی وضعیت ورود عوض شد
     onAuthStateChanged(auth, (user) => {
+        const userNameEl = document.getElementById("userName");
+        const userTypeEl = document.getElementById("userType");
+    
         if (user) {
-            loadAccountData();
+            if (userNameEl) userNameEl.textContent = user.displayName || (user.email ? user.email.split("@")[0] : "کاربر");
+            if (userTypeEl) userTypeEl.textContent = "ورود موفق 💫";
         } else {
-            accountType = "free";
-            purchasedPlus = false;
-            updateMenuUI();
+            if (userNameEl) userNameEl.textContent = "کاربر مهمان";
+            if (userTypeEl) userTypeEl.textContent = "وارد نشده ❌";
         }
-    });
+    });    
 })();
 function initializeEventListeners() {
     // Sidebar controls
@@ -3584,16 +3586,17 @@ document.addEventListener("DOMContentLoaded", () => {
     // از auth اصلی استفاده کن (که بالا با getAuth(app) تعریف شده)
     const userEmailDisplay = document.getElementById("userEmailDisplay");
     onAuthStateChanged(auth, (user) => {
+        const userNameEl = document.getElementById("userName");
+        const userTypeEl = document.getElementById("userType");
+    
         if (user) {
-            // ✅ کاربر وارد شده → ایمیلش رو نشون بده
-            userEmailDisplay.textContent = user.email || "بدون ایمیل ثبت‌شده";
-            userEmailDisplay.classList.remove("text-red-400");
+            if (userNameEl) userNameEl.textContent = user.displayName || (user.email ? user.email.split("@")[0] : "کاربر");
+            if (userTypeEl) userTypeEl.textContent = "ورود موفق 💫";
         } else {
-            // ❌ کاربر وارد نشده
-            userEmailDisplay.textContent = "وارد حساب نشده‌اید";
-            userEmailDisplay.classList.add("text-red-400");
+            if (userNameEl) userNameEl.textContent = "کاربر مهمان";
+            if (userTypeEl) userTypeEl.textContent = "وارد نشده ❌";
         }
-    });
+    });    
 });
 // 🟢 ذخیره‌ی پروفایل کاربر بعد از ورود
 function saveUserProfile(user, accountType = "") {
@@ -3633,13 +3636,15 @@ document.addEventListener("DOMContentLoaded", () => {
     setTimeout(() => {
         if (typeof auth !== "undefined") {
             onAuthStateChanged(auth, (user) => {
+                const userNameEl = document.getElementById("userName");
                 const userTypeEl = document.getElementById("userType");
+
                 if (user) {
-                    if (userTypeEl) userTypeEl.textContent = "ورود با موفقیت انجام شد 💫";
-                    saveUserProfile(user);
+                    if (userNameEl) userNameEl.textContent = user.displayName || (user.email ? user.email.split("@")[0] : "کاربر");
+                    if (userTypeEl) userTypeEl.textContent = "ورود موفق 💫";
                 } else {
-                    if (userTypeEl) userTypeEl.textContent = "حساب یافت نشد ❌";
-                    localStorage.removeItem("elma_user_profile");
+                    if (userNameEl) userNameEl.textContent = "کاربر مهمان";
+                    if (userTypeEl) userTypeEl.textContent = "وارد نشده ❌";
                 }
             });
         }
@@ -3902,45 +3907,45 @@ loginBtn.addEventListener("click", async () => {
 /* ---------- Sign in/up with Google ---------- */
 async function handleGoogleSignIn(event) {
     const isWebView = (() => {
-      const ua = navigator.userAgent || navigator.vendor || window.opera;
-      return /wv|FBAN|FBAV|Instagram|MedianApp/i.test(ua);
+        const ua = navigator.userAgent || navigator.vendor || window.opera;
+        return /wv|FBAN|FBAV|Instagram|MedianApp/i.test(ua);
     })();
-  
+
     try {
-      if (isWebView) {
-        console.log("📱 WebView detected → using redirect sign-in...");
-        await signInWithRedirect(auth, provider);
-        return;
-      }
-  
-      // حالت عادی مرورگر (پاپ‌آپ)
-      const result = await signInWithPopup(auth, provider);
-      await afterGoogleLogin(result.user);
+        if (isWebView) {
+            console.log("📱 WebView detected → using redirect sign-in...");
+            await signInWithRedirect(auth, provider);
+            return;
+        }
+
+        // حالت عادی مرورگر (پاپ‌آپ)
+        const result = await signInWithPopup(auth, provider);
+        await afterGoogleLogin(result.user);
     } catch (err) {
-      console.error("Google sign-in error:", err);
-  
-      // اگر پاپ‌آپ بسته یا بلاک شد → سوییچ به redirect
-      if (
-        err.code === "auth/popup-closed-by-user" ||
-        err.code === "auth/popup-blocked" ||
-        err.code === "auth/operation-not-supported-in-this-environment"
-      ) {
-        console.warn("🔁 Falling back to redirect sign-in...");
-        await signInWithRedirect(auth, provider);
-        return;
-      }
-  
-      showToast("خطا در ورود با گوگل: " + (err.message || err));
+        console.error("Google sign-in error:", err);
+
+        // اگر پاپ‌آپ بسته یا بلاک شد → سوییچ به redirect
+        if (
+            err.code === "auth/popup-closed-by-user" ||
+            err.code === "auth/popup-blocked" ||
+            err.code === "auth/operation-not-supported-in-this-environment"
+        ) {
+            console.warn("🔁 Falling back to redirect sign-in...");
+            await signInWithRedirect(auth, provider);
+            return;
+        }
+
+        showToast("خطا در ورود با گوگل: " + (err.message || err));
     }
-  }
-  
-  // بررسی نتیجه بعد از redirect
-  getRedirectResult(auth)
+}
+
+// بررسی نتیجه بعد از redirect
+getRedirectResult(auth)
     .then(async (result) => {
-      if (result?.user) await afterGoogleLogin(result.user);
+        if (result?.user) await afterGoogleLogin(result.user);
     })
     .catch((err) => console.error("Redirect result error:", err));
-  
+
 
 // بررسی نتیجه بعد از redirect (وقتی گوگل برمی‌گردونه)
 getRedirectResult(auth)
@@ -4317,4 +4322,3 @@ function showToast(message, type = "info") {
         setTimeout(() => toast.remove(), 400);
     }, 3000);
 }
-
