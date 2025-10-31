@@ -3900,39 +3900,63 @@ loginBtn.addEventListener("click", async () => {
 async function handleGoogleSignIn(event) {
     try {
         const result = await signInWithPopup(auth, provider);
-        const user = result.user;
-        const isNew = user.metadata.creationTime === user.metadata.lastSignInTime;
-        await saveUserToFirestore(user);
+        await afterGoogleLogin(result.user);
+    } catch (err) {
+        console.error("Google sign-in error:", err);
 
-        // ✅ گرفتن accountType از Firestore
-        const userRef = doc(db, "users", user.uid);
-        const snap = await getDoc(userRef);
-        const accountType = snap.exists() ? snap.data().accountType || "free" : "free";
-        localStorage.setItem("accountType", accountType);
-
-        if (isNew) {
-            registerForm.classList.add("hidden");
-            loginForm.classList.add("hidden");
-            setPasswordPanel.classList.remove("hidden");
-            if (user.email) regEmail.value = user.email;
-            saveGooglePassword.disabled = true;
+        // اگر پاپ‌آپ بسته یا بلاک شد، با redirect امتحان کن
+        if (
+            err.code === "auth/popup-closed-by-user" ||
+            err.code === "auth/popup-blocked" ||
+            err.code === "auth/operation-not-supported-in-this-environment"
+        ) {
+            console.warn("🔁 Falling back to redirect sign-in...");
+            await signInWithRedirect(auth, provider);
             return;
         }
 
-        document.getElementById("registrationModal").classList.add("hidden");
-        const nameEl = document.getElementById("userName");
-        const typeEl = document.getElementById("userType");
-        if (nameEl)
-            nameEl.textContent =
-                user.displayName || (user.email ? user.email.split("@")[0] : "کاربر");
-    } catch (err) {
-        console.error("Google sign-in error:", err);
         showToast("خطا در ورود با گوگل: " + (err.message || err));
     }
 }
+
+// بررسی نتیجه بعد از redirect (وقتی گوگل برمی‌گردونه)
+getRedirectResult(auth)
+    .then(async (result) => {
+        if (result?.user) {
+            await afterGoogleLogin(result.user);
+        }
+    })
+    .catch((err) => console.error("Redirect result error:", err));
+
+// تابع مشترک بعد از لاگین موفق
+async function afterGoogleLogin(user) {
+    const isNew = user.metadata.creationTime === user.metadata.lastSignInTime;
+    await saveUserToFirestore(user);
+
+    const userRef = doc(db, "users", user.uid);
+    const snap = await getDoc(userRef);
+    const accountType = snap.exists() ? snap.data().accountType || "free" : "free";
+    localStorage.setItem("accountType", accountType);
+
+    if (isNew) {
+        registerForm.classList.add("hidden");
+        loginForm.classList.add("hidden");
+        setPasswordPanel.classList.remove("hidden");
+        if (user.email) regEmail.value = user.email;
+        saveGooglePassword.disabled = true;
+        return;
+    }
+
+    document.getElementById("registrationModal").classList.add("hidden");
+    const nameEl = document.getElementById("userName");
+    if (nameEl)
+        nameEl.textContent =
+            user.displayName || (user.email ? user.email.split("@")[0] : "کاربر");
+}
+
+// اتصال دکمه‌ها
 googleLoginBtn.addEventListener("click", handleGoogleSignIn);
 googleRegisterBtn.addEventListener("click", handleGoogleSignIn);
-
 /* ---------- After Google sign-up: save password for that Google user ---------- */
 saveGooglePassword.addEventListener("click", async () => {
     saveGooglePassword.disabled = true;
