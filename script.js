@@ -3901,26 +3901,46 @@ loginBtn.addEventListener("click", async () => {
 
 /* ---------- Sign in/up with Google ---------- */
 async function handleGoogleSignIn(event) {
+    const isWebView = (() => {
+      const ua = navigator.userAgent || navigator.vendor || window.opera;
+      return /wv|FBAN|FBAV|Instagram|MedianApp/i.test(ua);
+    })();
+  
     try {
-        const result = await signInWithPopup(auth, provider);
-        await afterGoogleLogin(result.user);
+      if (isWebView) {
+        console.log("📱 WebView detected → using redirect sign-in...");
+        await signInWithRedirect(auth, provider);
+        return;
+      }
+  
+      // حالت عادی مرورگر (پاپ‌آپ)
+      const result = await signInWithPopup(auth, provider);
+      await afterGoogleLogin(result.user);
     } catch (err) {
-        console.error("Google sign-in error:", err);
-
-        // اگر پاپ‌آپ بسته یا بلاک شد، با redirect امتحان کن
-        if (
-            err.code === "auth/popup-closed-by-user" ||
-            err.code === "auth/popup-blocked" ||
-            err.code === "auth/operation-not-supported-in-this-environment"
-        ) {
-            console.warn("🔁 Falling back to redirect sign-in...");
-            await signInWithRedirect(auth, provider);
-            return;
-        }
-
-        showToast("خطا در ورود با گوگل: " + (err.message || err));
+      console.error("Google sign-in error:", err);
+  
+      // اگر پاپ‌آپ بسته یا بلاک شد → سوییچ به redirect
+      if (
+        err.code === "auth/popup-closed-by-user" ||
+        err.code === "auth/popup-blocked" ||
+        err.code === "auth/operation-not-supported-in-this-environment"
+      ) {
+        console.warn("🔁 Falling back to redirect sign-in...");
+        await signInWithRedirect(auth, provider);
+        return;
+      }
+  
+      showToast("خطا در ورود با گوگل: " + (err.message || err));
     }
-}
+  }
+  
+  // بررسی نتیجه بعد از redirect
+  getRedirectResult(auth)
+    .then(async (result) => {
+      if (result?.user) await afterGoogleLogin(result.user);
+    })
+    .catch((err) => console.error("Redirect result error:", err));
+  
 
 // بررسی نتیجه بعد از redirect (وقتی گوگل برمی‌گردونه)
 getRedirectResult(auth)
@@ -4297,3 +4317,4 @@ function showToast(message, type = "info") {
         setTimeout(() => toast.remove(), 400);
     }, 3000);
 }
+
