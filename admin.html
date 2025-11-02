@@ -9,7 +9,8 @@
   <script type="module" src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"></script>
   <script type="module" src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js"></script>
   <script type="module" src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+  <link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
 </head>
 
 <body class="bg-gray-900 text-white min-h-screen flex flex-col items-center justify-center">
@@ -39,10 +40,13 @@
     <h1 class="text-2xl font-bold mb-6 gradient-text">🎯 پنل مدیریت Elma</h1>
 
     <div class="space-y-4 text-right">
+
+      <!-- 🆕 تبدیل input به select برای انتخاب ایمیل -->
       <label class="block text-sm">ایمیل کاربر:</label>
-      <input id="userEmail" type="email"
-        class="w-full p-3 rounded-xl border border-gray-600 bg-gray-700 focus:outline-none focus:ring-2 focus:ring-pink-400"
-        placeholder="example@email.com">
+      <select id="userEmail"
+        class="w-full p-3 rounded-xl border border-gray-600 bg-gray-700 focus:outline-none focus:ring-2 focus:ring-pink-400">
+        <option value="">انتخاب کاربر...</option>
+      </select>
 
       <label class="block text-sm mt-4">نوع حساب:</label>
       <select id="newType"
@@ -54,10 +58,14 @@
       <label class="block text-sm mt-4">مدت اشتراک:</label>
       <select id="planMonths"
         class="w-full p-3 rounded-xl border border-gray-600 bg-gray-700 focus:outline-none focus:ring-2 focus:ring-pink-400">
+        <!-- 🆕 گزینه‌های جدید اضافه شدن -->
         <option value="0">بدون تمدید</option>
-        <option value="3">۳ ماه</option>
-        <option value="6">۶ ماه</option>
-        <option value="12">۱۲ ماه</option>
+        <option value="0.25">۷ روزه 🗓️</option>
+        <option value="1">۱ ماهه</option>
+        <option value="2">۲ ماهه</option>
+        <option value="3">۳ ماهه</option>
+        <option value="6">۶ ماهه</option>
+        <option value="12">۱۲ ماهه</option>
       </select>
 
       <button id="updateUser"
@@ -78,7 +86,7 @@
     import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
     import { getFirestore, doc, getDocs, query, where, updateDoc, collection } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-    // 🔥 تنظیمات Firebase (جایگزین کن)
+    // 🔥 تنظیمات Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyD_Ar1zFTBS9DDFlAflPt2IpcQ5y8EI5pE",
       authDomain: "zed-exe-48839.firebaseapp.com",
@@ -93,14 +101,12 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // 📌 فقط ایمیل‌های ادمین
     const adminEmails = ["elma.ai@gmail.com"];
 
     const loginSection = document.getElementById("loginSection");
     const adminPanel = document.getElementById("adminPanel");
     const loginBtn = document.getElementById("loginBtn");
     const loginMsg = document.getElementById("loginMsg");
-
     const userEmail = document.getElementById("userEmail");
     const newType = document.getElementById("newType");
     const planMonths = document.getElementById("planMonths");
@@ -123,6 +129,7 @@
         if (adminEmails.includes(res.user.email)) {
           loginSection.classList.add("hidden");
           adminPanel.classList.remove("hidden");
+          loadUserEmails(); // 🆕 بعد از ورود، ایمیل کاربران لود میشه
         } else {
           showMsg("⛔️ این حساب ادمین نیست!", true);
           await signOut(auth);
@@ -131,6 +138,22 @@
         showMsg("❌ خطا در ورود: " + err.message, true);
       }
     });
+
+    // 🆕 لود لیست ایمیل‌ها
+    async function loadUserEmails() {
+      userEmail.innerHTML = `<option value="">در حال بارگذاری...</option>`;
+      const snap = await getDocs(collection(db, "users"));
+      userEmail.innerHTML = `<option value="">انتخاب کاربر...</option>`;
+      snap.forEach(docSnap => {
+        const data = docSnap.data();
+        if (data.email) {
+          const opt = document.createElement("option");
+          opt.value = data.email;
+          opt.textContent = data.email;
+          userEmail.appendChild(opt);
+        }
+      });
+    }
 
     // 🚪 خروج
     logoutBtn.addEventListener("click", async () => {
@@ -144,6 +167,7 @@
       if (user && adminEmails.includes(user.email)) {
         loginSection.classList.add("hidden");
         adminPanel.classList.remove("hidden");
+        loadUserEmails(); // 🆕 وقتی ادمین لاگین هست، لیست ایمیل‌ها لود بشه
       } else {
         adminPanel.classList.add("hidden");
         loginSection.classList.remove("hidden");
@@ -155,10 +179,10 @@
       updateMsg.classList.add("hidden");
       const email = userEmail.value.trim();
       const type = newType.value;
-      const months = parseInt(planMonths.value);
+      const months = parseFloat(planMonths.value);
 
       if (!email) {
-        showMsg("ایمیل کاربر را وارد کنید", true);
+        showMsg("ایمیل کاربر را انتخاب کنید", true);
         return;
       }
 
@@ -182,9 +206,10 @@
           if (type === "premium" && months > 0) {
             if (currentExpiry && currentExpiry > now) {
               newExpiry = new Date(currentExpiry);
-              newExpiry.setMonth(newExpiry.getMonth() + months);
+              newExpiry.setDate(newExpiry.getDate() + (months * 30)); // 🆕 تبدیل ماه به روز
             } else {
-              newExpiry.setMonth(now.getMonth() + months);
+              newExpiry = new Date(now);
+              newExpiry.setDate(now.getDate() + (months * 30));
             }
 
             await updateDoc(userRef, {
@@ -232,5 +257,4 @@
   </style>
 
 </body>
-
 </html>
