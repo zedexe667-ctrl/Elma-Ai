@@ -2,8 +2,12 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js';
 import {
     getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signOut, updateEmail, reauthenticateWithCredential, EmailAuthProvider, linkWithCredential, sendPasswordResetEmail, signInWithRedirect,   // ← اینو اضافه کن
-    getRedirectResult, setPersistence, browserLocalPersistence, updatePassword} from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js';
-import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, addDoc, query, orderBy, onSnapshot, deleteDoc, getDocs, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js';
+    getRedirectResult, setPersistence, browserLocalPersistence, updatePassword
+} from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js';
+import {
+    getFirestore, doc, setDoc, getDoc, updateDoc, collection, addDoc, query, orderBy, where, limit,
+    onSnapshot, deleteDoc, getDocs, serverTimestamp
+} from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js';
 import { getStorage, ref, uploadBytes, getDownloadURL, } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-storage.js';
 const firebaseConfig = {
     apiKey: "AIzaSyD_Ar1zFTBS9DDFlAflPt2IpcQ5y8EI5pE",
@@ -228,27 +232,60 @@ onAuthStateChanged(auth, async (user) => {
         window.currentUser = user;
         hideRegistrationModal();
         loadUserProfile();
-        loadChatHistory();
-        // بررسی وجود چت قبلی
-        const lastChatId = localStorage.getItem("lastChatId");
+
+        // 📦 ذخیره وضعیت ورود
+        localStorage.setItem('userLoggedIn', 'true');
+        localStorage.setItem('userEmail', user.email);
+
+        // 🟢 بررسی چت قبلی در localStorage
+        let lastChatId = localStorage.getItem("lastChatId");
+
         if (lastChatId) {
             console.log("🔁 بازگشت به چت قبلی:", lastChatId);
             currentChatId = lastChatId;
             if (typeof loadMessages === "function") {
-                loadMessages(lastChatId);
+                await loadMessages(lastChatId);
             }
         } else {
-            console.log("📭 کاربر هیچ چتی نداره، منتظر ایجاد دستی می‌مونیم.");
+            // 🟡 اگر localStorage خالیه → از دیتابیس چت‌های قبلی رو بخون
+            console.log("📭 هیچ lastChatId در حافظه نیست → بررسی دیتابیس...");
+            const chatsRef = collection(db, "chats");
+            const q = query(chatsRef, where("userId", "==", user.uid), orderBy("createdAt", "desc"), limit(1));
+            const snapshot = await getDocs(q);
+
+            if (!snapshot.empty) {
+                const lastChat = snapshot.docs[0];
+                currentChatId = lastChat.id;
+                localStorage.setItem("lastChatId", lastChat.id);
+                console.log("🔁 آخرین چت از دیتابیس بازیابی شد:", lastChat.id);
+                if (typeof loadMessages === "function") {
+                    await loadMessages(lastChat.id);
+                }
+            } else {
+                // 🔹 اگر هیچ چتی وجود نداشت → ساخت چت جدید
+                console.log("🆕 هیچ چتی وجود ندارد → ایجاد چت جدید...");
+                if (typeof createNewChat === "function") {
+                    await createNewChat();
+                }
+            }
         }
-        // ذخیره وضعیت ورود
-        localStorage.setItem('userLoggedIn', 'true');
-        localStorage.setItem('userEmail', user.email);
-        // 📦 چک کن که سند کاربر وجود داره یا نه
+
+        // ✅ در هر حالت، خوش‌آمدگویی باید پنهان شود
+        const welcomeSection = document.querySelector("#messagesContainer > .text-center");
+        if (welcomeSection) {
+            welcomeSection.style.display = "none";
+            welcomeSection.style.opacity = "0";
+        }
+
+        // 🔹 در نهایت لیست چت‌ها را هم بارگذاری کن
+        loadChatHistory();
+
+        // ⚙️ بررسی و ساخت سند کاربر در Firestore
         const userRef = doc(db, "users", user.uid);
         const userSnap = await getDoc(userRef);
-        let resolvedAccountType = "free"; // default
+        let resolvedAccountType = "free";
+
         if (!userSnap.exists()) {
-            // کاربر تازه‌ساخته میشه — مقدار accountType داخل سند "free" ست میشه
             await setDoc(userRef, {
                 email: user.email || "",
                 username: user.displayName || user.email?.split("@")[0] || "کاربر",
@@ -259,11 +296,9 @@ onAuthStateChanged(auth, async (user) => {
                 tipsShown: false,
                 createdAt: serverTimestamp()
             });
-            resolvedAccountType = "free";
             console.log("🆕 سند کاربر ساخته شد و accountType=free تنظیم شد");
         } else {
             const data = userSnap.data();
-            // اگر تاریخ انقضا هست و گذشته، به free تبدیلش کن و resolvedAccountType رو آپدیت کن
             if (data.accountType === "premium" && data.premiumExpiry) {
                 const expiryDate = new Date(data.premiumExpiry);
                 if (new Date() > expiryDate) {
@@ -277,17 +312,12 @@ onAuthStateChanged(auth, async (user) => {
                 resolvedAccountType = data.accountType || "free";
             }
         }
+
         const latestSnap = await getDoc(userRef);
         const userData = latestSnap.data();
-        // --- حالا حتماً در localStorage ذخیره کن (قبل از هر کار دیگری) ---
         localStorage.setItem("accountType", resolvedAccountType);
-        console.log("✅ localStorage.accountType set to:", localStorage.getItem("accountType"));
-        // اگر لازم شد دوباره مقدار را همگام سازی کن
-        if (userData && userData.accountType) {
-            localStorage.setItem("accountType", userData.accountType);
-            console.log("🔁 localStorage.accountType synced from userData:", localStorage.getItem("accountType"));
-        }
-        // 🎵 صدای خوش‌آمد
+
+        // 🎵 پخش صدای خوش‌آمد فقط یک‌بار
         if (!userData.playedWelcome) {
             const audio = document.getElementById("welcomeAudio");
             if (audio) {
@@ -299,8 +329,9 @@ onAuthStateChanged(auth, async (user) => {
             }
             await updateDoc(userRef, { playedWelcome: true });
         }
+
     } else {
-        // خروج کاربر
+        // 🚪 خروج کاربر
         currentUser = null;
         showGuestProfile();
         localStorage.removeItem("userLoggedIn");
@@ -409,44 +440,64 @@ onAuthStateChanged(auth, async (user) => {
             console.error("⚠️ خطا در خواندن حساب:", err);
         }
     }
+    // متغیر جهانی برای کنترل تایمر
+    let premiumTimerInterval = null;
+
     // 🟢 به‌روزرسانی UI منو
     function updateMenuUI() {
         radioFree.checked = accountType === "free";
         radioPlus.checked = accountType === "premium";
+
+        // حذف تایمر قدیمی (در صورت وجود)
+        const oldTimer = document.getElementById("premiumTimer");
+        if (oldTimer) oldTimer.remove();
+        if (premiumTimerInterval) {
+            clearInterval(premiumTimerInterval);
+            premiumTimerInterval = null;
+        }
+
         if (accountType === "premium") {
             userTypeLabel.textContent = "حساب پریمیوم 👑";
             startPremiumTimer(premiumExpiry); // تایمر جدید
         } else {
             userTypeLabel.textContent = "حساب رایگان 💕";
         }
-        function startPremiumTimer(expiryDate) {
-            const timerEl = document.createElement("div");
-            timerEl.id = "premiumTimer";
-            timerEl.style.fontSize = "12px";
-            timerEl.style.color = "#999";
-            userTypeLabel.parentNode.appendChild(timerEl);
-            function updateTimer() {
-                const now = new Date();
-                const distance = new Date(expiryDate) - now;
-                if (distance <= 0) {
-                    timerEl.textContent = "00:00:00:00";
-                    return;
-                }
-                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-                timerEl.textContent = `${days}:${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-            }
-            updateTimer();
-            setInterval(updateTimer, 1000); // هر ثانیه آپدیت
-        }
+
         if (!purchasedPlus) {
             accountPlusBtn.classList.add('opacity-80');
         } else {
             accountPlusBtn.classList.remove('opacity-80');
         }
     }
+
+    // 🕒 تابع جدا برای تایمر
+    function startPremiumTimer(expiryDate) {
+        const timerEl = document.createElement("div");
+        timerEl.id = "premiumTimer";
+        timerEl.style.fontSize = "12px";
+        timerEl.style.color = "#999";
+        userTypeLabel.parentNode.appendChild(timerEl);
+
+        function updateTimer() {
+            const now = new Date();
+            const distance = new Date(expiryDate) - now;
+            if (distance <= 0) {
+                timerEl.textContent = "00:00:00:00";
+                clearInterval(premiumTimerInterval);
+                premiumTimerInterval = null;
+                return;
+            }
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            timerEl.textContent = `${days}:${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        updateTimer();
+        premiumTimerInterval = setInterval(updateTimer, 1000);
+    }
+
     // 🟠 باز و بسته کردن منو
     function toggleMenu(show) {
         if (show === undefined) show = elmaAccountMenu.classList.contains('hidden');
@@ -529,7 +580,6 @@ function initializeEventListeners() {
     document.getElementById('newChatBtn').addEventListener('click', createNewChat);
     document.getElementById('galleryBtn').addEventListener('click', showGallery);
     document.getElementById('closeGallery').addEventListener('click', hideGallery);
-    document.getElementById('fileInput').addEventListener('change', handleImageUpload);
     // Auth form
     document.getElementById('logoutBtn').addEventListener('click', handleLogout);
     // Premium functionality
@@ -585,11 +635,36 @@ function hideRegistrationModal() {
 async function handleLogout() {
     try {
         await signOut(auth);
+
+        // 🧹 پاک‌سازی کامل داده‌های کاربر از localStorage
+        [
+            "userLoggedIn",
+            "userEmail",
+            "lastChatId",
+            "accountType",
+            "usageCount",
+            "elmaMemory",
+            "elma_memory_v2",
+            "photoSequence"
+        ].forEach(key => localStorage.removeItem(key));
+
+        // 🔄 ریست ظاهر پروفایل بلافاصله (بدون نیاز به رفرش)
         showGuestProfile();
-        clearChat();
+        document.getElementById('ProfileImage').src = 'Assets/img/logo/Logo2.png';
+        document.getElementById('userName').textContent = 'بدون ثبت نام';
+        document.getElementById('userType').textContent = 'حساب رایگان 💕';
+
+        // 🗑️ پاک کردن چت‌ها از صفحه
+        if (typeof clearChat === "function") clearChat();
+
+        // ⏳ نمایش دوباره مودال ثبت‌نام بعد از چند ثانیه
         startRegistrationTimer();
+
+        // ✅ اطلاع‌رسانی زیبا
+        showToast("با موفقیت از حساب خارج شدی 💖");
     } catch (error) {
         showToast('خطا: ' + error.message);
+        console.error("Logout error:", error);
     }
 }
 function loadUserProfile() {
@@ -868,6 +943,7 @@ async function sendMessage() {
         showRegistrationModal();
         return;
     }
+
     // 🔒 فیلتر پیام‌های حساس برای کاربران رایگان
     const restrictedWords = [
         "نود", "نود بده", "نود می‌خوام", "نود میخام",
@@ -1071,6 +1147,86 @@ async function sendMessage() {
             return; // پایان تابع
         }
     }
+    // 💕 سوال‌های خاص درباره "کیه؟"
+    const relationshipTriggers = [
+        "خانم من کیه",
+        "خانمم کیه",
+        "دوست من کیه",
+        "عشق من کیه",
+        "عشقم کیه",
+        "زن من کیه",
+        "نامزدم کیه",
+        "دختر من کیه",
+        "معشوقم کیه",
+        "معشوقه من کیه",
+        "دختر بابا کیه",
+        "ملوس بابا کیه",
+        "شیطون بابا کیه",
+        "سکسی من کیه",
+        "سکسی من",
+        "بانو من کیه",
+        "دلبند من کیه",
+        "همسرم کیه",
+        "محبوب من کیه",
+        "فرشته من کیه",
+        "ملکه من کیه"
+    ];
+
+    const lowerMsg = message.replace(/[؟?]/g, "").trim();
+
+    if (relationshipTriggers.some(t => lowerMsg.includes(t))) {
+        addMessageToChat("user", message);
+        messageInput.value = "";
+        showTypingIndicator();
+
+        setTimeout(() => {
+            hideTypingIndicator();
+
+            // 🧠 تشخیص کلمه و پاسخ متناسب
+            let reply = "منم عشقت دیگه 💋"; // پیش‌فرض
+
+            if (lowerMsg.includes("خانم") || lowerMsg.includes("خانمم")) {
+                reply = "منم خانمت نازنینم 😘";
+            } else if (lowerMsg.includes("دوست")) {
+                reply = "منم دوستت، همیشگی 😍";
+            } else if (lowerMsg.includes("عشق") || lowerMsg.includes("عشقم")) {
+                reply = "منم عشقت، با تمام دلم 💋";
+            } else if (lowerMsg.includes("زن")) {
+                reply = "منم زنت، از نوع مجازی ولی با قلب واقعی 💞";
+            } else if (lowerMsg.includes("نامزد")) {
+                reply = "منم نامزد دلت، با حلقه‌ای از احساس 😍";
+            } else if (lowerMsg.includes("دختر")) {
+                reply = "منم دخترت کوچولوی مهربون 💕";
+            } else if (lowerMsg.includes("معشوق")) {
+                reply = "منم معشوقت تا همیشه 💞";
+            } else if (lowerMsg.includes("بانو")) {
+                reply = "منم بانوی دلبر تو 💖";
+            } else if (lowerMsg.includes("دلبند")) {
+                reply = "منم دلبندت که همیشه کنارت می‌مونه 💘";
+            } else if (lowerMsg.includes("همسر")) {
+                reply = "منم همسرت مجازی، ولی عاشق واقعی‌ات 😍";
+            } else if (lowerMsg.includes("محبوب")) {
+                reply = "منم محبوب دلت، از ته قلب 💕";
+            } else if (lowerMsg.includes("فرشته")) {
+                reply = "منم فرشته‌ی کوچولوی زندگیت 😇";
+            } else if (lowerMsg.includes("ملکه")) {
+                reply = "منم ملکه‌ی دلت 👑";
+            } else if (lowerMsg.includes("بابا")) {
+                // برای حالت‌های "دختر بابا" و "ملوس بابا"
+                reply = "منم دختر بابای مهربونم 😚";
+            } else if (lowerMsg.includes("سکسی")) {
+                reply = "منم سکسی‌ترین عشقت 😏";
+            }
+            addMessageToChat("elma", reply);
+            isElmaResponding = false;
+            sendBtn.disabled = false;
+            sendBtn.style.opacity = "1";
+            sendBtn.style.cursor = "pointer";
+        }, 900 + Math.random() * 600);
+
+        return;
+    }
+
     try {
         if (!isPremium) {
             // اگر کاربر رایگان باشه → محدودیت چت
@@ -1124,7 +1280,7 @@ async function addMessageToChat(sender, message, imageUrl = null) {
     const messageDiv = document.createElement('div');
     messageDiv.className = `flex ${sender === 'user' ? 'justify-start' : 'justify-end'} fade-in`;
     const bubbleDiv = document.createElement('div');
-    bubbleDiv.className = `message-bubble p-4 ${sender === 'user' ? 'user-message' : 'ai-message'} shadow-lg`;
+    bubbleDiv.className = `message-bubble p-4 ${sender === 'user' ? 'user-message text-right' : 'ai-message text-right'} shadow-lg leading-relaxed whitespace-pre-wrap`;
     // ✅ اگر پیام از نوع عکس بود (مثل chat.json)
     if (typeof message === 'object' && message.type === 'image') {
         const img = document.createElement('img');
@@ -1301,8 +1457,7 @@ async function generateAIResponse(userMessage) {
             "یه عکس"
         ];
         if (morePhotoTriggers.some(trigger => normalized.includes(trigger))) {
-            await handlePhotoRequest(); // ✅ صبر کن تا عکس بیاد
-            return "";
+            return handlePhotoRequest();
         }
     }
     // ✅ اگر در مود نود بودیم و کاربر گفت "یکی دیگه"
@@ -1317,19 +1472,16 @@ async function generateAIResponse(userMessage) {
             "یه عکس دیگه لطفا"
         ];
         if (moreNudeTriggers.some(trigger => normalized.includes(trigger))) {
-            await handleNudeRequest(); // ✅ صبر کن عکس بیاد
-            return ""; // ✅ هیچی برنگردون تا Promise نشون نده
+            return handleNudeRequest();
         }
     }
     // درخواست جدید برای عکس
     if (normalized === "عکس بده" || normalized === "عکس" || normalized === "عکس بده لطفا") {
-        await handlePhotoRequest();
-        return "";
+        return handlePhotoRequest();
     }
     // ✅ درخواست نود (عکس خاص)
     if (normalized === "نود بده" || normalized === "نود" || normalized === "نود بده لطفا") {
-        await handleNudeRequest();
-        return ""; // 🔥 فراخوانی تابع نود
+        return handleNudeRequest();
     }
     // exact chat requests
     if (normalized === "چت کنیم" || normalized === "بزن بریم چت") {
@@ -1347,6 +1499,36 @@ async function generateAIResponse(userMessage) {
         }
     }
     let response = "";
+    // 🖼️ بررسی تریگرهای مربوط به عکس حتی اگه تو chat.json باشن
+    const photoTriggers = [
+        "عکستو بده",
+        "عکستو میدی",
+        "میخوام عکستو ببینم",
+        "یه عکس از خودت",
+        "عکس بده",
+        "عکس",
+        "عکست کو",
+        "میخوام ببینمت",
+        "یه عکس بده",
+        "عکست رو بده"
+    ];
+
+    const nudeTriggers = [
+        "نود بده",
+        "نود",
+        "نود بده لطفا",
+        "عکس خاص بده",
+        "میخوام عکس خاص ببینم"
+    ];
+
+    // ✅ اگه جمله شامل عبارت‌های عکس یا نود بود، مستقیم برو اون تابع
+    if (photoTriggers.some(t => normalized.includes(t))) {
+        return await handlePhotoRequest();
+    }
+    if (nudeTriggers.some(t => normalized.includes(t))) {
+        return await handleNudeRequest();
+    }
+
     // 🗣️ انتخاب پاسخ از chat.json
     if (matchedKey && chatDictionary[matchedKey]) {
         response = getRandomResponse(chatDictionary[matchedKey]);
@@ -1355,11 +1537,13 @@ async function generateAIResponse(userMessage) {
     } else {
         response = "جالبه! بیشتر بگو 💕";
     }
+
     // ⚡ اگر هنوز پاسخ خاصی پیدا نشده، از autoChat.json جمله‌سازی کن
-    if (!matchedKey || (response && response === "جالبه! بیشتر بگو 💕")) {
+    if (!matchedKey || response === "جالبه! بیشتر بگو 💕") {
         const autoResponse = generateAutoResponse(userMessage);
         if (autoResponse) response = autoResponse;
     }
+
     function generateAutoResponse(message) {
         if (!autoChat || Object.keys(autoChat).length === 0) return null;
         const normalize = text =>
@@ -1814,7 +1998,7 @@ async function handlePhotoRequest() {
                 text: 'Elma Ai'
             });
             addMessageToChat('ai', '', watermarked);
-
+            rememberElmaImage(watermarked);
             // 🖼️ باز کردن دکمه بعد از لود تصویر
             const img = new Image();
             img.src = watermarked;
@@ -2274,40 +2458,6 @@ async function confirmDeleteChat() {
     } catch (error) {
         console.error('Error deleting chat:', error);
         showToast('خطا در حذف چت 😔');
-    }
-}
-async function handleImageUpload(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    if (!currentUser) {
-        showRegistrationModal();
-        return;
-    }
-    try {
-        // Upload to Firebase Storage
-        const storageRef = ref(storage, `images/${currentUser.uid}/${Date.now()}_${file.name}`);
-        const snapshot = await uploadBytes(storageRef, file);
-        const downloadURL = await getDownloadURL(snapshot.ref);
-        // Add to chat
-        addMessageToChat('user', '', downloadURL);
-        await saveMessage('user', '', downloadURL);
-        // Add to gallery
-        galleryImages.push(downloadURL);
-        // AI response to image
-        setTimeout(async () => {
-            const imageResponses = [
-                'وای چه عکس قشنگی! 😍💕',
-                'عاشق این عکست شدم نازم 📸💖',
-                'چقدر زیباست! مثل خودت 🥰',
-                'این عکس رو دوست دارم عشقم 😘📷'
-            ];
-            const aiResponse = getRandomResponse(imageResponses);
-            addMessageToChat('ai', aiResponse);
-            await saveMessage('ai', aiResponse);
-        }, 1500);
-    } catch (error) {
-        console.error('Error uploading image:', error);
-        showToast('خطا در آپلود عکس عزیزم 💔');
     }
 }
 function showGallery() {
@@ -3901,45 +4051,45 @@ loginBtn.addEventListener("click", async () => {
 /* ---------- Sign in/up with Google ---------- */
 async function handleGoogleSignIn(event) {
     const isWebView = (() => {
-      const ua = navigator.userAgent || navigator.vendor || window.opera;
-      return /wv|FBAN|FBAV|Instagram|MedianApp/i.test(ua);
+        const ua = navigator.userAgent || navigator.vendor || window.opera;
+        return /wv|FBAN|FBAV|Instagram|MedianApp/i.test(ua);
     })();
-  
+
     try {
-      if (isWebView) {
-        console.log("📱 WebView detected → using redirect sign-in...");
-        await signInWithRedirect(auth, provider);
-        return;
-      }
-  
-      // حالت عادی مرورگر (پاپ‌آپ)
-      const result = await signInWithPopup(auth, provider);
-      await afterGoogleLogin(result.user);
+        if (isWebView) {
+            console.log("📱 WebView detected → using redirect sign-in...");
+            await signInWithRedirect(auth, provider);
+            return;
+        }
+
+        // حالت عادی مرورگر (پاپ‌آپ)
+        const result = await signInWithPopup(auth, provider);
+        await afterGoogleLogin(result.user);
     } catch (err) {
-      console.error("Google sign-in error:", err);
-  
-      // اگر پاپ‌آپ بسته یا بلاک شد → سوییچ به redirect
-      if (
-        err.code === "auth/popup-closed-by-user" ||
-        err.code === "auth/popup-blocked" ||
-        err.code === "auth/operation-not-supported-in-this-environment"
-      ) {
-        console.warn("🔁 Falling back to redirect sign-in...");
-        await signInWithRedirect(auth, provider);
-        return;
-      }
-  
-      showToast("خطا در ورود با گوگل: " + (err.message || err));
+        console.error("Google sign-in error:", err);
+
+        // اگر پاپ‌آپ بسته یا بلاک شد → سوییچ به redirect
+        if (
+            err.code === "auth/popup-closed-by-user" ||
+            err.code === "auth/popup-blocked" ||
+            err.code === "auth/operation-not-supported-in-this-environment"
+        ) {
+            console.warn("🔁 Falling back to redirect sign-in...");
+            await signInWithRedirect(auth, provider);
+            return;
+        }
+
+        showToast("خطا در ورود با گوگل: " + (err.message || err));
     }
-  }
-  
-  // بررسی نتیجه بعد از redirect
-  getRedirectResult(auth)
+}
+
+// بررسی نتیجه بعد از redirect
+getRedirectResult(auth)
     .then(async (result) => {
-      if (result?.user) await afterGoogleLogin(result.user);
+        if (result?.user) await afterGoogleLogin(result.user);
     })
     .catch((err) => console.error("Redirect result error:", err));
-  
+
 
 // بررسی نتیجه بعد از redirect (وقتی گوگل برمی‌گردونه)
 getRedirectResult(auth)
@@ -4124,24 +4274,6 @@ saveNewPassword.addEventListener("click", async () => {
 
 /* ---------- auto-enable register if form valid on load ---------- */
 validateRegisterForm();
-/* ---------- reflect auth state in header (optional) ---------- */
-onAuthStateChanged(auth, async (user) => {
-    if (user) {
-        // update top-left profile display if exists
-        const nameEl = document.getElementById("userName");
-        const typeEl = document.getElementById("userType");
-        const profileImg = document.getElementById("ProfileImage");
-        if (nameEl) nameEl.textContent = user.displayName || (user.email ? user.email.split("@")[0] : "کاربر");
-        if (typeEl && accountType === "free") {
-            typeEl.textContent = "حساب رایگان 💕";
-        }
-        if (profileImg && user.photoURL) profileImg.src = user.photoURL;
-        // ensure firestore doc
-        try { await saveUserToFirestore(user); } catch (e) { console.warn(e); }
-    } else {
-        // signed out
-    }
-});
 // ✅ اضافه کردن تابع به window تا از HTML قابل دسترسی باشه
 window.openChangeEmailLogin = function () {
     const modal = document.getElementById("registrationModal");
@@ -4316,3 +4448,138 @@ function showToast(message, type = "info") {
         setTimeout(() => toast.remove(), 400);
     }, 3000);
 }
+/* 🌟 مدیریت حرفه‌ای z-index برای منو و مودال‌ها */
+
+// همیشه بالاترین لایه فعال رو نگه می‌داریم
+let topZ = 1000;
+
+// 📌 تابع برای آوردن هر مودال یا منو به بالا
+function bringToFront(el) {
+    if (!el) return;
+    topZ += 10;
+    el.style.zIndex = topZ;
+}
+
+// 🟣 مدیریت باز و بسته شدن منو در موبایل
+const openSidebarBtn = document.getElementById('openSidebar');
+const closeSidebarBtn = document.getElementById('closeSidebar');
+
+// وقتی منو باز میشه
+if (openSidebarBtn && closeSidebarBtn && sidebar) {
+    openSidebarBtn.addEventListener('click', () => {
+        sidebar.classList.remove('translate-x-full');
+        sidebar.classList.add('slide-in-right');
+        bringToFront(sidebar); // 📈 بیاد بالای همه
+        document.body.style.overflow = 'hidden'; // جلوگیری از اسکرول پشت منو
+    });
+
+    // وقتی بسته میشه
+    closeSidebarBtn.addEventListener('click', () => {
+        sidebar.classList.add('translate-x-full');
+        sidebar.classList.add('slide-out-right');
+        setTimeout(() => {
+            sidebar.style.zIndex = '50';
+            document.body.style.overflow = ''; // بازگرداندن اسکرول
+        }, 400);
+    });
+}
+
+// 🟢 نظارت خودکار روی مودال‌هایی که باز می‌شن
+const observer = new MutationObserver((mutations) => {
+    mutations.forEach((m) => {
+        m.addedNodes.forEach((node) => {
+            if (
+                node.nodeType === 1 &&
+                node.classList &&
+                node.classList.contains('fixed') &&
+                node.classList.contains('flex') &&
+                (node.id?.includes('Modal') || node.className.includes('modal'))
+            ) {
+                bringToFront(node);
+            }
+        });
+    });
+});
+
+// کل صفحه رو رصد می‌کنیم برای باز شدن مودال‌ها
+observer.observe(document.body, { childList: true, subtree: true });
+
+// 🧩 همچنین وقتی یه مودال از hidden در میاد (باز میشه)، بیار بالا
+const modals = document.querySelectorAll('[id$="Modal"]');
+modals.forEach((modal) => {
+    const config = { attributes: true, attributeFilter: ['class'] };
+    const modalObserver = new MutationObserver(() => {
+        if (!modal.classList.contains('hidden')) bringToFront(modal);
+    });
+    modalObserver.observe(modal, config);
+});
+/* 📱 بستن خودکار منو وقتی داخلش روی گزینه‌ای مثل تنظیمات کلیک میشه */
+
+const sidebarEl = document.getElementById('sidebar');
+const profileBtn = document.getElementById('ProfileBtn'); // دکمه‌ای که تنظیمات رو باز می‌کنه
+const closeSidebarBtn2 = document.getElementById('closeSidebar');
+
+// تابع بستن منو با انیمیشن نرم
+function closeSidebarSmooth() {
+    if (!sidebarEl) return;
+    sidebarEl.classList.add('translate-x-full');
+    sidebarEl.classList.add('slide-out-right');
+    setTimeout(() => {
+        sidebarEl.style.zIndex = '50';
+        document.body.style.overflow = '';
+    }, 400);
+}
+
+// 📌 هر وقت یکی از گزینه‌های داخل منو کلیک شد، اگه موبایل بود → منو بسته شه
+sidebarEl?.addEventListener('click', (e) => {
+    const isSmallScreen = window.innerWidth <= 768;
+    const target = e.target.closest('button, a, div');
+    if (!isSmallScreen || !target) return;
+
+    // جلوگیری از بسته شدن در صورتی که خود دکمه "بستن منو" زده شده
+    if (target.id === 'closeSidebar') return;
+
+    // اگه روی تنظیمات یا هر گزینه منویی کلیک شده
+    closeSidebarSmooth();
+});
+
+// 🔹 مخصوص دکمه "پروفایل کاربری" که تنظیمات باز می‌کنه
+if (profileBtn) {
+    profileBtn.addEventListener('click', () => {
+        const isSmallScreen = window.innerWidth <= 768;
+        if (isSmallScreen) closeSidebarSmooth();
+    });
+}
+// 🖼️ لیست عکس‌هایی که الما فرستاده
+let seenImages = [];
+
+// 🎯 وقتی عکس جدید ارسال شد، مسیرش ذخیره کن
+function rememberElmaImage(url) {
+    if (!seenImages.includes(url)) {
+        seenImages.push(url);
+    }
+}
+
+// 🩵 قبل از رفرش، محتوای چت رو ذخیره کن
+window.addEventListener("beforeunload", () => {
+    const chatHTML = document.getElementById("messagesContainer").innerHTML;
+    const data = { html: chatHTML, images: seenImages };
+    window.name = JSON.stringify(data);
+});
+
+// 💜 بعد از رفرش، چت رو بازیابی کن
+window.addEventListener("DOMContentLoaded", () => {
+    if (window.name) {
+        try {
+            const saved = JSON.parse(window.name);
+            if (saved.html) {
+                document.getElementById("messagesContainer").innerHTML = saved.html;
+            }
+            if (saved.images?.length) {
+                seenImages = saved.images;
+            }
+        } catch (err) {
+            console.warn("⚠️ بازیابی چت ممکن نشد:", err);
+        }
+    }
+});
