@@ -1,12 +1,12 @@
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js';
 import {
-    getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signOut, updateEmail, reauthenticateWithCredential, EmailAuthProvider, linkWithCredential, sendPasswordResetEmail, signInWithRedirect,   // ← اینو اضافه کن
+    getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signOut, updateEmail, reauthenticateWithCredential, EmailAuthProvider, linkWithCredential, sendPasswordResetEmail, signInWithRedirect, reauthenticateWithPopup,   // ← اینو اضافه کن
     getRedirectResult, setPersistence, browserLocalPersistence, updatePassword
 } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js';
 import {
     getFirestore, doc, setDoc, getDoc, updateDoc, collection, addDoc, query, orderBy, where, limit,
-    onSnapshot, deleteDoc, getDocs, serverTimestamp
+    onSnapshot, deleteDoc, getDocs, serverTimestamp, Timestamp
 } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js';
 import { getStorage, ref, uploadBytes, getDownloadURL, } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-storage.js';
 const firebaseConfig = {
@@ -23,6 +23,7 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
 // Global variables
+let serverOffset = 0;
 let currentUser = null;
 let currentChatId = null;
 let chatHistory = [];
@@ -45,6 +46,15 @@ let gameState = {
     playerChoices: [],
     gameType: null
 };
+async function syncServerTime() {
+    const ref = doc(db, "serverTime", "sync");
+    await setDoc(ref, { now: serverTimestamp() });
+    const snap = await getDoc(ref);
+    const serverNow = snap.data().now.toDate();
+    const localNow = new Date();
+    serverOffset = serverNow.getTime() - localNow.getTime();
+    console.log("⏰ Server synced. Offset (ms):", serverOffset);
+}
 setPersistence(auth, browserLocalPersistence)
     .then(() => {
         console.log("✅ Persistence set: user session will stay saved!");
@@ -262,7 +272,6 @@ onAuthStateChanged(auth, async (user) => {
                     await loadMessages(lastChat.id);
                 }
             } else {
-                // 🔹 اگر هیچ چتی وجود نداشت → ساخت چت جدید
                 console.log("🆕 هیچ چتی وجود ندارد → ایجاد چت جدید...");
                 if (typeof createNewChat === "function") {
                     await createNewChat();
@@ -270,7 +279,7 @@ onAuthStateChanged(auth, async (user) => {
             }
         }
 
-        // ✅ در هر حالت، خوش‌آمدگویی باید پنهان شود
+        // ✅ خوش‌آمد اولیه پنهان شود
         const welcomeSection = document.querySelector("#messagesContainer > .text-center");
         if (welcomeSection) {
             welcomeSection.style.display = "none";
@@ -286,38 +295,102 @@ onAuthStateChanged(auth, async (user) => {
         let resolvedAccountType = "free";
 
         if (!userSnap.exists()) {
+            // 🆕 کاربر تازه → فعال‌سازی دقیق ۷ روز پریمیوم با زمان سرور
             await setDoc(userRef, {
                 email: user.email || "",
                 username: user.displayName || user.email?.split("@")[0] || "کاربر",
-                accountType: "free",
-                premiumExpiry: null,
+                accountType: "premium",
+                purchasedPlus: false,
+                createdAt: serverTimestamp(),
                 playedWelcome: false,
                 sawTips: false,
                 tipsShown: false,
-                createdAt: serverTimestamp()
             });
-            console.log("🆕 سند کاربر ساخته شد و accountType=free تنظیم شد");
+
+            // 🕒 هم‌زمان‌سازی زمان سرور برای محاسبه دقیق
+            await updateDoc(userRef, { serverNow: serverTimestamp() });
+            const snap = await getDoc(userRef);
+            const serverNow = snap.data()?.serverNow?.toDate?.() || new Date();
+
+            // محاسبه دقیق ۷ روز کامل از لحظه سرور
+            const expiry = new Date(serverNow.getTime() + 7 * 24 * 60 * 60 * 1000);
+
+            await updateDoc(userRef, {
+                premiumExpiry: Timestamp.fromDate(expiry),
+            });
+
+            console.log("🎁 اشتراک دقیقاً ۷ روزه فعال شد تا:", expiry.toISOString());
+
+            // 🎀 نمایش مودال خوش‌آمد پریمیوم (الما)
+            const welcomePremiumModal = document.getElementById("welcomePremiumModal");
+            if (welcomePremiumModal) {
+                welcomePremiumModal.style.display = "block";
+                const closeBtn = document.getElementById("closeWelcomeModal");
+                if (closeBtn) {
+                    closeBtn.onclick = () => {
+                        welcomePremiumModal.style.display = "none";
+                    };
+                }
+            }
+
+            resolvedAccountType = "premium";
         } else {
             const data = userSnap.data();
+
+            // 🕒 بررسی دقیق انقضای اشتراک بر اساس زمان سرور
             if (data.accountType === "premium" && data.premiumExpiry) {
-                const expiryDate = new Date(data.premiumExpiry);
-                if (new Date() > expiryDate) {
-                    console.log("⚠️ اشتراک پریمیوم منقضی شده، تبدیل به رایگان.");
+                // نوع تاریخ (Timestamp یا string) را تطبیق بده
+                let expiryDate;
+                if (typeof data.premiumExpiry === "string") {
+                    expiryDate = new Date(data.premiumExpiry);
+                } else if (data.premiumExpiry.toDate) {
+                    expiryDate = data.premiumExpiry.toDate();
+                } else {
+                    expiryDate = null;
+                }
+
+                // زمان دقیق سرور فعلی
+                await syncServerTime();
+                const now = new Date(new Date().getTime() + serverOffset);
+
+                if (expiryDate && now >= expiryDate) {
+                    console.log("⚠️ اشتراک ۷ روزه منقضی شد، تغییر به رایگان.");
                     await updateDoc(userRef, { accountType: "free" });
                     resolvedAccountType = "free";
+
+                    // 🚨 نمایش پیام انقضای اشتراک
+                    if (typeof showToast === "function") {
+                        showToast("🎁 اشتراک پریمیومت تموم شد! برای ادامه، ارتقا بده 🌟");
+                    } else {
+                        alert("🎁 اشتراک پریمیومت تموم شد! برای ادامه، ارتقا بده 🌟");
+                    }
+
+                    // 👉 باز کردن مودال ارتقا (در صورت وجود)
+                    const upgradeModal = document.getElementById("premiumModal");
+                    if (upgradeModal) upgradeModal.style.display = "block";
                 } else {
                     resolvedAccountType = "premium";
+
+                    // ⏰ اگر کمتر از ۱ روز مونده، هشدار تمدید بده
+                    const timeLeft = expiryDate - now;
+                    if (timeLeft < 24 * 60 * 60 * 1000) {
+                        if (typeof showToast === "function") {
+                            showToast("⏰ فقط کمتر از ۱ روز از پریمیومت مونده! برای تمدید اقدام کن 💎");
+                        }
+                    }
                 }
             } else {
                 resolvedAccountType = data.accountType || "free";
             }
         }
-
+        // 📥 گرفتن جدیدترین دیتا
         const latestSnap = await getDoc(userRef);
         const userData = latestSnap.data();
+
+        // 💾 ذخیره نوع حساب
         localStorage.setItem("accountType", resolvedAccountType);
 
-        // 🎵 پخش صدای خوش‌آمد فقط یک‌بار
+        // 🎵 صدای خوش‌آمد فقط یه‌بار
         if (!userData.playedWelcome) {
             const audio = document.getElementById("welcomeAudio");
             if (audio) {
@@ -352,10 +425,12 @@ onAuthStateChanged(auth, async (user) => {
     const userTypeLabel = document.getElementById('userType');
     const upgradeTopBtn = document.getElementById("upgradeTopBtn");
     const upgradeBanner = document.querySelector(".upgrade-banner");
+
     let accountType = "free";
     let purchasedPlus = false;
     let premiumExpiry = null;
-    // این تابع بررسی می‌کنه که چه بخشی نمایش داده بشه
+
+    // 🔹 نمایش یا مخفی کردن بنر ارتقا
     function updateUpgradeVisibility(accountType, purchasedPlus) {
         const isPremium = accountType === "premium" && purchasedPlus;
         if (isPremium) {
@@ -366,89 +441,163 @@ onAuthStateChanged(auth, async (user) => {
             if (upgradeBanner) upgradeBanner.style.display = "flex";
         }
     }
-    // به تابع اصلی منو اضافه می‌شه
+
+    // 🔹 بررسی تغییرات DOM برای تنظیم UI
     const observer = new MutationObserver(() => {
-        // صبر می‌کنیم تا accountType توسط Firebase مقداردهی بشه
         if (typeof accountType !== "undefined") {
             updateUpgradeVisibility(accountType, purchasedPlus);
         }
     });
-    // به تغییرات DOM گوش بده (چون منو دیرتر لود میشه)
     observer.observe(document.body, { childList: true, subtree: true });
-    // هر چند ثانیه بررسی مجدد در صورت تغییر وضعیت
-    setInterval(() => {
-        if (typeof accountType !== "undefined") {
-            updateUpgradeVisibility(accountType, purchasedPlus);
-        }
-    }, 2000);
+    setInterval(() => updateUpgradeVisibility(accountType, purchasedPlus), 2000);
+
+    // 🔹 فعال‌سازی یا تمدید اشتراک پریمیوم
     async function activatePremium(months) {
         if (!auth.currentUser) return showToast("ابتدا وارد حساب خود شوید 💬");
+
         const userRef = doc(db, "users", auth.currentUser.uid);
+
+        // زمان سرور رو از Firestore بگیر
+        await updateDoc(userRef, { serverNow: serverTimestamp() });
         const snap = await getDoc(userRef);
         const data = snap.exists() ? snap.data() : {};
-        // اگر کاربر قبلاً اشتراک دارد و هنوز تمام نشده
-        const now = new Date();
-        let newExpiry = new Date();
-        const currentExpiry = data.premiumExpiry ? new Date(data.premiumExpiry) : null;
-        if (currentExpiry && currentExpiry > now) {
-            // اشتراک فعال است، پس تمدیدش کن
+        const serverNow = data.serverNow?.toDate?.() || new Date();
+
+        // محاسبه‌ی انقضا
+        let newExpiry = new Date(serverNow);
+        const currentExpiry = data.premiumExpiry ? data.premiumExpiry.toDate?.() : null;
+
+        if (currentExpiry && currentExpiry > serverNow) {
             newExpiry = new Date(currentExpiry);
             newExpiry.setMonth(newExpiry.getMonth() + months);
         } else {
-            // اشتراک جدید از الان شروع شود
-            newExpiry.setMonth(now.getMonth() + months);
+            newExpiry.setMonth(serverNow.getMonth() + months);
         }
-        try {
-            await updateDoc(userRef, {
-                accountType: "premium",
-                purchasedPlus: true,
-                premiumExpiry: newExpiry.toISOString(),
-            });
-            showToast(`اشتراک شما تا ${newExpiry.toLocaleDateString("fa-IR")} تمدید شد 💖`);
-            console.log("✅ تمدید اشتراک با موفقیت انجام شد:", newExpiry.toISOString());
-        } catch (err) {
-            console.error("❌ خطا در تمدید اشتراک:", err);
-            showToast("خطایی در تمدید اشتراک پیش آمد 😢");
-        }
+
+        await updateDoc(userRef, {
+            accountType: "premium",
+            purchasedPlus: true,
+            premiumExpiry: Timestamp.fromDate(newExpiry),
+        });
+
+        showToast(`اشتراک شما تا ${newExpiry.toLocaleDateString("fa-IR")} تمدید شد 💖`);
+        console.log("✅ تمدید اشتراک با زمان سرور:", newExpiry.toISOString());
     }
     window.activatePremium = activatePremium;
-    // 🟣 لود از Firestore
+
+
+    // 🔹 لود اطلاعات اکانت از Firestore
+    // 🔹 لود اطلاعات اکانت از Firestore
     async function loadAccountData() {
         try {
             if (!auth.currentUser) return;
+
             const userRef = doc(db, "users", auth.currentUser.uid);
             const snap = await getDoc(userRef);
+
             if (snap.exists()) {
                 const data = snap.data();
                 accountType = data.accountType || "free";
                 purchasedPlus = data.purchasedPlus || false;
-                premiumExpiry = data.premiumExpiry ? new Date(data.premiumExpiry) : null;
-                // بررسی انقضای اشتراک
+
+                // 🧭 پشتیبانی از هر نوع تاریخ (Timestamp یا string)
+                if (data.premiumExpiry) {
+                    if (typeof data.premiumExpiry === "string") {
+                        premiumExpiry = new Date(data.premiumExpiry);
+                    } else if (data.premiumExpiry.toDate) {
+                        premiumExpiry = data.premiumExpiry.toDate();
+                    } else {
+                        premiumExpiry = null;
+                    }
+                } else {
+                    premiumExpiry = null;
+                }
+
+                // 📅 بررسی دقیق انقضا با زمان سرور
+                await syncServerTime();
+                const now = new Date(new Date().getTime() + serverOffset);
+
                 if (accountType === "premium" && premiumExpiry) {
-                    const now = new Date();
-                    if (premiumExpiry < now) {
-                        console.log("🕒 اشتراک کاربر منقضی شده، تبدیل به رایگان");
+                    // اگر زمان فعلی >= انقضا بود، اشتراک قطع شه
+                    if (now >= premiumExpiry) {
+                        console.log("⏰ اشتراک ۷ روزه منقضی شد، تغییر به رایگان");
                         await updateDoc(userRef, { accountType: "free" });
                         accountType = "free";
+                        purchasedPlus = false;
+                        premiumExpiry = null;
                     }
                 }
             } else {
                 await setDoc(userRef, { accountType: "free", purchasedPlus: false });
             }
+
             updateMenuUI();
         } catch (err) {
             console.error("⚠️ خطا در خواندن حساب:", err);
         }
     }
-    // متغیر جهانی برای کنترل تایمر
+    // 🔸 کنترل تایمر پریمیوم
     let premiumTimerInterval = null;
+    async function startPremiumTimer(expiryDate) {
+        // 🔧 تبدیل ایمن نوع تاریخ
+        if (expiryDate && typeof expiryDate === "object" && expiryDate.toDate) {
+            expiryDate = expiryDate.toDate();
+        } else if (typeof expiryDate === "string") {
+            expiryDate = new Date(expiryDate);
+        }
 
-    // 🟢 به‌روزرسانی UI منو
+        const timerEl = document.createElement("div");
+        timerEl.id = "premiumTimer";
+        timerEl.style.fontSize = "12px";
+        timerEl.style.color = "#999";
+        userTypeLabel.parentNode.appendChild(timerEl);
+
+        if (serverOffset === 0) await syncServerTime();
+
+        function updateTimer() {
+            if (!expiryDate) {
+                timerEl.textContent = "00:00:00:00";
+                return;
+            }
+
+            const now = new Date(new Date().getTime() + serverOffset);
+            const distance = expiryDate - now;
+
+            if (distance <= 0) {
+                timerEl.textContent = "00:00:00:00";
+                clearInterval(premiumTimerInterval);
+                premiumTimerInterval = null;
+                // ⛔ اشتراک تموم شده → بلافاصله تبدیل به رایگان
+                if (accountType === "premium") {
+                    const userRef = doc(db, "users", auth.currentUser.uid);
+                    updateDoc(userRef, { accountType: "free" });
+                    accountType = "free";
+                    updateMenuUI();
+                    showToast("🎁 اشتراکت تموم شد نازنین! برای تمدید اقدام کن 🌸");
+                }
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            timerEl.textContent = `${days}:${hours
+                .toString()
+                .padStart(2, "0")}:${minutes
+                    .toString()
+                    .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+        }
+
+        updateTimer();
+        premiumTimerInterval = setInterval(updateTimer, 1000);
+    }
+
+    // 🔸 آپدیت UI منو
     function updateMenuUI() {
         radioFree.checked = accountType === "free";
         radioPlus.checked = accountType === "premium";
 
-        // حذف تایمر قدیمی (در صورت وجود)
         const oldTimer = document.getElementById("premiumTimer");
         if (oldTimer) oldTimer.remove();
         if (premiumTimerInterval) {
@@ -457,57 +606,38 @@ onAuthStateChanged(auth, async (user) => {
         }
 
         if (accountType === "premium") {
-            userTypeLabel.textContent = "حساب پریمیوم 👑";
-            startPremiumTimer(premiumExpiry); // تایمر جدید
+            userTypeLabel.textContent = "پریمیوم 👑";
+            startPremiumTimer(premiumExpiry);
         } else {
-            userTypeLabel.textContent = "حساب رایگان 💕";
+            userTypeLabel.textContent = "رایگان 💕";
         }
 
-        if (!purchasedPlus) {
-            accountPlusBtn.classList.add('opacity-80');
-        } else {
-            accountPlusBtn.classList.remove('opacity-80');
-        }
+        accountPlusBtn.classList.toggle('opacity-80', !purchasedPlus);
     }
 
-    // 🕒 تابع جدا برای تایمر
-    function startPremiumTimer(expiryDate) {
-        const timerEl = document.createElement("div");
-        timerEl.id = "premiumTimer";
-        timerEl.style.fontSize = "12px";
-        timerEl.style.color = "#999";
-        userTypeLabel.parentNode.appendChild(timerEl);
-
-        function updateTimer() {
-            const now = new Date();
-            const distance = new Date(expiryDate) - now;
-            if (distance <= 0) {
-                timerEl.textContent = "00:00:00:00";
-                clearInterval(premiumTimerInterval);
-                premiumTimerInterval = null;
-                return;
-            }
-            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-            timerEl.textContent = `${days}:${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-        }
-
-        updateTimer();
-        premiumTimerInterval = setInterval(updateTimer, 1000);
-    }
-
-    // 🟠 باز و بسته کردن منو
-    function toggleMenu(show) {
-        if (show === undefined) show = elmaAccountMenu.classList.contains('hidden');
-        elmaAccountMenu.classList.toggle('hidden', !show);
-    }
-    // 🔵 تغییر نوع حساب
+    // 🔹 تغییر نوع حساب
     async function selectAccount(type) {
         if (!auth.currentUser) return;
+
+        const userRef = doc(db, "users", auth.currentUser.uid);
+        const snap = await getDoc(userRef);
+        const data = snap.exists() ? snap.data() : {};
+
         if (type === "premium") {
-            // اگه هنوز نخریده، مودال پریمیوم باز شه
+            const now = new Date();
+            const expiry = data.premiumExpiry ? new Date(data.premiumExpiry) : null;
+
+            // ✅ اجازه بده اگه هنوز پریمیوم تموم نشده برگرده
+            if (!data.purchasedPlus && expiry && expiry > now) {
+                await updateDoc(userRef, { accountType: "premium" });
+                accountType = "premium";
+                updateMenuUI();
+                toggleMenu(false);
+                showToast("برگشتی به پریمیوم فعالت 👑");
+                return;
+            }
+
+            // 🔸 اگه خرید نکرده → باز کردن مودال خرید
             if (!purchasedPlus) {
                 const modal = document.getElementById('premiumModal');
                 if (modal) {
@@ -516,22 +646,27 @@ onAuthStateChanged(auth, async (user) => {
                 }
                 return;
             }
-            // اگه خرید کرده، و هنوز اشتراک فعاله
-            const userRef = doc(db, "users", auth.currentUser.uid);
+
+            // 🔹 اگه پریمیوم خریده
             await updateDoc(userRef, { accountType: "premium" });
             accountType = "premium";
             updateMenuUI();
             toggleMenu(false);
         } else if (type === "free") {
-            // سویچ به حساب رایگان (ولی خرید ذخیره بمونه)
-            const userRef = doc(db, "users", auth.currentUser.uid);
             await updateDoc(userRef, { accountType: "free" });
             accountType = "free";
             updateMenuUI();
             toggleMenu(false);
         }
     }
-    // 🟡 اتصال دکمه‌ها
+
+    // 🔸 کنترل باز و بسته شدن منو
+    function toggleMenu(show) {
+        if (show === undefined) show = elmaAccountMenu.classList.contains('hidden');
+        elmaAccountMenu.classList.toggle('hidden', !show);
+    }
+
+    // 🔹 اتصال دکمه‌ها
     elmaNameBtn?.addEventListener('click', (e) => {
         e.stopPropagation();
         toggleMenu();
@@ -544,7 +679,8 @@ onAuthStateChanged(auth, async (user) => {
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') toggleMenu(false);
     });
-    // 🧩 وقتی وضعیت ورود عوض شد
+
+    // 🔹 وقتی وضعیت ورود عوض شد
     onAuthStateChanged(auth, (user) => {
         if (user) {
             loadAccountData();
@@ -691,7 +827,7 @@ function loadUserProfile() {
                 const isPremium =
                     userData.accountType === 'premium' || userData.accountType === 'pro';
                 document.getElementById('userType').textContent =
-                    isPremium ? 'حساب پریمیوم 👑' : 'حساب رایگان 💕';
+                    isPremium ? ' پریمیوم 👑' : ' رایگان 💕';
                 if (isPremium) {
                     usageCount = { photo: Infinity, chat: Infinity, game: Infinity };
                     localStorage.removeItem('usageCount');
@@ -705,7 +841,7 @@ function loadUserProfile() {
 }
 function showGuestProfile() {
     document.getElementById('userName').textContent = 'بدون ثبت نام';
-    document.getElementById('userType').textContent = 'حساب رایگان 💕';
+    document.getElementById('userType').textContent = ' رایگان 💕';
 }
 function toggleTheme() {
     const body = document.body;
@@ -860,22 +996,43 @@ function hideDeleteAccountModal() {
 }
 async function confirmDeleteAccount() {
     if (!currentUser) return;
+
     try {
-        // Delete all user chats first
+        // REAUTH
+        const providers = currentUser.providerData.map(p => p.providerId);
+        if (providers.includes("password")) {
+            // ایمیل/پسورد
+            const password = await showPasswordModal(); // بهتره modal داشته باشی، از prompt اجتناب کن
+            if (!password) { showToast("حذف لغو شد"); return; }
+            const credential = EmailAuthProvider.credential(currentUser.email, password);
+            await reauthenticateWithCredential(currentUser, credential);
+        } else if (providers.includes("google.com")) {
+            // گوگل — popup احراز هویت مجدد
+            const provider = new GoogleAuthProvider();
+            await reauthenticateWithPopup(currentUser, provider);
+        } else {
+            // fallback برای provider های دیگه — می‌تونی provider مناسب رو اینجا اضافه کنی
+            // به عنوان fallback ساده: از کاربر بخواه لاگ‌اوت کنه و دوباره لاگین کنه
+            showToast("برای حذف اکانت لازم است دوباره با همان روش ورود، وارد حساب خود شوید. لطفاً خارج شوید و دوباره وارد شوید.");
+            return;
+        }
+
+        // اگر رسیدیم اینجا یعنی reauth موفق بوده
         await confirmDeleteAllChats();
-        // Delete user Profile
-        await deleteDoc(doc(db, 'users', currentUser.uid));
-        // Delete the user account
+        await deleteDoc(doc(db, "users", currentUser.uid));
         await currentUser.delete();
+
         hideDeleteAccountModal();
         hideSettingsModal();
-        // Show goodbye message
-        showToast('اکانت شما حذف شد! 💔\nامیدواریم دوباره ببینیمت عزیزم 😢');
-        // Reload page
+        showToast("اکانت شما حذف شد! 💔");
         window.location.reload();
     } catch (error) {
-        console.error('Error deleting account:', error);
-        showToast('خطا در حذف اکانت 😔\nلطفاً دوباره تلاش کن');
+        console.error("Error deleting account:", error);
+        if (error.code === "auth/requires-recent-login") {
+            showToast("برای حذف باید دوباره وارد شوی. لطفاً لاگ‌اوت کن و دوباره وارد شو.");
+        } else {
+            showToast("خطا در حذف اکانت: " + (error.message || "لطفاً دوباره تلاش کن"));
+        }
     }
 }
 function autoResize() {
@@ -1338,25 +1495,48 @@ async function addMessageToChat(sender, message, imageUrl = null) {
 }
 // Scroll to bottom
 messagesContainer.scrollTop = messagesContainer.scrollHeight;
-function showTypingIndicator() {
-    const typingDiv = document.createElement('div');
-    typingDiv.id = 'typingIndicator';
-    typingDiv.className = 'flex justify-end fade-in';
-    const bubbleDiv = document.createElement('div');
-    bubbleDiv.className = 'message-bubble p-4 ai-message shadow-lg';
-    const indicatorDiv = document.createElement('div');
-    indicatorDiv.className = 'flex gap-1 items-center';
-    indicatorDiv.innerHTML = '<span class="text-sm mr-2">در حال تایپ...</span><div class="typing-indicator"></div><div class="typing-indicator"></div><div class="typing-indicator"></div>';
+function showTypingIndicator(text = "در حال تایپ...") {
+    // حذف قبلی اگه وجود داره (برای جلوگیری از چندتا با هم)
+    const existing = document.getElementById("typingIndicator");
+    if (existing) existing.remove();
+
+    const typingDiv = document.createElement("div");
+    typingDiv.id = "typingIndicator";
+    typingDiv.className = "flex justify-end fade-in";
+
+    const bubbleDiv = document.createElement("div");
+    bubbleDiv.className = "message-bubble p-4 ai-message shadow-lg rounded-2xl";
+
+    const indicatorDiv = document.createElement("div");
+    indicatorDiv.className = "flex gap-1 items-center";
+
+    // بدنه‌ی اولیه
+    indicatorDiv.innerHTML = `
+        <span id="typingText" class="text-sm mr-2"></span>
+        <div class="typing-indicator"></div>
+        <div class="typing-indicator"></div>
+        <div class="typing-indicator"></div>
+    `;
+
     bubbleDiv.appendChild(indicatorDiv);
     typingDiv.appendChild(bubbleDiv);
     messagesContainer.appendChild(typingDiv);
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+    // ✨ افکت تایپ تدریجی متن (حروف یکی‌یکی)
+    const typingText = document.getElementById("typingText");
+    let i = 0;
+    const typingInterval = setInterval(() => {
+        typingText.textContent += text[i];
+        i++;
+        if (i >= text.length) clearInterval(typingInterval);
+    }, 60); // سرعت تایپ هر حرف (میلی‌ثانیه)
 }
+
+// 🌼 حذف وضعیت تایپ
 function hideTypingIndicator() {
-    const typingIndicator = document.getElementById('typingIndicator');
-    if (typingIndicator) {
-        typingIndicator.remove();
-    }
+    const typing = document.getElementById("typingIndicator");
+    if (typing) typing.remove();
 }
 // ----------------------
 // اضافه کن: توابع کمکی برای fuzzy match
@@ -1436,57 +1616,145 @@ function bestFuzzyMatch(message, dictionary, threshold = 0.65) {
 // ----------------------
 async function generateAIResponse(userMessage) {
     if (!userMessage) {
-        if (chatDictionary && chatDictionary["default"]) return getRandomResponse(chatDictionary["default"]);
+        if (chatDictionary && chatDictionary["default"])
+            return getRandomResponse(chatDictionary["default"]);
         return "چیزی نگفتی عزیزم 😘";
     }
-    userMessage = userMessage.trim();
-    userMessage = userMessage.replace(/\s+/g, " ");
-    // === QUICK-ACTIONS: handle exact commands first (prevent partial matches to chat.json) ===
+
+    // 🧹 پاکسازی و آماده‌سازی پیام
+    userMessage = userMessage.trim().replace(/\s+/g, " ");
     const normalized = userMessage.toString().trim();
-    // ✅ اگر قبلاً تو مود عکس بودیم و کاربر گفت "یکی دیگه" یا مشابهش، دوباره عکس بفرست
+    const words = normalized.split(/\s+/);
+    const isLongMessage = words.length >= 3; // جمله بلندتر از ۳ کلمه → آنالیز
+
+    // 💬 وضعیت تایپ یا آنالیز
+    showTypingIndicator(isLongMessage ? "در حال آنالیز متن..." : "در حال تایپ...");
+    await new Promise(res => setTimeout(res, isLongMessage ? 2500 : 800));
+
+    // ✅ حالت‌های خاص (عکس، چت و ...)
     if (inPhotoMode) {
-        const morePhotoTriggers = [
-            "یکی دیگه",
-            "بازم بده",
-            "بازم میخوام",
-            "یه عکس دیگه",
-            "یکی دیگه بده",
-            "بعدی",
-            "دوباره",
-            "یه عکس دیگه لطفا",
-            "یه عکس"
-        ];
-        if (morePhotoTriggers.some(trigger => normalized.includes(trigger))) {
+        const triggers = ["یکی دیگه", "بازم بده", "بازم میخوام", "یه عکس دیگه", "یکی دیگه بده", "بعدی", "دوباره", "یه عکس دیگه لطفا", "یه عکس"];
+        if (triggers.some(t => normalized.includes(t))) {
+            hideTypingIndicator();
             return handlePhotoRequest();
         }
     }
-    // ✅ اگر در مود نود بودیم و کاربر گفت "یکی دیگه"
     if (inNudeMode) {
-        const moreNudeTriggers = [
-            "یکی دیگه",
-            "یه عکس دیگه",
-            "بازم بده",
-            "بعدی",
-            "دوباره",
-            "بازم میخوام",
-            "یه عکس دیگه لطفا"
-        ];
-        if (moreNudeTriggers.some(trigger => normalized.includes(trigger))) {
+        const triggers = ["یکی دیگه", "یه عکس دیگه", "بازم بده", "بعدی", "دوباره", "بازم میخوام", "یه عکس دیگه لطفا"];
+        if (triggers.some(t => normalized.includes(t))) {
+            hideTypingIndicator();
             return handleNudeRequest();
         }
     }
-    // درخواست جدید برای عکس
-    if (normalized === "عکس بده" || normalized === "عکس" || normalized === "عکس بده لطفا") {
-        return handlePhotoRequest();
+    if (["عکس بده", "عکس", "عکس بده لطفا"].includes(normalized)) {
+        hideTypingIndicator(); return handlePhotoRequest();
     }
-    // ✅ درخواست نود (عکس خاص)
-    if (normalized === "نود بده" || normalized === "نود" || normalized === "نود بده لطفا") {
-        return handleNudeRequest();
+    if (["نود بده", "نود", "نود بده لطفا"].includes(normalized)) {
+        hideTypingIndicator(); return handleNudeRequest();
     }
-    // exact chat requests
-    if (normalized === "چت کنیم" || normalized === "بزن بریم چت") {
-        return handleChatRequest();
+    if (["چت کنیم", "بزن بریم چت"].includes(normalized)) {
+        hideTypingIndicator(); return handleChatRequest();
     }
+
+    // 💬 حذف علائم و آماده‌سازی
+    const neutralWords = ["الما", "عشقم", "عزیزم", "گلم", "قشنگم", "خانمم", "نازم", "قلبم", "جونم"];
+    const cleanedMsg = normalized.replace(/[^\p{L}\p{N}\s]/gu, "").trim();
+    const wordsArr = cleanedMsg.split(/\s+/);
+
+    // 1️⃣ اگه فقط یه کلمه خاص گفته (مثلاً "عشقم") → پاسخ خودش
+    if (wordsArr.length === 1 && neutralWords.includes(cleanedMsg)) {
+        hideTypingIndicator();
+        if (chatDictionary[cleanedMsg]) {
+            const responses = chatDictionary[cleanedMsg];
+            return Array.isArray(responses)
+                ? responses[Math.floor(Math.random() * responses.length)]
+                : responses;
+        }
+        return "جونم عشقم 😘";
+    }
+
+    // 2️⃣ حذف کلمات خنثی از جمله
+    const filteredMessage = wordsArr.filter(w => !neutralWords.includes(w)).join(" ").trim();
+
+    // 3️⃣ جستجوی هوشمند کلیدها (اول exact match، بعد طولانی‌ترها)
+    function normalizeForKey(t) {
+        return t.replace(/[آا]/g, "ا").replace(/[?؟!.,،]/g, "").replace(/\s+/g, " ").trim().toLowerCase();
+    }
+
+    const keyList = Object.keys(chatDictionary || {});
+    const normMsg = normalizeForKey(filteredMessage);
+
+    let detectedKeys = [];
+    let exactFound = null;
+    const normKeyMap = {};
+
+    for (const k of keyList) {
+        const nk = normalizeForKey(k);
+        normKeyMap[nk] = k;
+        if (nk === normMsg) {
+            exactFound = k;
+            break;
+        }
+    }
+
+    if (exactFound) {
+        detectedKeys = [exactFound];
+    } else {
+        const candidates = [];
+        for (const k of keyList) {
+            const nk = normalizeForKey(k);
+            if (!nk) continue;
+            if (normMsg.includes(nk)) {
+                candidates.push({ key: k, norm: nk, len: nk.length });
+            }
+        }
+        candidates.sort((a, b) => b.len - a.len);
+
+        const accepted = [];
+        for (const c of candidates) {
+            const isSubOfAccepted = accepted.some(a => a.norm.includes(c.norm));
+            if (!isSubOfAccepted) accepted.push(c);
+        }
+        detectedKeys = accepted.map(a => a.key);
+    }
+
+    // 4️⃣ تولید پاسخ
+    if (detectedKeys.length > 0) {
+        const responseParts = [];
+        for (const key of detectedKeys) {
+            const possible = chatDictionary[key];
+            if (possible) {
+                const chosen = Array.isArray(possible)
+                    ? possible[Math.floor(Math.random() * possible.length)]
+                    : possible;
+                responseParts.push(chosen);
+            }
+        }
+        let response = responseParts.join("، ");
+        response = response.replace(/،\s*$/, "");
+        hideTypingIndicator();
+        return response;
+    }
+
+    // 5️⃣ اگه هیچ کلیدی نبود → fuzzy یا autoChat
+    const fuzzyResult = bestFuzzyMatch(filteredMessage, chatDictionary, 0.65);
+    if (fuzzyResult && fuzzyResult.key) {
+        hideTypingIndicator();
+        const responses = chatDictionary[fuzzyResult.key];
+        return Array.isArray(responses)
+            ? responses[Math.floor(Math.random() * responses.length)]
+            : responses;
+    }
+
+    // 6️⃣ fallback نهایی
+    const deepResponse = analyzeDeep(filteredMessage);
+    hideTypingIndicator();
+
+    if (deepResponse) return deepResponse;
+    if (chatDictionary["default"]) return getRandomResponse(chatDictionary["default"]);
+
+    return "جالبه! بیشتر بگو 💕";
+
     // =======================================================================
     // 🔍 تشخیص کلید از روی جمله‌ی کاربر
     let matchedKey = Object.keys(chatDictionary).find(key => userMessage.includes(key));
@@ -1499,35 +1767,29 @@ async function generateAIResponse(userMessage) {
         }
     }
     let response = "";
-    // 🖼️ بررسی تریگرهای مربوط به عکس حتی اگه تو chat.json باشن
-    const photoTriggers = [
-        "عکستو بده",
-        "عکستو میدی",
-        "میخوام عکستو ببینم",
-        "یه عکس از خودت",
-        "عکس بده",
-        "عکس",
-        "عکست کو",
-        "میخوام ببینمت",
-        "یه عکس بده",
-        "عکست رو بده"
-    ];
+    // 📸 اگر پاسخ از نوع عکس باشد
+    if (
+        matchedKey &&
+        Array.isArray(chatDictionary[matchedKey]) &&
+        chatDictionary[matchedKey][0]?.type === "image"
+    ) {
+        const imageArray = chatDictionary[matchedKey];
 
-    const nudeTriggers = [
-        "نود بده",
-        "نود",
-        "نود بده لطفا",
-        "عکس خاص بده",
-        "میخوام عکس خاص ببینم"
-    ];
+        // 🎲 انتخاب تصادفی یکی از تصاویر
+        const randomItem = imageArray[Math.floor(Math.random() * imageArray.length)];
 
-    // ✅ اگه جمله شامل عبارت‌های عکس یا نود بود، مستقیم برو اون تابع
-    if (photoTriggers.some(t => normalized.includes(t))) {
-        return await handlePhotoRequest();
+        if (randomItem?.type === "image" && randomItem?.url) {
+            await addMessageToChat("elma", { type: "image", url: randomItem.url });
+        }
+
+        // ✅ بازگرداندن وضعیت پاسخ‌دهی
+        isElmaResponding = false;
+        sendBtn.disabled = false;
+        sendBtn.style.opacity = "1";
+        sendBtn.style.cursor = "pointer";
+        return; // 🚀 ادامه نده چون عکس فرستاده شد
     }
-    if (nudeTriggers.some(t => normalized.includes(t))) {
-        return await handleNudeRequest();
-    }
+
 
     // 🗣️ انتخاب پاسخ از chat.json
     if (matchedKey && chatDictionary[matchedKey]) {
@@ -1623,12 +1885,6 @@ async function generateAIResponse(userMessage) {
                 return ["😂 تو با این حرفت منو خندوندی", "عه چه بامزه‌ای تو 😆", "داری منو دیوونه می‌کنی از خنده 🤣"][
                     Math.floor(Math.random() * 3)
                 ];
-            if (topic === "comeback")
-                return [
-                    "آرام باش، همیشه لازم نیست حرفت به گوش همه برسه.",
-                    "یه لحظه فکر کن؛ قبل از گفتن، حرف خوبه رو هم بسنج.",
-                    "فایده‌ای نداره؛ بیخیال شو."
-                ][Math.floor(Math.random() * 3)];
             // دسته‌ی عاشقانه
             if (topic === "love" || topic === "romantic") {
                 return responses[Math.floor(Math.random() * responses.length)].replace("{{word}}", matched);
@@ -2460,76 +2716,189 @@ async function confirmDeleteChat() {
         showToast('خطا در حذف چت 😔');
     }
 }
+// نمایش گالری
 function showGallery() {
     galleryModal.classList.remove('hidden');
     loadGalleryImages();
 }
+
+// بستن گالری
 function hideGallery() {
     galleryModal.classList.add('hidden');
 }
+
 // helper: آیا کاربر پریمیوم است؟
 function isUserPremium() {
-    // این تابع از همان مکانیک فایل تو استفاده می‌کند: userType داخل DOM
     const userTypeEl = document.getElementById('userType');
     return userTypeEl && /پریمیوم|pro|premium/i.test(userTypeEl.textContent);
 }
-// جایگزین loadGalleryImages()
+
+/* ------------------------------------
+   🧩 بررسی و ذخیره وضعیت تأیید سن +18
+------------------------------------ */
+function hasConfirmedAge() {
+    return localStorage.getItem("ageConfirmed") === "true";
+}
+
+function setAgeConfirmed() {
+    localStorage.setItem("ageConfirmed", "true");
+}
+
+function showAgeConfirmModal(onConfirm) {
+    // اگر قبلاً تأیید کرده، مستقیم باز کن
+    if (hasConfirmedAge()) {
+        onConfirm?.();
+        return;
+    }
+
+    const overlay = document.createElement("div");
+    overlay.className = "fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 p-4";
+
+    overlay.innerHTML = `
+      <div class="glass-effect rounded-2xl p-6 max-w-md w-full text-right fade-in">
+        <h3 class="text-xl font-bold mb-3">تأیید سن — +18</h3>
+        <p class="theme-text-secondary text-sm mb-4">
+          این عکس‌ها ممکن است شامل محتوای مخصوص افراد بالای ۱۸ سال باشند.
+          آیا تأیید می‌کنید که بالای ۱۸ سال دارید؟
+        </p>
+        <div class="flex items-center gap-2 mb-4">
+          <input id="rememberAge" type="checkbox" />
+          <label for="rememberAge" class="text-sm">دفعه بعد نپرس</label>
+        </div>
+        <div class="flex justify-between gap-2">
+          <button id="cancelAge" class="py-2 px-4 rounded-2xl glass-effect">لغو</button>
+          <button id="confirmAge" class="py-2 px-4 rounded-2xl bg-green-600 text-white hover:bg-green-700">تأیید می‌کنم</button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(overlay);
+
+    const cancelBtn = overlay.querySelector("#cancelAge");
+    const confirmBtn = overlay.querySelector("#confirmAge");
+    const rememberChk = overlay.querySelector("#rememberAge");
+
+    cancelBtn.addEventListener("click", () => overlay.remove());
+    overlay.addEventListener("click", e => { if (e.target === overlay) overlay.remove(); });
+
+    confirmBtn.addEventListener("click", () => {
+        if (rememberChk.checked) setAgeConfirmed();
+        overlay.remove();
+        onConfirm?.();
+    });
+}
+
+/* ------------------------------------
+   📸 گالری تصاویر
+------------------------------------ */
 function loadGalleryImages() {
     const galleryGrid = document.getElementById('galleryGrid');
     galleryGrid.innerHTML = '';
-    // تصاویر نمونه (می‌تونی آدرس‌ها را به آرایه‌ای که از سرورت میاد تغییر بدی)
+
+    // تصاویر نمونه (می‌تونی آدرس‌ها را از سرور بگیری)
     const sampleImages = [];
     for (let i = 1; i <= 16; i++) {
         sampleImages.push(`Assets/img/Elma Nude/Elma${i}.png`);
     }
-    // 👇 در صورت نیاز به فایل خاص آخر (بدون شماره)
     sampleImages.push('Assets/img/Elma Nude/Elma.png');
-    console.log(sampleImages);
+
     const premium = isUserPremium();
+
     sampleImages.forEach(imageUrl => {
         const imgDiv = document.createElement('div');
-        imgDiv.className = 'aspect-square rounded-2xl hover-lift glass-effect gallery-item';
-        imgDiv.innerHTML = `
-            <img src="${imageUrl}" alt="Gallery Image">
-        `;
+        imgDiv.className = 'aspect-square rounded-2xl hover-lift glass-effect gallery-item relative overflow-hidden';
+        imgDiv.innerHTML = `<img src="${imageUrl}" alt="Gallery Image">`;
+
         if (!premium) {
-            // lock it for free users
+            // 🔒 کاربران رایگان — قفل کامل
             imgDiv.classList.add('locked');
             imgDiv.innerHTML += `
                 <div class="lock-overlay">
-                  <div class="lock-badge">
-                    <i class="fas fa-lock"></i>
-                    <span>ویژه پرو</span>
-                  </div>
-                  <div class="lock-text">برای دیدن کامل عکس، پرو بخرید</div>
+                    <div class="lock-badge"><i class="fas fa-lock"></i><span>ویژه پرو</span></div>
+                    <div class="lock-text">برای دیدن کامل عکس، پرو بخرید</div>
                 </div>
             `;
-            // کلیک روی overlay -> نمایش مودال خرید یا ثبت‌نام
             imgDiv.querySelector('.lock-overlay').addEventListener('click', (e) => {
                 e.stopPropagation();
+                if (!currentUser) showRegistrationModal();
+                else document.getElementById('premiumModal').classList.remove('hidden');
+            });
+
+            // --- داخل loadGalleryImages(), در بخش premium case:
+        } else {
+            // پریمیوم: اما تا تایید سن، مات بمونه
+            imgDiv.classList.add('locked', 'premium-age-locked');
+            imgDiv.innerHTML += `
+        <div class="lock-overlay">
+          <div class="lock-badge">
+            <i class="fas fa-exclamation-circle"></i>
+            <span>+18 — تأیید سن</span>
+          </div>
+          <div class="lock-text">برای دیدن کامل، بالای ۱۸ سال هستی؟</div>
+        </div>
+    `;
+            const overlay = imgDiv.querySelector('.lock-overlay');
+
+            // 1) کلیک روی overlay = شروع فرایند تأیید و باز کردن عکس
+            overlay.addEventListener('click', (e) => {
+                e.stopPropagation();
                 if (!currentUser) {
-                    // اگر وارد نشده‌اند، ثبت‌نام را نشان بده
                     showRegistrationModal();
-                } else {
-                    // اگر وارد شده‌اند ولی آزاد نیستند، مودال خرید نشان بده
-                    document.getElementById('premiumModal').classList.remove('hidden');
+                    return;
+                }
+                if (hasConfirmedAge()) {
+                    // اگر قبلاً تأیید شده، مستقیم باز کن
+                    showImageModal(imageUrl, true);
+                    // بردار overlay برای UX
+                    imgDiv.classList.remove('locked', 'premium-age-locked');
+                    overlay.remove();
+                    return;
+                }
+                // در غیر این صورت مودال تأیید سن
+                showAgeConfirmModal(imageUrl, () => {
+                    // پس از تأیید، عکس کامل رو باز کن
+                    imgDiv.classList.remove('locked', 'premium-age-locked');
+                    overlay.remove();
+                    showImageModal(imageUrl, true);
+                });
+            });
+
+            // 2) همینطور برای کلیک مستقیم روی خود آیتم/عکس، یک listener داریم:
+            imgDiv.addEventListener('click', (e) => {
+                // اگر هنوز قفل هست => شروع بررسی تأیید سن (رفتار مشابه overlay)
+                if (imgDiv.classList.contains('locked') && !hasConfirmedAge()) {
+                    e.stopPropagation();
+                    showAgeConfirmModal(imageUrl, () => {
+                        imgDiv.classList.remove('locked', 'premium-age-locked');
+                        imgDiv.querySelector('.lock-overlay')?.remove();
+                        showImageModal(imageUrl, true);
+                    });
+                    return;
+                }
+                // اگر باز شده یا سن تأیید شده => باز کن
+                if (!imgDiv.classList.contains('locked') || hasConfirmedAge()) {
+                    showImageModal(imageUrl, true);
                 }
             });
-        } else {
-            // اگر پریمیوم است، کلیک مستقیم باز کردن عکس کامل
-            imgDiv.addEventListener('click', () => showImageModal(imageUrl, true));
         }
-        // برای حالت‌های مشترک (مثلاً اگر بخوای آمار یا لایک اضافه کنی) می‌تونی اینجا اضافه کنی
         galleryGrid.appendChild(imgDiv);
     });
 }
-// نسخه ارتقا یافته showImageModal
-// اگر forceOpen === true از قفل عبور می‌کند (برای پریمیوم‌ها)
+
+/* ------------------------------------
+   🖼️ نمایش مودال تصویر
+------------------------------------ */
 function showImageModal(imageUrl, forceOpen = false) {
     const premium = isUserPremium();
+
+    // اگر پریمیوم است ولی سن تأیید نشده و forceOpen=false، مودال سن را نشان بده
+    if (premium && !hasConfirmedAge() && !forceOpen) {
+        showAgeConfirmModal(() => showImageModal(imageUrl, true));
+        return;
+    }
+
+    // اگر کاربر رایگان است و forceOpen=false، قفل خرید را نشان بده
     if (!premium && !forceOpen) {
-        // Free user clicked image (در حالت ما کلیک مستقیم روی img برای free غیرفعال است،
-        // اما اگر از جایی دیگه‌ای خواستی بازش کنی، می‌گیریم اینجا)
         if (!currentUser) {
             showRegistrationModal();
             return;
@@ -2537,12 +2906,14 @@ function showImageModal(imageUrl, forceOpen = false) {
         document.getElementById('premiumModal').classList.remove('hidden');
         return;
     }
-    // ساخت مودال نمایش تصویر کامل
+
+    // 📷 ساخت مودال نمایش تصویر
     const modal = document.createElement('div');
     modal.className = 'fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4 fade-in';
     modal.innerHTML = `
         <div class="relative max-w-4xl max-h-full">
-            <img src="${imageUrl}" alt="Full Size Image" class="max-w-full max-h-[80vh] rounded-2xl glow-effect">
+            <img src="${imageUrl}" alt="Full Size Image"
+                 class="max-w-full max-h-[80vh] rounded-2xl glow-effect">
             <button class="absolute top-4 left-4 text-white text-2xl hover:opacity-80 bg-black bg-opacity-50 rounded-full p-3 close-modal-btn">
                 <i class="fas fa-download"></i>
             </button>
@@ -2551,32 +2922,38 @@ function showImageModal(imageUrl, forceOpen = false) {
             </button>
         </div>
     `;
+
     // بستن مودال
     modal.addEventListener('click', (e) => {
-        // اگر روی بک‌دراپ کلیک شد یا دکمه بستن
-        if (e.target === modal || e.target.closest('.close-modal-btn')) {
-            modal.remove();
-        }
+        if (e.target === modal || e.target.closest('.fa-times')) modal.remove();
     });
-    // دانلود تصویر (فقط برای پریمیوم)
+
+    // دانلود عکس (فقط پریمیوم)
     const downloadBtn = modal.querySelector('.fa-download')?.closest('button');
     if (downloadBtn) {
         downloadBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             if (!isUserPremium()) {
-                // اگر کاربر پریمیوم نبود، مودال خرید
                 document.getElementById('premiumModal').classList.remove('hidden');
                 return;
             }
-            // دانلود با لینک مستقیم
+
+            // ساخت نام فایل سفارشی 👇
+            const now = new Date();
+            const dateStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}-${String(now.getHours()).padStart(2, '0')}-${String(now.getMinutes()).padStart(2, '0')}`;
+            const fileExt = imageUrl.split('.').pop().split('?')[0];
+            const fileName = `ElmaAi-elma-ai.kesug.com-${dateStr}.${fileExt}`;
+
+            // دانلود با نام جدید
             const a = document.createElement('a');
             a.href = imageUrl;
-            a.download = imageUrl.split('/').pop();
+            a.download = fileName;
             document.body.appendChild(a);
             a.click();
             a.remove();
         });
     }
+
     document.body.appendChild(modal);
 }
 // Rename chat functionality
@@ -3937,28 +4314,46 @@ googlePasswordRepeat.addEventListener("input", () => {
 });
 /* ---------- Firebase actions ---------- */
 const provider = new GoogleAuthProvider();
+
 async function saveUserToFirestore(user) {
     if (!user || !user.uid) return;
     const uRef = doc(db, "users", user.uid);
     const snap = await getDoc(uRef);
-    const now = serverTimestamp();
+
     if (!snap.exists()) {
+        // ✅ کاربر جدید → بدهش پریمیوم ۷ روزه با زمان سرور دقیق
         await setDoc(uRef, {
             uid: user.uid,
             email: user.email || null,
             name: user.displayName || null,
             photoURL: user.photoURL || null,
-            createdAt: now,
-            accountType: "free"
+            createdAt: serverTimestamp(), // ثبت لحظه ساخت
+            accountType: "premium",
+            purchasedPlus: false,
         });
+
+        // 🔹 الان زمان دقیق سرور رو بگیر
+        await updateDoc(uRef, { serverNow: serverTimestamp() });
+        const newSnap = await getDoc(uRef);
+        const serverNow = newSnap.data()?.serverNow?.toDate();
+
+        if (serverNow) {
+            const sevenDaysLater = new Date(serverNow.getTime() + 7 * 24 * 60 * 60 * 1000);
+            await updateDoc(uRef, { premiumExpiry: Timestamp.fromDate(sevenDaysLater) });
+            console.log("🎁 حساب جدید ساخته شد و پریمیوم هدیه گرفت تا:", sevenDaysLater.toISOString());
+        }
     } else {
-        // ensure some fields exist
-        await setDoc(uRef, {
-            uid: user.uid,
-            email: user.email || null,
-            name: user.displayName || null,
-            photoURL: user.photoURL || null,
-        }, { merge: true });
+        // 🔹 اگه قبلاً ساخته شده، فقط اطلاعات پروفایلش رو بروزرسانی کن
+        await setDoc(
+            uRef,
+            {
+                uid: user.uid,
+                email: user.email || null,
+                name: user.displayName || null,
+                photoURL: user.photoURL || null,
+            },
+            { merge: true }
+        );
     }
 }
 /* ---------- Register with Email/Password ---------- */
@@ -3991,8 +4386,8 @@ registerBtn.addEventListener("click", async () => {
         // ✅ نوع حساب را از Firestore بگیر
         const userRef = doc(db, "users", cred.user.uid);
         const snap = await getDoc(userRef);
-        const accountType = snap.exists() ? snap.data().accountType || "free" : "free";
-        localStorage.setItem("accountType", accountType);
+
+
 
         // 🎨 به‌روزرسانی UI
         document.getElementById("registrationModal").classList.add("hidden");
@@ -4028,8 +4423,8 @@ loginBtn.addEventListener("click", async () => {
         // ✅ گرفتن accountType از Firestore
         const userRef = doc(db, "users", userCred.user.uid);
         const snap = await getDoc(userRef);
-        const accountType = snap.exists() ? snap.data().accountType || "free" : "free";
-        localStorage.setItem("accountType", accountType);
+
+
 
         // 🎨 به‌روزرسانی UI
         document.getElementById("registrationModal").classList.add("hidden");
@@ -4107,8 +4502,8 @@ async function afterGoogleLogin(user) {
 
     const userRef = doc(db, "users", user.uid);
     const snap = await getDoc(userRef);
-    const accountType = snap.exists() ? snap.data().accountType || "free" : "free";
-    localStorage.setItem("accountType", accountType);
+
+
 
     if (isNew) {
         registerForm.classList.add("hidden");
@@ -4147,8 +4542,8 @@ saveGooglePassword.addEventListener("click", async () => {
         // ✅ گرفتن accountType از Firestore
         const userRef = doc(db, "users", linkedResult.user.uid);
         const snap = await getDoc(userRef);
-        const accountType = snap.exists() ? snap.data().accountType || "free" : "free";
-        localStorage.setItem("accountType", accountType);
+
+
 
         document.getElementById("registrationModal").classList.add("hidden");
         const nameEl = document.getElementById("userName");
@@ -4567,7 +4962,7 @@ window.addEventListener("beforeunload", () => {
     window.name = JSON.stringify(data);
 });
 
-// 💜 بعد از رفرش، چت رو بازیابی کن
+
 window.addEventListener("DOMContentLoaded", () => {
     if (window.name) {
         try {
@@ -4583,3 +4978,62 @@ window.addEventListener("DOMContentLoaded", () => {
         }
     }
 });
+function quickMatch(message) {
+    message = normalizeText(message);
+    for (const key in chatDictionary) {
+        if (message.includes(key)) {
+            const responses = chatDictionary[key];
+            return Array.isArray(responses)
+                ? responses[Math.floor(Math.random() * responses.length)]
+                : responses;
+        }
+    }
+    return null;
+}
+
+function analyzeDeep(message) {
+    message = normalizeText(message);
+    let bestMatch = null;
+    let bestScore = 0;
+
+    // 🔍 بررسی autoChat.json
+    for (const category in autoChat) {
+        const data = autoChat[category];
+        if (!data || !data.keywords) continue;
+        const { keywords, responses } = data;
+
+        for (const word of keywords) {
+            const score = similarity(message, word);
+            if (score > bestScore) {
+                bestScore = score;
+                bestMatch = responses[Math.floor(Math.random() * responses.length)]
+                    .replace("{{word}}", word);
+            }
+        }
+    }
+
+    // 🔍 بررسی chat.json
+    for (const key in chatDictionary) {
+        const score = similarity(message, key);
+        if (score > bestScore) {
+            bestScore = score;
+            const responses = chatDictionary[key];
+            bestMatch = Array.isArray(responses)
+                ? responses[Math.floor(Math.random() * responses.length)]
+                : responses;
+        }
+    }
+
+    return bestMatch;
+}
+
+function similarity(a, b) {
+    a = normalizeText(a);
+    b = normalizeText(b);
+    const common = a.split(" ").filter(w => b.includes(w));
+    return common.length / Math.max(a.split(" ").length, b.split(" ").length);
+}
+
+function normalizeText(t) {
+    return t.replace(/[آا]/g, "ا").replace(/[?؟!.,،]/g, "").trim();
+}
