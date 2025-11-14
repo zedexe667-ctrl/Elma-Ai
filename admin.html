@@ -9,8 +9,7 @@
   <script type="module" src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"></script>
   <script type="module" src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js"></script>
   <script type="module" src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"></script>
-  <link rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
 </head>
 
 <body class="bg-gray-900 text-white min-h-screen flex flex-col items-center justify-center">
@@ -72,7 +71,10 @@
         class="w-full mt-6 py-3 bg-gradient-to-r from-pink-500 to-purple-600 rounded-xl hover:scale-105 transition-all font-semibold">
         <i class="fas fa-sync-alt mr-2"></i> به‌روزرسانی حساب
       </button>
-
+      <button id="resetSubscription"
+        class="w-full mt-3 py-3 bg-gradient-to-r from-gray-500 to-gray-700 rounded-xl hover:scale-105 transition-all font-semibold">
+        🔄 ریست اشتراک به رایگان
+      </button>
       <p id="updateMsg" class="mt-4 text-sm text-green-400 hidden"></p>
     </div>
 
@@ -229,6 +231,42 @@
       }
     });
 
+    // 🔄 ریست اشتراک کاربر
+    const resetSubscription = document.getElementById("resetSubscription");
+
+    resetSubscription.addEventListener("click", async () => {
+      updateMsg.classList.add("hidden");
+      const email = userEmail.value.trim();
+
+      if (!email) {
+        showMsg("ایمیل کاربر را انتخاب کنید", true);
+        return;
+      }
+
+      try {
+        const q = query(collection(db, "users"), where("email", "==", email));
+        const snap = await getDocs(q);
+
+        if (snap.empty) {
+          showMsg("❗️کاربری با این ایمیل پیدا نشد", true);
+          return;
+        }
+
+        for (const docSnap of snap.docs) {
+          const userRef = doc(db, "users", docSnap.id);
+          await updateDoc(userRef, {
+            accountType: "free",
+            purchasedPlus: false,
+            premiumExpiry: null
+          });
+        }
+
+        showMsg(`✅ اشتراک ${email} با موفقیت ریست شد و رایگان گردید.`);
+      } catch (err) {
+        showMsg("❌ خطا در ریست اشتراک: " + err.message, true);
+      }
+    });
+
     // 📩 پیام
     function showMsg(msg, isError = false) {
       loginMsg.textContent = msg;
@@ -257,4 +295,5 @@
   </style>
 
 </body>
+
 </html>
