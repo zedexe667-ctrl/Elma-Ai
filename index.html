@@ -483,6 +483,94 @@
             max-width: 90rem;
             /* هر عدد دلخواه px/rem */
         }
+
+        /* 📱 جلوگیری از رفتن متن دکمه‌ها به خط بعد در موبایل */
+        @media (max-width: 768px) {
+            button {
+                white-space: nowrap;
+                /* جلو شکستن متن */
+                overflow: hidden;
+                /* اگه متن خیلی بلند بود، overflow نده */
+                font-size: 0.9rem;
+                /* یه ذره کوچیک‌تر تا جا بگیره */
+            }
+        }
+
+        .animate-fadeIn {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        #slvaBtn {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(4px);
+        }
+
+        #slvaBtn:hover {
+            background: var(--bg-tertiary);
+            color: var(--accent-color);
+            transform: scale(1.03);
+        }
+
+        .slva-list li {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .slva-list li::before {
+            content: "\f00c";
+            /* FontAwesome check icon */
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            color: #c522c5;
+            /* سبز */
+        }
+
+        .typing-indicator {
+            width: 6px;
+            height: 6px;
+            background-color: #fff;
+            border-radius: 50%;
+            animation: typingBlink 1.2s infinite ease-in-out;
+        }
+
+        .typing-indicator:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-indicator:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typingBlink {
+
+            0%,
+            80%,
+            100% {
+                opacity: 0.2;
+                transform: translateY(0);
+            }
+
+            40% {
+                opacity: 1;
+                transform: translateY(-2px);
+            }
+        }
     </style>
 </head>
 
@@ -587,7 +675,7 @@
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="text-sm font-semibold theme-text-secondary flex items-center gap-2">
                             <i class="fas fa-history"></i>
-                            چت‌های قبلی
+                            چت‌ ها
                         </h3>
                         <button id="archiveHistoryBtn" class="p-2 rounded-full glass-effect hover-lift">
                             <i class="fas fa-archive theme-text-primary text-sm"></i>
@@ -603,7 +691,6 @@
                 class="group sm:bg-token-main-surface-primary text-token-text-primary hover:bg-token-main-surface-secondary relative z-10 flex w-full items-center justify-between rounded-t-2xl py-3 ps-4 pe-4 text-xs border-token-border-default border border-[.5px] p-2 focus-visible:ring-token-text-tertiary focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-offset-transparent focus-visible:outline-hidden motion-safe:transition-colors motion-safe:duration-150">
                 <span class="flex items-center gap-2">
                     <span>
-                        <!-- svg... (همون svg که دادی) -->
                         <svg width="20" height="20" viewBox="0 0 300.005 300.005" fill="currentColor"
                             xmlns="http://www.w3.org/2000/svg" class="icon-sm text-[#5856D6] dark:text-[#DCDBF6]">
                             <g>
@@ -647,7 +734,7 @@
                         </div>
                         <div class="flex-1 text-right">
                             <div id="userName" class="font-medium theme-text-primary">کاربر مهمان</div>
-                            <div id="userType" class="text-sm theme-text-secondary">حساب رایگان 💕</div>
+                            <div id="userType" class="text-sm theme-text-secondary">حساب رایگان</div>
                         </div>
                     </button>
                     <button id="logoutBtn" class="p-2 rounded-full glass-effect hover-lift">
@@ -678,7 +765,7 @@
                             <button id="elmaNameBtn"
                                 class="text-lg font-semibold gradient-text flex items-center gap-2 p-1 hover:opacity-90"
                                 aria-haspopup="true" aria-expanded="false">
-                                Elma 💕
+                                Elma
                                 <i class="fas fa-caret-down theme-text-primary text-sm"></i>
                             </button>
                             <div id="elmaAccountMenu"
@@ -689,7 +776,7 @@
                                         class="w-full flex items-center justify-between p-3 rounded-lg hover:theme-bg-tertiary transition-all mb-1"
                                         id="accountFreeBtn">
                                         <div class="text-right">
-                                            <div class="font-medium theme-text-primary">Elma 2.5 flash</div>
+                                            <div class="font-medium theme-text-primary">Elma Free</div>
                                             <div class="text-xs theme-text-secondary">سطح پایه</div>
                                         </div>
                                         <input type="radio" name="accountType" value="free" id="radioFree"
@@ -1122,11 +1209,6 @@
                             <i class="fas fa-user-cog ml-2"></i>
                             اکانت
                         </button>
-                        <button id="memoryTab"
-                            class="flex-1 py-4 px-6 text-center theme-text-secondary hover:theme-text-primary font-medium transition-all duration-300">
-                            <i class="fas fa-brain ml-2"></i>
-                            حافظه
-                        </button>
                         <button id="themeTab"
                             class="flex-1 py-4 px-6 text-center theme-text-secondary hover:theme-text-primary font-medium transition-all duration-300">
                             <i class="fas fa-paint-brush ml-2"></i>
@@ -1258,107 +1340,6 @@
                                 <button id="forgotPasswordBtn"
                                     class="text-sm text-blue-400 underline hover:text-blue-300 transition">رمزم رو
                                     فراموش کردم</button>
-                            </div>
-                        </div>
-                        <!-- Memory Settings -->
-                        <div id="memorySettings" class="space-y-6 hidden">
-                            <!-- Title -->
-                            <div class="text-center mb-6">
-                                <h3 class="text-2xl font-bold gradient-text">🧠 تنظیمات حافظه Elma</h3>
-                                <p class="theme-text-secondary text-sm">تمام داده‌های زیر در مرورگر شما ذخیره می‌شن
-                                    (LocalStorage)</p>
-                            </div>
-                            <!-- Name -->
-                            <div class="glass-effect rounded-2xl p-4">
-                                <label for="realName" class="block font-medium theme-text-primary mb-2">اسم
-                                    واقعی</label>
-                                <input id="realName" type="text" placeholder="مثلاً امیر، سارا، یا GHOST 😎"
-                                    class="w-full p-3 rounded-2xl glass-effect theme-text-primary focus:outline-none focus:glow-effect transition-all duration-300" />
-                            </div>
-                            <!-- Nickname -->
-                            <div class="glass-effect rounded-2xl p-4">
-                                <label for="nickname" class="block font-medium theme-text-primary mb-2">لقب مورد
-                                    علاقه
-                                    💕</label>
-                                <input id="nickname" type="text" placeholder="مثلاً عشقم، رفیق، خوشگلم 😍"
-                                    class="w-full p-3 rounded-2xl glass-effect theme-text-primary focus:outline-none focus:glow-effect transition-all duration-300" />
-                            </div>
-                            <!-- Interests -->
-                            <div class="glass-effect rounded-2xl p-4">
-                                <label for="interests" class="block font-medium theme-text-primary mb-2">علایق
-                                    🎮🎧💻</label>
-                                <textarea id="interests" rows="2"
-                                    placeholder="مثلاً برنامه‌نویسی، موسیقی، فیلم، فوتبال ⚽"
-                                    class="w-full p-3 rounded-2xl glass-effect theme-text-primary focus:outline-none focus:glow-effect transition-all duration-300 resize-none"></textarea>
-                            </div>
-                            <!-- Mood -->
-                            <div class="glass-effect rounded-2xl p-4">
-                                <label for="mood" class="block font-medium theme-text-primary mb-2">مود فعلی
-                                    😎</label>
-                                <select id="mood"
-                                    class="w-full p-3 rounded-2xl glass-effect theme-text-primary focus:outline-none focus:glow-effect transition-all duration-300">
-                                    <option value="happy">شاد 😊</option>
-                                    <option value="sad">غمگین 😢</option>
-                                    <option value="tired">خسته 😴</option>
-                                    <option value="angry">عصبی 😡</option>
-                                    <option value="romantic">عاشق 💖</option>
-                                </select>
-                            </div>
-                            <!-- Affinity -->
-                            <div class="glass-effect rounded-2xl p-4">
-                                <label for="affinity" class="block font-medium theme-text-primary mb-2">سطح صمیمیت
-                                    💞</label>
-                                <input id="affinity" type="range" min="0" max="100" value="50"
-                                    class="w-full accent-pink-500">
-                                <div class="text-center theme-text-secondary text-sm mt-1">۵۰٪</div>
-                            </div>
-                            <!-- Last Interaction -->
-                            <div class="glass-effect rounded-2xl p-4">
-                                <label class="block font-medium theme-text-primary mb-2">آخرین تعامل 📅</label>
-                                <div id="lastInteraction"
-                                    class="w-full p-3 rounded-2xl glass-effect theme-text-secondary text-sm border border-pink-300/30">
-                                    هنوز تعاملی ثبت نشده
-                                </div>
-                            </div>
-                            <!-- Management Buttons -->
-                            <div class="flex flex-wrap gap-3 justify-center mt-6">
-                                <button id="saveMemoryBtn"
-                                    class="flex-1 py-3 bg-gradient-to-r from-pink-500 to-fuchsia-600 text-white rounded-2xl hover-lift transition-all duration-300 font-medium">
-                                    💾 ذخیره حافظه
-                                </button>
-                                <button id="viewMemoryBtn"
-                                    class="flex-1 py-3 glass-effect theme-text-primary rounded-2xl hover-lift transition-all duration-300 font-medium">
-                                    🧠 نمایش حافظه
-                                </button>
-                                <button id="clearMemoryBtn"
-                                    class="flex-1 py-3 bg-red-500 hover:bg-red-600 text-white rounded-2xl hover-lift transition-all duration-300 font-medium">
-                                    🔄 پاک‌سازی حافظه
-                                </button>
-                            </div>
-                            <div class="flex flex-wrap gap-3 justify-center">
-                                <button id="exportMemoryBtn"
-                                    class="flex-1 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-2xl hover-lift transition-all duration-300 font-medium">
-                                    📤 خروجی JSON
-                                </button>
-                                <button id="importMemoryBtn"
-                                    class="flex-1 py-3 bg-green-500 hover:bg-green-600 text-white rounded-2xl hover-lift transition-all duration-300 font-medium">
-                                    📥 ورود JSON
-                                </button>
-                                <input type="file" id="importFileInput" accept=".json" class="hidden" />
-                            </div>
-                            <!-- Memory Display Modal -->
-                            <div id="memoryViewModal"
-                                class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden z-[999] flex items-center justify-center">
-                                <div
-                                    class="glass-effect rounded-3xl max-w-lg w-full mx-4 p-8 text-center bounce-in shadow-2xl border border-pink-400/30">
-                                    <h3 class="text-xl font-bold gradient-text mb-4">🧠 حافظه ذخیره‌شده</h3>
-                                    <pre id="memoryViewContent"
-                                        class="text-left theme-text-secondary bg-black/10 p-4 rounded-2xl max-h-[300px] overflow-y-auto text-sm"></pre>
-                                    <button id="closeMemoryView"
-                                        class="mt-4 w-full py-3 theme-accent text-white rounded-2xl hover-lift transition-all duration-300 font-medium">
-                                        بستن
-                                    </button>
-                                </div>
                             </div>
                         </div>
                         <div id="themeSettings" class="space-y-6 hidden">
