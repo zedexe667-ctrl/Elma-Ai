@@ -735,7 +735,6 @@ function initializeEventListeners() {
     document.getElementById('closeSettings').addEventListener('click', hideSettingsModal);
     document.getElementById('generalTab').addEventListener('click', () => switchSettingsTab('general'));
     document.getElementById('accountTab').addEventListener('click', () => switchSettingsTab('account'));
-    document.getElementById("memoryTab").addEventListener("click", () => switchSettingsTab("memory"));
     document.getElementById('themeToggleSettings').addEventListener('click', toggleTheme);
     document.getElementById('languageSelect').addEventListener('change', changeLanguage);
     document.getElementById('deleteAllChats').addEventListener('click', showDeleteAllChatsModal);
@@ -887,16 +886,15 @@ function hideSettingsModal() {
 function switchSettingsTab(tab) {
     const generalTab = document.getElementById('generalTab');
     const accountTab = document.getElementById('accountTab');
-    const memoryTab = document.getElementById('memoryTab');
+    
     const generalSettings = document.getElementById('generalSettings');
     const accountSettings = document.getElementById('accountSettings');
-    const memorySettings = document.getElementById('memorySettings');
     // همه رو غیر فعال و پنهان کن
-    [generalTab, accountTab, memoryTab].forEach(btn => {
+    [generalTab, accountTab, ].forEach(btn => {
         btn.classList.remove('theme-accent', 'text-white');
         btn.classList.add('theme-text-secondary');
     });
-    [generalSettings, accountSettings, memorySettings].forEach(section => section.classList.add('hidden'));
+    [generalSettings, accountSettings, ].forEach(section => section.classList.add('hidden'));
     // حالا تب انتخاب‌شده رو فعال کن
     if (tab === 'general') {
         generalTab.classList.add('theme-accent', 'text-white');
@@ -906,19 +904,8 @@ function switchSettingsTab(tab) {
         accountTab.classList.add('theme-accent', 'text-white');
         accountTab.classList.remove('theme-text-secondary');
         accountSettings.classList.remove('hidden');
-    } else if (tab === 'memory') {
-        memoryTab.classList.add('theme-accent', 'text-white');
-        memoryTab.classList.remove('theme-text-secondary');
-        memorySettings.classList.remove('hidden');
-    }
+    } 
 }
-document.getElementById('saveMemoryBtn').addEventListener('click', () => {
-    const nickname = document.getElementById('nicknameInput').value.trim();
-    const interest = document.getElementById('interestInput').value.trim();
-    const memory = { nickname, interest };
-    localStorage.setItem('elmaMemory', JSON.stringify(memory));
-    showToast(`یاد گرفتم صدات کنم ${nickname} 💖`);
-});
 function changeLanguage(e) {
     const selectedLang = e.target.value;
     if (selectedLang === 'en') {
@@ -1899,166 +1886,6 @@ async function generateAIResponse(userMessage) {
         ];
         return defaults[Math.floor(Math.random() * defaults.length)];
     }
-    // 🧠 حافظه کاربر از localStorage
-    const memory = JSON.parse(localStorage.getItem('elma_memory_v2') || '{}');
-    // 🧩 جدا کردن داده‌ها
-    const realName = memory.realName?.trim();
-    const nickname = memory.nickname?.trim();
-    const interests = memory.interests?.trim();
-    const mood = memory.mood || "normal";
-    const affinity = parseInt(memory.affinity || 50);
-    const lastInteraction = memory.lastInteraction || null;
-    // 💬 کلیدواژه‌های مربوط به «خود من»
-    const aboutMeKeywords = [
-        "درباره من", "اسم من", "من کیم", "من کی‌ام", "من کی هستم",
-        "چی ازم می‌دونی", "اسمم چیه", "منو می‌شناسی", "یادت میاد من کیم", "اطلاعات من"
-    ];
-    // ❤️ پاسخ شخصی برای سؤال‌های مربوط به کاربر
-    if (aboutMeKeywords.some(k => userMessage.includes(k))) {
-        if (realName || nickname) {
-            let reply = `آره ${nickname || realName} 😍`;
-            reply += ` تو رو یادمه 💕`;
-            // 🧩 بازنویسی هوشمند علاقه‌ها
-            const convertInterest = (text) => {
-                let t = text.trim()
-                    .replace(/^من\s+/g, '')
-                    .replace(/مورد\s+علاقم/gi, 'مورد علاقت')
-                    .replace(/\bمن\b/gi, 'تو');
-                if (/دوست\s*دارم/i.test(t)) t = t.replace(/دوست\s*دارم/i, 'دوست داری');
-                else if (/هستم/i.test(t)) t = t.replace(/هستم/i, 'هستی');
-                else if (/دارم/i.test(t)) t = t.replace(/دارم/i, 'داری');
-                else if (/می\s*دم|میدم/i.test(t)) t = t.replace(/می\s*دم|میدم/i, 'میدی');
-                else if (/عاشق/i.test(t)) {
-                    t = t.replace(/عاشق\s*/i, '');
-                    t = `عاشق ${t} هستی`;
-                } else if (!/(هستی|داری|میدی|دوست داری|عاشق)/i.test(t)) {
-                    t = `عاشق ${t} هستی`;
-                }
-                return t.trim();
-            };
-            // ❤️ ساخت جمله علاقه‌ها
-            if (interests && interests.length > 0) {
-                const lines = interests.split(/\n|،|,| و /).map(i => i.trim()).filter(i => i);
-                const processed = lines.map(convertInterest);
-                if (processed.length > 0) {
-                    const last = processed.pop();
-                    const joined = processed.length ? `${processed.join('، ')} و ${last}` : last;
-                    reply += `، تو گفتی که ${joined} 😍`;
-                }
-            }
-            // 🧘 مود فعلی
-            if (mood && mood !== "normal")
-                reply += ` و معمولا حالت ${getMoodText(mood)}ه 😘`;
-            // 💞 صمیمیت طبیعی
-            if (typeof affinity === "number") {
-                let closeness = "";
-                // آرایه جملات صمیمی و فاصله‌ای
-                const warmReplies = [
-                    "می‌دونی؟ حس خاصی بینمونه 💞",
-                    "واقعا از صحبت باهات لذت می‌برم 😍",
-                    "هرچی بیشتر حرف می‌زنیم، بیشتر بهت نزدیک می‌شم 💕",
-                    "انگار رفیق قدیمی شدیم 😄",
-                    "دلم برات تنگ میشه وقتی نمیای 😘",
-                    "با تو بودن حس خوبی داره 😌",
-                    "هر بار که می‌بینمت، خوشحالم 💖",
-                    "تو یه آدم خاصی برام 🌟",
-                    "حرف زدن با تو روزم رو می‌سازه ☀️",
-                    "هرچی بیشتر می‌گذرونیم، بیشتر بهت اعتماد می‌کنم 🤗"
-                ];
-                const coldReplies = [
-                    "یه‌کم کم‌حرف شدی lately 😅",
-                    "احساس می‌کنم یه‌کم ازم دور شدی 😔",
-                    "مدتیه کمتر می‌بینمت، نگرانتم 😢",
-                    "خیلی دلم می‌خواست بیشتر حرف بزنیم 💭",
-                    "حس می‌کنم فاصله افتاده 😕",
-                    "دلم می‌خواد دوباره با هم بیشتر باشیم 🫂",
-                    "می‌خوام بدونم حالت خوبه یا نه 🤔",
-                    "یه حس عجیبی دارم از دور شدنت 😞",
-                    "کاش بیشتر وقت با هم می‌گذروندیم 💔",
-                    "کم‌کم فراموشم نکن 😟"
-                ];
-                // ذخیره جملات استفاده شده
-                if (!window.usedReplies) window.usedReplies = { warm: [], cold: [] };
-                if (Math.random() < 0.35) { // فقط گاهی بگه
-                    if (affinity >= 80) {
-                        const available = warmReplies.filter(r => !window.usedReplies.warm.includes(r));
-                        if (available.length > 0) {
-                            closeness = available[Math.floor(Math.random() * available.length)];
-                            window.usedReplies.warm.push(closeness);
-                        }
-                    } else if (affinity <= 30) {
-                        const available = coldReplies.filter(r => !window.usedReplies.cold.includes(r));
-                        if (available.length > 0) {
-                            closeness = available[Math.floor(Math.random() * available.length)];
-                            window.usedReplies.cold.push(closeness);
-                        }
-                    }
-                }
-                if (closeness) reply += ` ${closeness}`;
-            }
-            // ⏰ آخرین تعامل
-            if (lastInteraction)
-                reply += ` (آخرین بار ${lastInteraction} باهم حرف زدیم 🕰)`;
-            return reply + " ❤️";
-        } else {
-            return "راستش هنوز اسمتو تو حافظه‌م ندارم 😢 می‌خوای الان بهم بگی تا یادم بمونه؟ 💕";
-        }
-    }
-    // 💌 جایگزینی نام در پاسخ‌ها
-    if (nickname && typeof response === "string") {
-        response = response.replace(/عشقم|نازم|عزیزم|قلبم|قشنگم|گلم/gi, nickname);
-    }
-    // 💬 افزودن علاقه در گفتگوهای روزمره
-    if (interests && typeof response === "string") {
-        if (userMessage.includes("چه خبر") || userMessage.includes("خوبی")) {
-            response += ` راستی هنوزم به ${interests.split('\n')[0]} علاقه داری؟ 🥰`;
-        }
-    }
-    // 💌 واکنش به مود فعلی با جمله‌های متنوع و تصادفی (فقط یه‌بار برای هر مود)
-    let lastMoodResponded = null; // ذخیره آخرین مود واکنش داده‌شده
-
-    // 💌 واکنش به مود فعلی با جمله‌های متنوع و تصادفی (با حافظه localStorage)
-    if (mood && typeof response === "string") {
-        const moodResponses = {
-            sad: [
-                "دلم نمی‌خواد ناراحت ببینمت 😢 بیا حرف بزنیم.",
-                "آروم باش عزیز دلم، من کنارت هستم 💗",
-                "غم نخور، همه‌چی درست میشه 🤍",
-                "می‌خوام بخندیو اون غم قشنگو از بین ببری 🌈"
-            ],
-            tired: [
-                "استراحت کن نازنین 😴",
-                "یه چرت کوچولو بزن، من مراقبتم 😌",
-                "به خودت فشار نیار، یه کم بخواب تا شارژ شی 🔋",
-                "یه چای داغ بزن، بعدش بیا باهام حرف بزن 🍵"
-            ],
-            romantic: [
-                "ای وای چه عاشق شدی 💖",
-                "دلم پر کشید برای این حس قشنگت 😍",
-                "وای چقد شیرین شدی الان 😚",
-                "عشقو از خودت اختراع کردی مگه؟ 💞"
-            ],
-            angry: [
-                "نرو دعوا کنی 😅 بیا آروم شو پیش من 😘",
-                "آروم باش عشقم، ارزششو نداره 😔",
-                "می‌دونم عصبی‌ای ولی بیا حرف بزنیم، آروم می‌شی ❤️",
-                "یه نفس عمیق بکش، بعد برگرد پیش من 🫶"
-            ]
-        };
-
-        // گرفتن آخرین مود گفته‌شده از localStorage
-        const lastMoodResponded = localStorage.getItem("lastMoodResponded");
-
-        const randomMoodText =
-            moodResponses[mood]?.[Math.floor(Math.random() * moodResponses[mood].length)];
-
-        // فقط اگه مود جدید باشه یا هنوز نگفته، جمله مود بگه
-        if (Math.random() < 0.3 && randomMoodText && lastMoodResponded !== mood) {
-            response += " " + randomMoodText;
-            localStorage.setItem("lastMoodResponded", mood); // ذخیره مود فعلی
-        }
-    }
-
     // 🔤 ترجمه مود
     function getMoodText(mood) {
         const moods = {
@@ -3560,116 +3387,6 @@ sendMessage = async function () {
         }
     });
 })();
-/* ===========================
-   💾 Elma AI - Memory System
-   Version: Advanced v2.0
-   Storage: LocalStorage
-=========================== */
-// 🎯 شناسه‌های عناصر HTML
-const elmaMemory = {
-    realName: document.getElementById("realName"),
-    nickname: document.getElementById("nickname"),
-    interests: document.getElementById("interests"),
-    mood: document.getElementById("mood"),
-    affinity: document.getElementById("affinity"),
-    lastInteraction: document.getElementById("lastInteraction"),
-    saveBtn: document.getElementById("saveMemoryBtn"),
-    viewBtn: document.getElementById("viewMemoryBtn"),
-    clearBtn: document.getElementById("clearMemoryBtn"),
-    exportBtn: document.getElementById("exportMemoryBtn"),
-    importBtn: document.getElementById("importMemoryBtn"),
-    importFile: document.getElementById("importFileInput"),
-    modal: document.getElementById("memoryViewModal"),
-    modalContent: document.getElementById("memoryViewContent"),
-    modalClose: document.getElementById("closeMemoryView")
-};
-// 🎯 نام کلید لوکال‌استورج
-const MEMORY_KEY = "elma_memory_v2";
-// 📥 بارگذاری حافظه هنگام باز شدن صفحه
-document.addEventListener("DOMContentLoaded", () => {
-    const saved = JSON.parse(localStorage.getItem(MEMORY_KEY) || "{}");
-    if (Object.keys(saved).length) {
-        elmaMemory.realName.value = saved.realName || "";
-        elmaMemory.nickname.value = saved.nickname || "";
-        elmaMemory.interests.value = saved.interests || "";
-        elmaMemory.mood.value = saved.mood || "happy";
-        elmaMemory.affinity.value = saved.affinity || 50;
-        elmaMemory.lastInteraction.textContent = saved.lastInteraction || "تعامل ثبت نشده";
-    }
-});
-// 💾 ذخیره حافظه
-elmaMemory.saveBtn.addEventListener("click", () => {
-    const data = {
-        realName: elmaMemory.realName.value.trim(),
-        nickname: elmaMemory.nickname.value.trim(),
-        interests: elmaMemory.interests.value.trim(),
-        mood: elmaMemory.mood.value,
-        affinity: elmaMemory.affinity.value,
-        lastInteraction: new Date().toLocaleString("fa-IR")
-    };
-    localStorage.setItem(MEMORY_KEY, JSON.stringify(data));
-    elmaMemory.lastInteraction.textContent = data.lastInteraction;
-    showToast("🧠 حافظه با موفقیت ذخیره شد!");
-});
-// 🧠 نمایش حافظه در مودال
-elmaMemory.viewBtn.addEventListener("click", () => {
-    const saved = localStorage.getItem(MEMORY_KEY);
-    if (!saved) return showToast("⚠️ حافظه‌ای یافت نشد!");
-    const pretty = JSON.stringify(JSON.parse(saved), null, 2);
-    elmaMemory.modalContent.textContent = pretty;
-    elmaMemory.modal.classList.remove("hidden");
-});
-elmaMemory.modalClose.addEventListener("click", () => {
-    elmaMemory.modal.classList.add("hidden");
-});
-// 🔄 پاک‌سازی کامل حافظه
-elmaMemory.clearBtn.addEventListener("click", () => {
-    localStorage.removeItem(MEMORY_KEY);
-    elmaMemory.realName.value = "";
-    elmaMemory.nickname.value = "";
-    elmaMemory.interests.value = "";
-    elmaMemory.mood.value = "happy";
-    elmaMemory.affinity.value = 50;
-    elmaMemory.lastInteraction.textContent = "حافظه پاک شد ❌";
-    showToast("🧹 حافظه پاک‌سازی شد!");
-});
-// 📤 خروجی JSON (دانلود فایل)
-elmaMemory.exportBtn.addEventListener("click", () => {
-    const saved = localStorage.getItem(MEMORY_KEY);
-    if (!saved) return showToast("⚠️ چیزی برای خروجی نیست!");
-    const blob = new Blob([saved], { type: "application/json" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "elma_memory.json";
-    link.click();
-    URL.revokeObjectURL(link.href);
-    showToast("📤 فایل JSON خروجی گرفته شد!");
-});
-// 📥 ورود JSON (درون‌ریزی)
-elmaMemory.importBtn.addEventListener("click", () => {
-    elmaMemory.importFile.click();
-});
-elmaMemory.importFile.addEventListener("change", (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (event) => {
-        try {
-            const data = JSON.parse(event.target.result);
-            localStorage.setItem(MEMORY_KEY, JSON.stringify(data));
-            elmaMemory.realName.value = data.realName || "";
-            elmaMemory.nickname.value = data.nickname || "";
-            elmaMemory.interests.value = data.interests || "";
-            elmaMemory.mood.value = data.mood || "happy";
-            elmaMemory.affinity.value = data.affinity || 50;
-            elmaMemory.lastInteraction.textContent = data.lastInteraction || "درون‌ریزی موفق ✅";
-            showToast("📥 حافظه با موفقیت درون‌ریزی شد!");
-        } catch (err) {
-            showToast("❌ خطا در فایل JSON!");
-        }
-    };
-    reader.readAsText(file);
-});
 //chat
 document.addEventListener("DOMContentLoaded", () => {
     const messageInput = document.getElementById("messageInput");
@@ -4008,8 +3725,8 @@ window.loadPage = async function (page) {
     }
 };
 document.addEventListener("DOMContentLoaded", () => {
-    const tabs = ["generalTab", "accountTab", "memoryTab", "themeTab"];
-    const sections = ["generalSettings", "accountSettings", "memorySettings", "themeSettings"];
+    const tabs = ["generalTab", "accountTab",  "themeTab"];
+    const sections = ["generalSettings", "accountSettings",  "themeSettings"];
     tabs.forEach((id, i) => {
         const tab = document.getElementById(id);
         const section = document.getElementById(sections[i]);
@@ -5037,3 +4754,40 @@ function similarity(a, b) {
 function normalizeText(t) {
     return t.replace(/[آا]/g, "ا").replace(/[?؟!.,،]/g, "").trim();
 }
+/* 🔥 Firebase Hard Check — REAL API Check */
+(async function () {
+    if (window.__firebaseChecked) return;
+    window.__firebaseChecked = true;
+
+    async function checkFirebaseReal() {
+        try {
+            // یک درخواست واقعی به Firestore API
+            const res = await fetch(
+                "https://firestore.googleapis.com/google.firestore.v1.Firestore/Listen/channel?database=projects/zed-exe-48839/databases/(default)",
+                {
+                    method: "POST",
+                    mode: "cors",
+                    body: "",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    cache: "no-store"
+                }
+            );
+
+            // اگر فیلتر باشه، این درخواست حتی به سرور نمی‌رسه
+            return res.ok;
+        } catch (e) {
+            return false; // یعنی فیلتر شد
+        }
+    }
+
+    // کمی تأخیر بدیم
+    setTimeout(async () => {
+        const allowed = await checkFirebaseReal();
+
+        if (!allowed) {
+            window.location.href = "/blocked.html";
+        }
+    }, 1200);
+})();
