@@ -18,6 +18,7 @@ const firebaseConfig = {
     appId: "1:283941493182:web:7a9deae50c01c9feb8c1ef",
     measurementId: "G-014WZDJBSL"
 };
+
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -70,7 +71,7 @@ let autoChat = {};
 // 🔹 ۱. لود فایل جمله‌سازی (autoChat.json)
 async function loadAutoChat() {
     try {
-        const res = await fetch('./autoChat.json?v=' + Date.now());
+        const res = await fetch('/autoChat.json?v=' + Date.now());
         autoChat = await res.json();
         console.log('✅ autoChat.json بارگذاری شد:', Object.keys(autoChat).length, 'دسته جمله‌ساز');
     } catch (err) {
@@ -83,7 +84,7 @@ async function loadChatDictionary() {
         // 🟢 ابتدا autoChat.json را بارگذاری کن (اولویت با آن است)
         await loadAutoChat();
         // 🚀 حالا chat.json را بخوان
-        const response = await fetch('./chat.json?v=' + Date.now());
+        const response = await fetch('/chat.json?v=' + Date.now());
         if (!response.ok) {
             throw new Error(`HTTP ${response.status}: فایل chat.json پیدا نشد`);
         }
@@ -270,11 +271,6 @@ onAuthStateChanged(auth, async (user) => {
                 console.log("🔁 آخرین چت از دیتابیس بازیابی شد:", lastChat.id);
                 if (typeof loadMessages === "function") {
                     await loadMessages(lastChat.id);
-                }
-            } else {
-                console.log("🆕 هیچ چتی وجود ندارد → ایجاد چت جدید...");
-                if (typeof createNewChat === "function") {
-                    await createNewChat();
                 }
             }
         }
@@ -671,8 +667,6 @@ onAuthStateChanged(auth, async (user) => {
         e.stopPropagation();
         toggleMenu();
     });
-    accountFreeBtn?.addEventListener('click', () => selectAccount('free'));
-    accountPlusBtn?.addEventListener('click', () => selectAccount('premium'));
     document.addEventListener('click', (e) => {
         if (!elmaMenuContainer.contains(e.target)) toggleMenu(false);
     });
@@ -785,7 +779,7 @@ async function handleLogout() {
 
         // 🔄 ریست ظاهر پروفایل بلافاصله (بدون نیاز به رفرش)
         showGuestProfile();
-        document.getElementById('ProfileImage').src = 'Assets/img/logo/Logo2.png';
+        document.getElementById('ProfileImage').src = '/Assets/img/logo/Logo2.png';
         document.getElementById('userName').textContent = 'بدون ثبت نام';
         document.getElementById('userType').textContent = 'حساب رایگان 💕';
 
@@ -814,11 +808,11 @@ function loadUserProfile() {
                 // ✅ اگر کاربر پروفایلش را سفارشی کرده (دیگر از گوگل نگیریم)
                 if (userData.customProfile === true) {
                     displayName = userData.username || "کاربر 💜";
-                    profileImage = userData.photoURL || 'Assets/img/logo/Logo2.png';
+                    profileImage = userData.photoURL || '/Assets/img/logo/Logo2.png';
                 } else {
                     // 🟢 اولین بار: از گوگل لود شود
                     displayName = currentUser.displayName || currentUser.email || "کاربر 💜";
-                    profileImage = currentUser.photoURL || 'Assets/img/logo/Logo2.png';
+                    profileImage = currentUser.photoURL || '/Assets/img/logo/Logo2.png';
                 }
                 document.getElementById('userName').textContent = displayName;
                 document.getElementById('ProfileImage').src = profileImage;
@@ -961,7 +955,6 @@ async function confirmDeleteAllChats() {
         await Promise.all(deletePromises);
         hideDeleteAllChatsModal();
         hideSettingsModal();
-        createNewChat();
         // Show success message
         const successDiv = document.createElement('div');
         successDiv.className = 'fixed top-4 right-4 bg-green-500 text-white p-4 rounded-2xl z-50 fade-in';
@@ -1431,7 +1424,7 @@ async function addMessageToChat(sender, message, imageUrl = null) {
         try {
             // ✅ فقط لوگو و متن ثابت روی عکس بیاد
             const watermarked = await watermarkImage(message.url, {
-                logo: 'Assets/img/logo/Logo2.png',
+                logo: '/Assets/img/logo/Logo2.png',
                 opacity: 0.5,
                 position: 'bottom-right',
                 margin: 25,
@@ -2061,11 +2054,11 @@ async function handlePhotoRequest() {
         sendBtn.style.opacity = "0.5";
         sendBtn.style.cursor = "not-allowed";
 
-        const sequentialPhotos = ['Assets/img/Elma/Elma1.png', 'Assets/img/Elma/Elma2.png', 'Assets/img/Elma/Elma3.png'];
+        const sequentialPhotos = ['/Assets/img/Elma/Elma1.png', '/Assets/img/Elma/Elma2.png', '/Assets/img/Elma/Elma3.png'];
         let photoToSend;
         if (isPremium) {
-            const premiumPhotos = ['Assets/img/Elma/Elma.png'];
-            for (let i = 4; i <= 112; i++) premiumPhotos.push(`Assets/img/Elma/Elma${i}.png`);
+            const premiumPhotos = ['/Assets/img/Elma/Elma.png'];
+            for (let i = 4; i <= 112; i++) premiumPhotos.push(`/Assets/img/Elma/Elma${i}.png`);
             photoToSend = premiumPhotos[Math.floor(Math.random() * premiumPhotos.length)];
         } else {
             photoToSend = sequentialPhotos[photoSequence];
@@ -2074,7 +2067,7 @@ async function handlePhotoRequest() {
 
         try {
             const watermarked = await watermarkImage(photoToSend, {
-                logo: 'Assets/img/logo/Logo2.png',
+                logo: '/Assets/img/logo/Logo2.png',
                 opacity: 0.5,
                 position: 'bottom-right',
                 margin: 25,
@@ -2135,12 +2128,12 @@ async function handleNudeRequest() {
 
     const totalImages = 16;
     const randomNum = Math.floor(Math.random() * totalImages) + 1;
-    const imageUrl = `Assets/img/Elma Nude/Elma${randomNum === 1 ? "" : randomNum}.png`;
+    const imageUrl = `/Assets/img/Elma Nude/Elma${randomNum === 1 ? "" : randomNum}.png`;
 
     try {
         // ایجاد واترمارک
         const watermarked = await watermarkImage(imageUrl, {
-            logo: 'Assets/img/logo/Logo2.png',
+            logo: '/Assets/img/logo/Logo2.png',
             opacity: 0.5,
             position: 'bottom-right',
             margin: 25,
@@ -2280,167 +2273,328 @@ function handleGameChoice(nextQuestion, choiceText) {
 function getRandomResponse(responses) {
     return responses[Math.floor(Math.random() * responses.length)];
 }
-async function saveMessage(sender, message, imageUrl = null) {
-    if (!currentUser || !currentChatId) return;
+function detectChatCategory(msg) {
+    if (!msg) return "گفتگو";
+
+    msg = msg.trim().toLowerCase();
+
+    // ---- احوال پرسی ----
+    const greetings = ["سلام", "خوبی", "چه خبر", "درود", "hi", "hello"];
+    if (greetings.some(w => msg.startsWith(w) || msg.includes(w))) {
+        return "احوال‌پرسی";
+    }
+
+    // ---- درخواست عکس ----
+    const photoReq = ["عکس", "photo", "pic", "پیکچر"];
+    if (photoReq.some(w => msg.includes(w))) {
+        return "درخواست عکس";
+    }
+
+    // ---- درخواست کمک / دستور ----
+    const req = ["میخوام", "درخواست", "بده", "بساز", "درست کن", "میشه", "می‌تونی"];
+    if (req.some(w => msg.includes(w))) {
+        return "درخواستی";
+    }
+
+    // ---- سوال ----
+    if (msg.includes("?") || msg.includes("؟")) {
+        return "سؤال";
+    }
+
+    // ---- چت عادی ----
+    if (msg.split(" ").length <= 4) {
+        return "چت کوتاه";
+    }
+
+    return "گفتگو";
+}
+// === Chat module — fixed & robust ===
+// Drop this block into your script.js (it assumes firestore `db`, auth `auth`, and UI helpers exist)
+
+/*
+  Goals:
+  - Validate lastChatId from localStorage before using it
+  - Ensure saveMessage always creates a chat when required
+  - Keep chat list in sync via loadChatHistory()
+  - Load messages for a chat and reflect them in UI
+  - Minimal invasive changes: uses existing helpers like addMessageToChat(), clearChat(), sidebar, messagesContainer
+*/
+
+// Validate that a saved chatId actually exists in Firestore
+async function validateLastChatId() {
     try {
-        await addDoc(collection(db, 'chats', currentChatId, 'messages'), {
-            sender: sender,
-            message: message,
-            imageUrl: imageUrl,
-            timestamp: new Date(),
-            userId: currentUser.uid
-        });
-        // Update chat title only if it's the first user message and title is still default
-        if (sender === 'user' && message) {
-            const chatDoc = await getDoc(doc(db, 'chats', currentChatId));
-            if (chatDoc.exists()) {
-                const chatData = chatDoc.data();
-                // Only update title if it's still the default title
-                if (chatData.title === 'چت جدید') {
-                    const chatTitle = message.substring(0, 30) + (message.length > 30 ? '...' : '');
-                    await updateDoc(doc(db, 'chats', currentChatId), {
-                        title: chatTitle,
-                        lastMessage: message,
-                        updatedAt: new Date()
-                    });
-                } else {
-                    // Just update last message and timestamp
-                    await updateDoc(doc(db, 'chats', currentChatId), {
-                        lastMessage: message,
-                        updatedAt: new Date()
-                    });
+        const lastChatId = localStorage.getItem('lastChatId');
+        if (!lastChatId) return null;
+        const docRef = doc(db, 'chats', lastChatId);
+        const snap = await getDoc(docRef);
+        if (snap.exists()) return lastChatId;
+        localStorage.removeItem('lastChatId');
+        return null;
+    } catch (err) {
+        console.warn('validateLastChatId error:', err);
+        try { localStorage.removeItem('lastChatId'); } catch (e) {}
+        return null;
+    }
+}
+
+// Initialize/reset currentChatId at runtime (call on auth ready)
+async function initCurrentChatId() {
+    currentChatId = await validateLastChatId();
+}
+
+// Patch: ensure currentChatId is valid before using it. If not present, create a new chat.
+async function ensureActiveChat(skipClear = true) {
+    if (currentChatId) {
+        // double-check exists
+        const snap = await getDoc(doc(db, 'chats', currentChatId));
+        if (snap.exists()) return currentChatId;
+        // invalid id: clear
+        currentChatId = null;
+        try { localStorage.removeItem('lastChatId'); } catch(e){}
+    }
+
+    // create a new chat and return id
+    const chatRef = await createNewChat(skipClear);
+    if (chatRef) {
+        currentChatId = chatRef.id;
+        try { localStorage.setItem('lastChatId', currentChatId); } catch(e){}
+        return currentChatId;
+    }
+    return null;
+}
+
+// ===== Rewritten saveMessage — robust and idempotent =====
+async function saveMessage(sender, message, imageUrl = null) {
+    if (!currentUser) return; // only logged-in users
+
+    try {
+        // Ensure we have a valid active chat
+        if (!currentChatId) {
+            const chatRef = await createNewChat(true); // don't clear UI when creating via message
+            if (!chatRef) {
+                console.error('Could not create chat before saving message');
+                return;
+            }
+            currentChatId = chatRef.id;
+            try { localStorage.setItem('lastChatId', currentChatId); } catch (e) {}
+        } else {
+            // verify existing id points to a real chat
+            const existing = await getDoc(doc(db, 'chats', currentChatId));
+            if (!existing.exists()) {
+                // recreate
+                const chatRef = await createNewChat(true);
+                if (chatRef) {
+                    currentChatId = chatRef.id;
+                    try { localStorage.setItem('lastChatId', currentChatId); } catch(e){}
                 }
             }
         }
+
+        // Save message into subcollection messages
+        await addDoc(collection(db, 'chats', currentChatId, 'messages'), {
+            sender: sender,
+            message: message || '',
+            imageUrl: imageUrl || null,
+            timestamp: new Date(),
+            userId: currentUser.uid
+        });
+
+        // Update chat meta (lastMessage, updatedAt) safely
+        try {
+            const chatRef = doc(db, 'chats', currentChatId);
+            const chatSnap = await getDoc(chatRef);
+            if (chatSnap.exists()) {
+                const chatData = chatSnap.data() || {};
+                const updates = {
+                    lastMessage: message || (imageUrl ? '📷 تصویر' : ''),
+                    updatedAt: new Date()
+                };
+
+                // If title still default, try to detect category from the user's first message
+                if (sender === 'user' && chatData.title === 'چت جدید') {
+                    updates.title = detectChatCategory(message);
+                }
+
+                await updateDoc(chatRef, updates);
+            }
+        } catch (err) {
+            console.warn('Failed updating chat meta:', err);
+        }
+
     } catch (error) {
         console.error('Error saving message:', error);
     }
 }
-async function createNewChat() {
+
+// ===== createNewChat (keeps existing behavior but returns fully populated ref) =====
+async function createNewChat(skipClear = false) {
     if (!currentUser) {
         showRegistrationModal();
-        return;
+        return null;
     }
+
     try {
-        // ساخت چت جدید در دیتابیس
-        const chatRef = await addDoc(collection(db, 'chats'), {
+        const payload = {
             userId: currentUser.uid,
             title: 'چت جدید',
             createdAt: new Date(),
             archived: false,
             updatedAt: new Date()
-        });
-        // ذخیره شناسه چت جدید در حافظه
+        };
+
+        const chatRef = await addDoc(collection(db, 'chats'), payload);
+
+        // store id
         currentChatId = chatRef.id;
-        localStorage.setItem("lastChatId", chatRef.id);
-        clearChat();
-        // بستن سایدبار در حالت موبایل
-        if (window.innerWidth < 768) {
-            sidebar.classList.add('translate-x-full');
-        }
-        // بعد از ساخت، لیست چت‌ها رو دوباره بارگذاری کن
+        try { localStorage.setItem('lastChatId', chatRef.id); } catch(e){}
+
+        // clear UI only when desired
+        if (!skipClear) clearChat();
+
+        if (window.innerWidth < 768) sidebar.classList.add('translate-x-full');
+
+        // refresh list
         loadChatHistory();
-        console.log("✅ چت جدید ساخته شد:", chatRef.id);
+        console.log('✅ New chat created:', chatRef.id);
+
+        return chatRef;
     } catch (error) {
-        console.error('❌ خطا در ساخت چت جدید:', error);
+        console.error('❌ Error creating chat:', error);
+        return null;
     }
 }
-function clearChat() {
-    messagesContainer.innerHTML = `
-                <div class="text-center py-12 fade-in">
-                    <div class="w-24 h-24 mx-auto mb-6 rounded-full overflow-hidden border-4 border-pink-400 heart-float glow-effect">
-                        <img src="Assets/img/Elma/Elma103.png" alt="Elma" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                        <div class="w-full h-full theme-accent flex items-center justify-center" style="display: none;">
-                            <i class="fas fa-heart text-white text-3xl"></i>
-                        </div>
-                    </div>
-                    <h2 class="text-3xl font-bold gradient-text mb-3">سلام عشقم! من الما هستم 💖</h2>
-                    <p class="theme-text-secondary text-lg">دوست دختر مجازی تو هستم</p>
-                </div>
-            `;
-}
+
+// ===== loadChatHistory (keeps original but more defensive) =====
 async function loadChatHistory() {
     window.loadChat = loadChat;
     if (!currentUser) return;
+
     const q = query(
         collection(db, 'chats'),
         orderBy('updatedAt', 'desc')
     );
+
     onSnapshot(q, (snapshot) => {
         const chatHistoryDiv = document.getElementById('chatHistory');
+        if (!chatHistoryDiv) return;
         chatHistoryDiv.innerHTML = '';
-        snapshot.forEach((doc) => {
-            const chat = doc.data();
-            if (chat.userId === currentUser.uid) {
-                const shortTitle = chat.title ? chat.title.split(' ').slice(0, 2).join(' ') : '';
-                const chatItem = document.createElement('div');
-                chatItem.className = 'w-full p-2 rounded-xl glass-effect hover-lift transition-all duration-300 mb-2 relative group';
-                chatItem.innerHTML = `
-                                            <div class="flex items-center justify-between">
-                                                <div class="flex-1 cursor-pointer" onclick="loadChat('${doc.id}')">
-                                                    <div class="theme-text-primary font-medium truncate flex items-center gap-2">
-                                                    <i class="fas fa-champagne-glasses text-pink-400"></i>
-                                                    ${shortTitle}
-                                                </div>
-                                            </div>
-                                <div class="relative opacity-0 group-hover:opacity-100 transition-opacity duration-300 chat-menu-container">
-                                    <button onclick="toggleChatMenu(event, '${doc.id}')" class="p-2 rounded-full glass-effect hover-lift">
-                                        <i class="fas fa-ellipsis-h theme-text-primary text-sm"></i>
-                                    </button>
-                                    <div id="chatMenu-${doc.id}" class="absolute left-0 top-full mt-2 w-48 glass-effect rounded-2xl shadow-lg hidden z-20 overflow-hidden chat-dropdown-menu">
-                                        <button onclick="renameChatItem('${doc.id}', '${chat.title}')" class="w-full text-right p-3 hover:theme-bg-tertiary transition-all duration-300 flex items-center gap-3">
-                                            <i class="fas fa-edit theme-text-primary text-sm"></i>
-                                            <span class="theme-text-primary text-sm">تغییر نام</span>
-                                        </button>
-                                        <button onclick="archiveChatItem('${doc.id}')" class="w-full text-right p-3 hover:theme-bg-tertiary transition-all duration-300 flex items-center gap-3">
-                                            <i class="fas fa-archive theme-text-primary text-sm"></i>
-                                            <span class="theme-text-primary text-sm">آرشیو</span>
-                                        </button>
-                                        <button onclick="deleteChatItem('${doc.id}')" class="w-full text-right p-3 hover:bg-red-500 hover:bg-opacity-20 transition-all duration-300 flex items-center gap-3 text-red-500">
-                                            <i class="fas fa-trash text-sm"></i>
-                                            <span class="text-sm">حذف چت</span>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                chatHistoryDiv.appendChild(chatItem);
-            }
+
+        snapshot.forEach((docSnap) => {
+            const chat = docSnap.data();
+            if (chat.userId !== currentUser.uid) return;
+
+            const shortTitle = chat.title || 'چت';
+            const chatItem = document.createElement('div');
+            chatItem.className = 'w-full p-2 rounded-xl glass-effect hover-lift transition-all duration-300 mb-2 relative group';
+
+            chatItem.innerHTML = `
+                <div class="flex items-center justify-between">
+                    <div class="flex-1 cursor-pointer" onclick="loadChat('${docSnap.id}')">
+                        <div class="theme-text-primary font-medium truncate flex items-center gap-2">
+                            <i class="fas fa-champagne-glasses text-pink-400"></i>
+                            ${shortTitle}
+                        </div>
+                    </div>
+                    <div class="relative opacity-0 group-hover:opacity-100 transition-opacity duration-300 chat-menu-container">
+                        <button onclick="toggleChatMenu(event, '${docSnap.id}')" class="p-2 rounded-full glass-effect hover-lift">
+                            <i class="fas fa-ellipsis-h theme-text-primary text-sm"></i>
+                        </button>
+                        <div id="chatMenu-${docSnap.id}" class="absolute left-0 top-full mt-2 w-48 glass-effect rounded-2xl shadow-lg hidden z-20 overflow-hidden chat-dropdown-menu">
+                            <button onclick="renameChatItem('${docSnap.id}', '${shortTitle.replace(/'/g, "\\'")}')" class="w-full text-right p-3 hover:theme-bg-tertiary transition-all duration-300 flex items-center gap-3">
+                                <i class="fas fa-edit theme-text-primary text-sm"></i>
+                                <span class="theme-text-primary text-sm">تغییر نام</span>
+                            </button>
+                            <button onclick="archiveChatItem('${docSnap.id}')" class="w-full text-right p-3 hover:theme-bg-tertiary transition-all duration-300 flex items-center gap-3">
+                                <i class="fas fa-archive theme-text-primary text-sm"></i>
+                                <span class="theme-text-primary text-sm">آرشیو</span>
+                            </button>
+                            <button onclick="deleteChatItem('${docSnap.id}')" class="w-full text-right p-3 hover:bg-red-500 hover:bg-opacity-20 transition-all duration-300 flex items-center gap-3 text-red-500">
+                                <i class="fas fa-trash text-sm"></i>
+                                <span class="text-sm">حذف چت</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            chatHistoryDiv.appendChild(chatItem);
         });
     });
 }
+function clearChat() {
+    messagesContainer.innerHTML = `
+        <div class="text-center py-12 fade-in">
+            <div class="w-24 h-24 mx-auto mb-6 rounded-full overflow-hidden border-4 border-pink-400 heart-float glow-effect">
+                <img src="/Assets/img/Elma/Elma103.png" alt="Elma" class="w-full h-full object-cover"
+                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="w-full h-full theme-accent flex items-center justify-center" style="display: none;">
+                    <i class="fas fa-heart text-white text-3xl"></i>
+                </div>
+            </div>
+            <h2 class="text-3xl font-bold gradient-text mb-3">سلام عشقم! من الما هستم 💖</h2>
+            <p class="theme-text-secondary text-lg">دوست دختر مجازی تو هستم</p>
+        </div>
+    `;
+}
+window.clearChat = clearChat;
+// ===== loadChat (defensive, attaches onSnapshot to messages subcollection) =====
 async function loadChat(chatId) {
-    currentChatId = chatId;
-    clearChat();
     try {
-        // Load chat info
+        // establish as current
+        currentChatId = chatId;
+        localStorage.setItem('lastChatId', chatId);
+
+        // clear UI welcome
+        clearChat();
+
+        // load chat header if you want (optional)
         const chatDoc = await getDoc(doc(db, 'chats', chatId));
-        if (chatDoc.exists()) {
-            const chatData = chatDoc.data();
-            // Chat title is now fixed as "Elma 💕"
-        }
-        // Load messages
-        const q = query(
-            collection(db, 'chats', chatId, 'messages'),
-            orderBy('timestamp', 'asc')
-        );
+        if (!chatDoc.exists()) return;
+
+        // messages listener
+        const q = query(collection(db, 'chats', chatId, 'messages'), orderBy('timestamp', 'asc'));
         onSnapshot(q, (snapshot) => {
-            // Clear existing messages except welcome
-            const messages = messagesContainer.querySelectorAll('.fade-in');
-            messages.forEach(msg => msg.remove());
-            snapshot.forEach((doc) => {
-                const message = doc.data();
+            // remove previous message bubbles (but leave welcome container if needed)
+            // safe remove: remove nodes with .message-bubble OR not .fade-in welcome
+            const existing = Array.from(messagesContainer.children);
+            // remove all except a possible welcome container with class fade-in
+            existing.forEach((el) => {
+                if (el.classList && !el.classList.contains('fade-in')) el.remove();
+            });
+
+            snapshot.forEach((msgDoc) => {
+                const message = msgDoc.data();
+                // rely on your addMessageToChat to render proper bubble
                 addMessageToChat(message.sender, message.message, message.imageUrl);
             });
+
+            // scroll to bottom
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
         });
-        // Close sidebar on mobile
-        if (window.innerWidth < 768) {
-            sidebar.classList.add('translate-x-full');
-        }
-    } catch (error) {
-        console.error('Error loading chat:', error);
+
+        if (window.innerWidth < 768) sidebar.classList.add('translate-x-full');
+    } catch (err) {
+        console.error('Error loading chat:', err);
     }
 }
+
+// ===== Hook into onAuthStateChanged to init currentChatId =====
+// If you already have an onAuthStateChanged in file, merge the call to initCurrentChatId() there.
+onAuthStateChanged(auth, async (user) => {
+    if (user) {
+        currentUser = user;
+        // try to restore valid chat id
+        currentChatId = await validateLastChatId();
+        // load chat list
+        loadChatHistory();
+    } else {
+        currentUser = null;
+        currentChatId = null;
+        try { localStorage.removeItem('lastChatId'); } catch(e){}
+    }
+});
+
+// ===== End of chat module =====
 // Premium functionality
 function showPremiumModal() {
     document.getElementById('premiumModal').classList.remove('hidden');
@@ -2485,7 +2639,6 @@ async function archiveCurrentChat() {
         dropdownMenu.classList.add('hidden');
         // Create new chat after archiving
         setTimeout(() => {
-            createNewChat();
         }, 2000);
     } catch (error) {
         console.error('Error archiving chat:', error);
@@ -2537,7 +2690,6 @@ async function confirmDeleteChat() {
         // Delete the chat document
         await deleteDoc(doc(db, 'chats', currentChatId));
         hideDeleteModal();
-        createNewChat();
     } catch (error) {
         console.error('Error deleting chat:', error);
         showToast('خطا در حذف چت 😔');
@@ -2625,9 +2777,9 @@ function loadGalleryImages() {
     // تصاویر نمونه (می‌تونی آدرس‌ها را از سرور بگیری)
     const sampleImages = [];
     for (let i = 1; i <= 16; i++) {
-        sampleImages.push(`Assets/img/Elma Nude/Elma${i}.png`);
+        sampleImages.push(`/Assets/img/Elma Nude/Elma${i}.png`);
     }
-    sampleImages.push('Assets/img/Elma Nude/Elma.png');
+    sampleImages.push('/Assets/img/Elma Nude/Elma.png');
 
     const premium = isUserPremium();
 
@@ -2926,19 +3078,27 @@ window.archiveChatItem = async function (chatId) {
             archived: true,
             archivedAt: new Date()
         });
+
         const menu = document.getElementById(`chatMenu-${chatId}`);
         menu?.classList.add('hidden');
         menu?.parentElement?.classList.remove('chat-menu-open');
-        loadChatHistory();
 
+        loadChatHistory();
         customshowToast('چت آرشیو شد! 📦', 'success');
 
-        if (currentChatId === chatId) createNewChat();
+        // ❗ دیگه چت جدید نساز
+        if (currentChatId === chatId) {
+            currentChatId = null; // فقط خالی کن
+            localStorage.removeItem("lastChatId");
+            clearChat();
+        }
+
     } catch (error) {
         console.error('Error archiving chat:', error);
         customshowToast('خطا در آرشیو کردن چت 😔', 'error');
     }
 };
+
 
 window.deleteChatItem = async function (chatId) {
     const confirmed = await customConfirm('آیا مطمئنی که می‌خوای این چت رو حذف کنی؟ این عمل قابل بازگشت نیست!');
@@ -2957,7 +3117,13 @@ window.deleteChatItem = async function (chatId) {
         loadChatHistory();
         customshowToast('چت حذف شد! 🗑️', 'success');
 
-        if (currentChatId === chatId) createNewChat();
+        // ❗ اینم دیگه چت جدید نسازه
+        if (currentChatId === chatId) {
+            currentChatId = null;
+            localStorage.removeItem("lastChatId");
+            clearChat();
+        }
+
     } catch (error) {
         console.error('Error deleting chat:', error);
         customshowToast('خطا در حذف چت 😔', 'error');
@@ -3299,11 +3465,11 @@ sendMessage = async function () {
                             // انتخاب تصادفی عکس از پوشه Elma Nude
                             const totalImages = 16;
                             const randomNum = Math.floor(Math.random() * totalImages) + 1;
-                            const imageUrl = `Assets/img/Elma Nude/Elma${randomNum === 1 ? "" : randomNum}.png`;
+                            const imageUrl = `/Assets/img/Elma Nude/Elma${randomNum === 1 ? "" : randomNum}.png`;
                             try {
                                 // ✅ افزودن واترمارک روی عکس نود
                                 const watermarked = await watermarkImage(imageUrl, {
-                                    logo: 'Assets/img/logo/Logo2.png', // لوگو واترمارک
+                                    logo: '/Assets/img/logo/Logo2.png', // لوگو واترمارک
                                     opacity: 0.5,
                                     position: 'bottom-right',
                                     margin: 25,
@@ -3845,7 +4011,7 @@ function saveUserProfile(user, accountType = "") {
         uid: user.uid || null,
         name: user.displayName || user.email || "کاربر",
         email: user.email || "",
-        photo: user.photoURL || "Assets/img/logo/Logo2.png",
+        photo: user.photoURL || "/Assets/img/logo/Logo2.png",
         accountType,
         lastLogin: new Date().toISOString(),
     };
@@ -4791,3 +4957,4 @@ function normalizeText(t) {
         }
     }, 1200);
 })();
+
