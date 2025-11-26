@@ -4,346 +4,193 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>⚠ Cyber Firewall Blocked</title>
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/phosphor-icons@2.0.3/src/css/icons.css">
+    <title>⛔ اتصال مسدود شد</title>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;800&display=swap');
+        @import url("https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;800&display=swap");
 
         body {
             margin: 0;
             font-family: "Vazirmatn", sans-serif;
-            background: #050509;
+            background: #0a0d11;
             height: 100vh;
-            overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
-            color: white;
+            color: #fff;
+            overflow: hidden;
         }
 
-        /* ===== BACKGROUND LAYERS ===== */
-        .cyber-grid {
-            position: absolute;
-            inset: 0;
-            background-image:
-                linear-gradient(rgba(130, 0, 255, 0.15) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(130, 0, 255, 0.15) 1px, transparent 1px);
-            background-size: 38px 38px;
-            z-index: 1;
-            opacity: 0.25;
-            animation: gridMove 18s linear infinite;
-        }
-
-        @keyframes gridMove {
-            from {
-                transform: translateY(0);
+        /* ------------------------
+           DESKTOP CYBERPUNK THEME
+        ------------------------- */
+        @media (min-width: 769px) {
+            body {
+                background: radial-gradient(circle at 20% 30%, #003b57 0%, #03040a 80%);
             }
 
-            to {
-                transform: translateY(38px);
-            }
-        }
-
-        .cyber-gradient {
-            position: absolute;
-            inset: 0;
-            background:
-                radial-gradient(circle at 20% 20%, rgba(255, 0, 170, 0.35), transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(0, 170, 255, 0.35), transparent 55%),
-                radial-gradient(circle at 50% 120%, rgba(180, 0, 255, 0.28), transparent 60%);
-            filter: blur(80px);
-            z-index: 2;
-        }
-
-        .cyber-lines {
-            position: absolute;
-            inset: 0;
-            z-index: 3;
-            background: linear-gradient(120deg, transparent, rgba(255, 0, 180, 0.15), transparent);
-            animation: moveLine 6s linear infinite;
-        }
-
-        @keyframes moveLine {
-            from {
-                transform: translateX(-100%);
+            .panel {
+                background: rgba(0, 0, 0, 0.50);
+                border: 1px solid #009dff;
+                padding: 50px;
+                max-width: 580px;
+                backdrop-filter: blur(15px) saturate(180%);
+                box-shadow: 0 0 40px rgba(0, 150, 255, 0.25);
             }
 
-            to {
-                transform: translateX(100%);
+            .glow-grid {
+                position: absolute;
+                inset: 0;
+                background-image:
+                    linear-gradient(rgba(0, 255, 255, 0.1) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(0, 140, 255, 0.1) 1px, transparent 1px);
+                background-size: 55px 55px;
+                animation: gridAnim 18s linear infinite;
+                opacity: 0.22;
+            }
+
+            @keyframes gridAnim {
+                from {
+                    transform: translateY(0);
+                }
+
+                to {
+                    transform: translateY(55px);
+                }
             }
         }
 
-        .noise {
-            position: absolute;
-            inset: 0;
-            background: url('https://i.imgur.com/8K3JQ8L.png');
-            opacity: 0.04;
-            z-index: 4;
-        }
-
-        /* ===== PANEL ===== */
-        .panel {
-            position: relative;
-            z-index: 10;
-            width: 92%;
-            max-width: 520px;
-            background: rgba(18, 18, 28, 0.55);
-            backdrop-filter: blur(22px) saturate(180%);
-            border: 1px solid rgba(255, 0, 190, 0.25);
-            border-right: 1px solid rgba(0, 160, 255, 0.25);
-            border-radius: 26px;
-            padding: 44px 42px 36px;
-            box-shadow:
-                0 0 30px rgba(255, 0, 180, 0.2),
-                0 0 40px rgba(0, 130, 255, 0.18);
-            animation: fadeIn 0.9s ease, popIn 0.6s ease;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(25px);
+        /* ------------------------
+           MOBILE NEON THEME
+        ------------------------- */
+        @media (max-width: 768px) {
+            body {
+                background: radial-gradient(circle at 50% 10%, #0047ff 0%, #020205 85%);
             }
 
-            to {
-                opacity: 1;
-                transform: translateY(0);
+            .panel {
+                background: rgba(0, 0, 20, 0.55);
+                border: 1px solid #3a7bff;
+                padding: 35px 28px;
+                border-radius: 22px;
+                backdrop-filter: blur(12px);
+                box-shadow: 0 0 35px rgba(0, 120, 255, 0.25);
+            }
+
+            .glow-grid {
+                position: absolute;
+                inset: 0;
+                background: url("https://i.postimg.cc/wM7H7kHc/neon-lines.png");
+                background-size: cover;
+                opacity: 0.15;
             }
         }
 
-        @keyframes popIn {
-            0% {
-                transform: scale(0.92);
-            }
-
-            100% {
-                transform: scale(1);
-            }
-        }
-
-        /* ===== ICON ===== */
-        .icon {
-            font-size: 80px;
-            margin-bottom: 18px;
-            color: #ff0088;
-            filter: drop-shadow(0 0 10px rgba(255, 0, 190, 0.55));
-        }
-
-        /* ===== TEXT ===== */
         h1 {
             text-align: center;
             font-size: 26px;
-            margin-bottom: 12px;
-            font-weight: 800;
-            background: linear-gradient(135deg, #ff3db6, #00c8ff);
-
-            /* این دوتا باید کنار هم باشن */
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #00aeff, #9cefff);
             -webkit-background-clip: text;
             background-clip: text;
-
             color: transparent;
-            text-shadow: 0 0 18px rgba(255, 0, 200, 0.3);
         }
-
 
         p {
-            line-height: 2.1;
+            text-align: center;
+            line-height: 2.2;
             font-size: 15px;
-            color: #e7e7e7;
+            color: #e9e9e9;
         }
 
-        .section-title {
-            color: #ff7dd9;
-            font-weight: 600;
-            margin-top: 22px;
-        }
-
-        /* ===== LIST ===== */
-        ul {
-            margin-top: 8px;
-        }
-
-        ul li {
-            margin-bottom: 7px;
-            font-size: 14px;
-            padding-right: 14px;
-            position: relative;
-            color: #ececec;
-        }
-
-        ul li::before {
-            content: "";
-            position: absolute;
-            right: 0;
-            width: 7px;
-            height: 7px;
-            background: #ff3db6;
-            border-radius: 50%;
-            box-shadow: 0 0 12px #ff3db6;
-            top: 8px;
-        }
-
-        /* ===== BUTTON ===== */
         .btn {
-            margin-top: 34px;
+            margin-top: 30px;
             width: 100%;
-            padding: 15px 0;
+            padding: 14px 0;
+            background: linear-gradient(135deg, #008cff, #00ffee);
             border: none;
             border-radius: 14px;
-            font-size: 15px;
-            background: linear-gradient(135deg, #ff0088, #00aaff);
             color: white;
             font-weight: 700;
             cursor: pointer;
-            box-shadow: 0 6px 22px rgba(255, 0, 180, 0.32);
-            transition: 0.22s;
+            font-size: 16px;
+            transition: .22s;
+            box-shadow: 0 8px 25px rgba(0, 210, 255, 0.28);
         }
 
         .btn:hover {
-            transform: scale(1.035);
-            box-shadow: 0 6px 30px rgba(0, 190, 255, 0.28);
+            transform: scale(1.05);
         }
 
-        /* ===== MOBILE ===== */
-        @media(max-width: 480px) {
-            .panel {
-                padding: 34px 26px;
-                border-radius: 20px;
-            }
-
-            .icon {
-                font-size: 60px;
-            }
-
-            h1 {
-                font-size: 22px;
-            }
+        /* Success (سرور درست شد) */
+        .success h1 {
+            background: linear-gradient(135deg, #00ffbf, #ffffff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
         }
     </style>
 </head>
 
 <body>
 
-    <div class="cyber-grid"></div>
-    <div class="cyber-gradient"></div>
-    <div class="cyber-lines"></div>
-    <div class="noise"></div>
+    <div class="glow-grid"></div>
 
     <div class="panel">
-        <i class="ph-shield-warning icon"></i>
+        <h1 id="title">در حال بررسی اتصال…</h1>
 
-        <h1>اتصال به دیتابیس مسدود شد</h1>
-
-        <p>
-            اتصال به سرویس دیتابیس <strong style="color:#ff5abb">Firebase</strong> مسدود شده است.
-            <br>
-            این مشکل از **سمت گوگل و قوانین کشور شما** است و از سمت سایت ما قابل رفع نیست.
-            <br>
-            برای اتصال موفق، باید از **کشورهای پشتیبانی‌شده** به Firebase وصل شوید.
+        <p id="message">
+            لطفاً چند لحظه صبر کنید…
         </p>
 
-        <p class="section-title">کشورهای مسدود (فیلتر شده):</p>
-        <ul>
-            <li>ایران</li>
-            <li>روسیه</li>
-            <li>چین</li>
-            <li>ترکیه</li>
-            <li>امارات</li>
-            <li>عراق</li>
-        </ul>
-
-        <p class="section-title">کشورهای بدون محدودیت (تست شده):</p>
-        <ul>
-            <li>آمریکا</li>
-            <li>هند</li>
-            <li>برزیل</li>
-            <li>فرانسه</li>
-        </ul>
-
-        <button class="btn" onclick="location.reload()">
-            <i class="ph-arrow-counter-clockwise"></i> تلاش دوباره
-        </button>
+        <button class="btn" onclick="manualRetry()">تلاش مجدد 🔄</button>
     </div>
 
     <script>
-        (async function () {
-
-            // کشورهایی که معمولا خوبن، اما ممکنه بعضی IPهاشون بلاک باشه
-            const normallyGood = ["us", "ca", "fr", "br", "in", "uk", "ie", "ar"];
-
-            // کشورهایی که همیشه مشکل دارن
-            const fullyFiltered = [
-                "au", "sg", "nl", "pl", "jp", "de", "se", "no", "fi", "dk",
-                "it", "es", "ch", "pt", "cz", "hu", "ro", "at", "kr", "hk"
-            ];
-
-            async function detectCountry() {
-                try {
-                    const res = await fetch("https://api.country.is");
-                    const data = await res.json();
-                    return data.country ? data.country.toLowerCase() : "unknown";
-                } catch {
-                    return "unknown";
-                }
+        async function checkFirebase() {
+            try {
+                const res = await fetch(
+                    "https://firestore.googleapis.com/google.firestore.v1.Firestore/Listen/channel?database=projects/zed-exe-48839/databases/(default)",
+                    { method: "POST", headers: { "Content-Type": "application/json" }, body: "" }
+                );
+                return res.ok;
+            } catch {
+                return false;
             }
+        }
 
-            async function checkFirebase() {
-                try {
-                    const res = await fetch(
-                        "https://firestore.googleapis.com/google.firestore.v1.Firestore/Listen/channel?database=projects/zed-exe-48839/databases/(default)",
-                        {
-                            method: "POST",
-                            mode: "cors",
-                            headers: { "Content-Type": "application/json" },
-                            body: "",
-                            cache: "no-store"
-                        }
-                    );
-                    return res.ok; // اگر 200 بود یعنی وصل شد
-                } catch {
-                    return false; // یعنی وصل نمیشه
-                }
-            }
+        async function startCheck() {
+            const ok = await checkFirebase();
 
-            const country = await detectCountry();
-            const firebaseOK = await checkFirebase();
+            const title = document.getElementById("title");
+            const msg = document.getElementById("message");
 
-            const firstTime = !localStorage.getItem("refreshCheck");
+            if (ok) {
+                document.body.classList.add("success");
+                title.innerHTML = "اتصال برقرار شد! 😎";
+                msg.innerHTML = "سرور جدید سالمه — درحال انتقال...";
 
-            if (firebaseOK) {
-                // سرور دیتابیس بازه
-                localStorage.removeItem("refreshCheck");
-                window.location.href = "/";
+                setTimeout(() => {
+                    window.location.href = "/";
+                }, 1500);
+
                 return;
             }
 
-            // ----- اگر Firebase بسته بود -----
-            const title = document.querySelector("h1");
-            const paragraph = document.querySelector("p");
+            msg.innerHTML = `
+            منطقه شما توسط <b>Firebase</b> فیلتر شده ⚠️<br><br>
+            اگر از فیلترشکن استفاده نمی‌کنید، لطفاً یک VPN فعال کنید.<br>
+            اگر استفاده می‌کنید، لطفاً سرور آن را تغییر دهید.<br><br>
+            این مشکل از سمت سایت نیست — از سمت سرور می‌باشد.
+            `;
+        }
 
-            const displayCountry = country !== "unknown"
-                ? `سرور ${country.toUpperCase()}`
-                : "سرور ناشناس";
+        function manualRetry() {
+            startCheck();
+        }
 
-            if (firstTime) {
-                // بار اول
-                title.innerHTML = "اتصال به دیتابیس برقرار نشد";
-                paragraph.innerHTML =
-                    `با اینکه کشور شما <strong>${displayCountry}</strong> هست،
-        ولی این رنج آی‌پی خاص فیلتره داداشی.`;
-            } else {
-                // تلاش دوم به بعد
-                title.innerHTML = "اوه نه! دوباره همین شد 😭";
-                paragraph.innerHTML =
-                    `ای بابا <strong>${displayCountry}</strong> هم جواب نداد داداش!
-        این آی‌پی خاصش فیلتره. یه سرور دیگه بزن شاید این یکی کار کنه 🔥`;
-            }
-
-            localStorage.setItem("refreshCheck", "true");
-
-        })();
+        // Auto check on load
+        startCheck();
     </script>
 
 </body>
