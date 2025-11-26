@@ -419,7 +419,6 @@ onAuthStateChanged(auth, async (user) => {
     const radioFree = document.getElementById('radioFree');
     const radioPlus = document.getElementById('radioPlus');
     const userTypeLabel = document.getElementById('userType');
-    const upgradeTopBtn = document.getElementById("upgradeTopBtn");
     const upgradeBanner = document.querySelector(".upgrade-banner");
 
     let accountType = "free";
@@ -430,10 +429,8 @@ onAuthStateChanged(auth, async (user) => {
     function updateUpgradeVisibility(accountType, purchasedPlus) {
         const isPremium = accountType === "premium" && purchasedPlus;
         if (isPremium) {
-            if (upgradeTopBtn) upgradeTopBtn.style.display = "none";
             if (upgradeBanner) upgradeBanner.style.display = "none";
         } else {
-            if (upgradeTopBtn) upgradeTopBtn.style.display = "flex";
             if (upgradeBanner) upgradeBanner.style.display = "flex";
         }
     }
@@ -623,16 +620,6 @@ onAuthStateChanged(auth, async (user) => {
             const now = new Date();
             const expiry = data.premiumExpiry ? new Date(data.premiumExpiry) : null;
 
-            // ✅ اجازه بده اگه هنوز پریمیوم تموم نشده برگرده
-            if (!data.purchasedPlus && expiry && expiry > now) {
-                await updateDoc(userRef, { accountType: "premium" });
-                accountType = "premium";
-                updateMenuUI();
-                toggleMenu(false);
-                showToast("برگشتی به پریمیوم فعالت 👑");
-                return;
-            }
-
             // 🔸 اگه خرید نکرده → باز کردن مودال خرید
             if (!purchasedPlus) {
                 const modal = document.getElementById('premiumModal');
@@ -710,8 +697,7 @@ function initializeEventListeners() {
     document.getElementById('newChatBtn').addEventListener('click', createNewChat);
     document.getElementById('galleryBtn').addEventListener('click', showGallery);
     document.getElementById('closeGallery').addEventListener('click', hideGallery);
-    // Auth form
-    document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+    
     // Premium functionality
     document.getElementById('closePremium').addEventListener('click', hidePremiumModal);
     // Delete confirmation
@@ -725,7 +711,6 @@ function initializeEventListeners() {
     // Archive list modal
     document.getElementById('closeArchiveList').addEventListener('click', hideArchiveListModal);
     // Settings
-    document.getElementById('ProfileBtn').addEventListener('click', showSettingsModal);
     document.getElementById('closeSettings').addEventListener('click', hideSettingsModal);
     document.getElementById('generalTab').addEventListener('click', () => switchSettingsTab('general'));
     document.getElementById('accountTab').addEventListener('click', () => switchSettingsTab('account'));
@@ -881,23 +866,30 @@ function switchSettingsTab(tab) {
     const generalTab = document.getElementById('generalTab');
     const accountTab = document.getElementById('accountTab');
     
+
     const generalSettings = document.getElementById('generalSettings');
     const accountSettings = document.getElementById('accountSettings');
-    // همه رو غیر فعال و پنهان کن
-    [generalTab, accountTab, ].forEach(btn => {
+    
+
+    // غیر فعال کردن تب‌ها
+    [generalTab, accountTab, analyticsTab].forEach(btn => {
         btn.classList.remove('theme-accent', 'text-white');
         btn.classList.add('theme-text-secondary');
     });
-    [generalSettings, accountSettings, ].forEach(section => section.classList.add('hidden'));
-    // حالا تب انتخاب‌شده رو فعال کن
+
+    // پنهان کردن تمام سکشن‌ها
+    [generalSettings, accountSettings, ]
+        .forEach(sec => sec.classList.add('hidden'));
+
+    // فعال کردن تب انتخابی
     if (tab === 'general') {
         generalTab.classList.add('theme-accent', 'text-white');
-        generalTab.classList.remove('theme-text-secondary');
         generalSettings.classList.remove('hidden');
+
     } else if (tab === 'account') {
         accountTab.classList.add('theme-accent', 'text-white');
-        accountTab.classList.remove('theme-text-secondary');
         accountSettings.classList.remove('hidden');
+
     } 
 }
 function changeLanguage(e) {
@@ -3523,36 +3515,6 @@ sendMessage = async function () {
     // در حالت عادی، تابع اصلی رو اجرا کن
     await originalSendMessage();
 };
-// قرار بده پایین تر از تعریف currentUser (یا جایی که به currentUser دسترسی داری)
-(function () {
-    const upgradeBtn = document.getElementById('upgradeTopBtn');
-    if (!upgradeBtn) return;
-    function openPremiumOrRegister() {
-        // اگر کاربر لاگین نیست، مودال ثبت‌نام رو نشون بده
-        if (!window.currentUser) {
-            const reg = document.getElementById('registrationModal');
-            if (reg) reg.classList.remove('hidden');
-            return;
-        }
-        // در غیر این صورت مودال پریمیوم رو باز کن
-        const modal = document.getElementById('premiumModal');
-        if (modal) {
-            modal.classList.remove('hidden');
-            // فوکوس روی اولین دکمه داخل مودال (برای قابل‌دستیابی)
-            const firstBtn = modal.querySelector('button, [tabindex]');
-            if (firstBtn) firstBtn.focus();
-        }
-    }
-    // کلیک
-    upgradeBtn.addEventListener('click', openPremiumOrRegister);
-    // دسترسی صفحه‌کلید: Enter / Space
-    upgradeBtn.addEventListener('keydown', function (e) {
-        if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            openPremiumOrRegister();
-        }
-    });
-})();
 //chat
 document.addEventListener("DOMContentLoaded", () => {
     const messageInput = document.getElementById("messageInput");
@@ -4794,7 +4756,6 @@ modals.forEach((modal) => {
 /* 📱 بستن خودکار منو وقتی داخلش روی گزینه‌ای مثل تنظیمات کلیک میشه */
 
 const sidebarEl = document.getElementById('sidebar');
-const profileBtn = document.getElementById('ProfileBtn'); // دکمه‌ای که تنظیمات رو باز می‌کنه
 const closeSidebarBtn2 = document.getElementById('closeSidebar');
 
 // تابع بستن منو با انیمیشن نرم
@@ -4822,12 +4783,8 @@ sidebarEl?.addEventListener('click', (e) => {
 });
 
 // 🔹 مخصوص دکمه "پروفایل کاربری" که تنظیمات باز می‌کنه
-if (profileBtn) {
-    profileBtn.addEventListener('click', () => {
-        const isSmallScreen = window.innerWidth <= 768;
-        if (isSmallScreen) closeSidebarSmooth();
-    });
-}
+
+
 // 🖼️ لیست عکس‌هایی که الما فرستاده
 let seenImages = [];
 
@@ -4958,3 +4915,77 @@ function normalizeText(t) {
     }, 1200);
 })();
 
+// 🌟 Floating Profile Menu
+const profileBtn = document.getElementById("ProfileBtn");
+const profileMenu = document.getElementById("profileFloatingMenu");
+
+profileBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    profileMenu.classList.toggle("hidden");
+});
+
+// بستن منو با کلیک بیرون
+document.addEventListener("click", (e) => {
+    if (!profileMenu.contains(e.target) && e.target !== profileBtn) {
+        profileMenu.classList.add("hidden");
+    }
+});
+
+// نمایش تنظیمات داخل منو
+document.getElementById("menuOpenSettings").addEventListener("click", () => {
+    profileMenu.classList.add("hidden");
+    showSettingsModal();
+});
+
+// خروج
+document.getElementById("menuLogout").addEventListener("click", () => {
+    profileMenu.classList.add("hidden");
+    handleLogout();
+});
+
+// همگام‌سازی اطلاعات پروفایل داخل منو
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        document.getElementById("menuProfileName").textContent =
+            user.displayName || "کاربر";
+        document.getElementById("menuProfileEmail").textContent =
+            user.email || "no email";
+        document.getElementById("menuProfileImage").src =
+            user.photoURL || "/Assets/img/logo/Logo2.png";
+    }
+});
+// ====== Help Menu ======
+const menuOpenHelp = document.getElementById("menuOpenHelp");
+const helpModal = document.getElementById("helpModal");
+const closeHelpModal = document.getElementById("closeHelpModal");
+const okHelpModal = document.getElementById("okHelpModal");
+
+function openHelp() {
+    helpModal.classList.remove("hidden");
+    document.body.style.overflow = "hidden"; // جلوگیری از اسکرول
+}
+
+function closeHelp() {
+    helpModal.classList.add("hidden");
+    document.body.style.overflow = "";
+}
+
+// کلیک روی آیتم راهنما داخل منو
+menuOpenHelp.addEventListener("click", () => {
+    profileMenu.classList.add("hidden"); // مثل بقیه آیتم‌ها
+    openHelp();
+});
+
+// دکمه بستن
+closeHelpModal.addEventListener("click", closeHelp);
+okHelpModal.addEventListener("click", closeHelp);
+
+// کلیک بیرون مودال
+helpModal.addEventListener("click", (e) => {
+    if (e.target === helpModal) closeHelp();
+});
+
+// بستن با ESC
+document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeHelp();
+});
